@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PillPilot</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Login -->
+  <section id="login" class="card center hidden">
+    <h1>💊 PillPilot</h1>
+    <p class="muted">Oturum açın</p>
+    <form id="loginForm">
+      <label>Kullanıcı<input name="user" autocomplete="username" required></label>
+      <label>Parola<input name="pass" type="password" autocomplete="current-password" required></label>
+      <button type="submit">Giriş</button>
+      <p id="loginErr" class="err"></p>
+    </form>
+  </section>
+
+  <!-- Dashboard -->
+  <main id="dash" class="hidden">
+    <header class="topbar">
+      <span class="brand">💊 PillPilot</span>
+      <span id="devId" class="muted"></span>
+      <button id="logout" class="ghost">Çıkış</button>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Durum</h2>
+        <div class="statline"><span>Durum</span><b id="st-state">—</b></div>
+        <div class="statline"><span>Bölme</span><b id="st-slot">—</b></div>
+        <div class="statline"><span>Sonraki doz</span><b id="st-next">—</b></div>
+        <div class="statline"><span>Saat (cihaz)</span><b id="st-time">—</b></div>
+        <div class="pills">
+          <span class="pill" id="p-wifi">Wi-Fi</span>
+          <span class="pill" id="p-mqtt">MQTT</span>
+          <span class="pill" id="p-rtc">RTC</span>
+        </div>
+        <div class="row">
+          <button id="btnDispense">Test doz ver</button>
+          <button id="btnHome" class="ghost">Yeniden hizala</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Kamera</h2>
+        <img id="cam" alt="Kamera görüntüsü" />
+        <p class="muted small">Kamera düğümü ayrı kimlik doğrulaması ister. Anlık
+          görüntüler Telegram grubuna gönderilir.</p>
+        <a id="camLink" class="ghost btnlike" target="_blank" rel="noopener">Kamerayı aç</a>
+      </div>
+
+      <div class="card wide">
+        <h2>Program</h2>
+        <table id="schedTable">
+          <thead><tr><th>Etiket</th><th>Saat</th><th>Günler</th><th>Açık</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="row">
+          <button id="addDose" class="ghost">+ Doz ekle</button>
+          <button id="saveSched">Programı kaydet</button>
+        </div>
+        <p id="schedMsg" class="muted small"></p>
+      </div>
+
+      <div class="card wide">
+        <h2>Olay geçmişi</h2>
+        <ul id="events" class="events"></ul>
+      </div>
+
+      <div class="card">
+        <h2>Parola değiştir</h2>
+        <form id="pwForm">
+          <label>Mevcut parola<input name="current" type="password" required></label>
+          <label>Yeni parola (min 8)<input name="new" type="password" minlength="8" required></label>
+          <button type="submit" class="ghost">Güncelle</button>
+          <p id="pwMsg" class="muted small"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

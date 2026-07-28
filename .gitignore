@@ -1,0 +1,22 @@
+# Secrets — never commit real credentials
+**/include/secrets.h
+**/src/secrets.h
+*.secrets
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/
+!.vscode/extensions.json
+
+# Build / OS junk
+*.bin
+*.elf
+*.o
+.DS_Store
+Thumbs.db
+
+# OpenSCAD render output
+*.stl
+*.3mf
