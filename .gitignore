@@ -20,3 +20,6 @@ Thumbs.db
 # OpenSCAD render output
 *.stl
 *.3mf
+
+# Local build-only vendored libraries (fetched from GitHub, not committed)
+firmware/*/lib/

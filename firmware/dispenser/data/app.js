@@ -59,6 +59,12 @@ function renderStatus(s) {
   $("#st-next").textContent  = s.nextLabel ? `${s.nextLabel} · ${s.nextTime}` : "—";
   $("#st-time").textContent  = s.time || "—";
   $("#devId").textContent    = s.deviceId || "";
+  if (s.battMv != null) {
+    $("#st-batt-row").style.display = "";
+    $("#st-batt").textContent = `%${s.battPct} · ${s.battMv} mV`;
+  } else {
+    $("#st-batt-row").style.display = "none";
+  }
   togglePill("#p-wifi", s.wifi);
   togglePill("#p-mqtt", s.mqtt);
   togglePill("#p-rtc",  s.rtc);
@@ -82,6 +88,13 @@ $("#btnDispense").addEventListener("click", async (e) => {
 $("#btnHome").addEventListener("click", async () => {
   await api("/api/home", { method: "POST" });
 });
+async function jog(sign) {
+  const n = Math.max(1, Math.min(2048, parseInt($("#jogSteps").value, 10) || 0));
+  const body = new URLSearchParams({ steps: String(sign * n) });
+  await api("/api/jog", { method: "POST", body });
+}
+$("#jogFwd").addEventListener("click", () => jog(1));
+$("#jogBack").addEventListener("click", () => jog(-1));
 
 // ── Schedule editor ───────────────────────────────────────────────────────────
 async function loadSchedule() {

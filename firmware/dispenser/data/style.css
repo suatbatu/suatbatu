@@ -40,6 +40,9 @@ button.ghost, .ghost.btnlike { background:transparent; color:var(--accent-ink); 
 button:disabled { opacity:.5; cursor:not-allowed; }
 .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
 
+.jog { display:flex; align-items:center; gap:8px; margin-top:12px; flex-wrap:wrap; }
+.jog input { width:80px; }
+.jog button { padding:6px 12px; }
 .statline { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px solid var(--line); }
 .statline b { font-variant-numeric:tabular-nums; }
 .pills { display:flex; gap:8px; margin:12px 0 4px; }

@@ -34,6 +34,7 @@
         <div class="statline"><span>Bölme</span><b id="st-slot">—</b></div>
         <div class="statline"><span>Sonraki doz</span><b id="st-next">—</b></div>
         <div class="statline"><span>Saat (cihaz)</span><b id="st-time">—</b></div>
+        <div class="statline" id="st-batt-row"><span>Pil</span><b id="st-batt">—</b></div>
         <div class="pills">
           <span class="pill" id="p-wifi">Wi-Fi</span>
           <span class="pill" id="p-mqtt">MQTT</span>
@@ -42,6 +43,13 @@
         <div class="row">
           <button id="btnDispense">Test doz ver</button>
           <button id="btnHome" class="ghost">Yeniden hizala</button>
+        </div>
+        <div class="jog">
+          <span class="muted small">Hizalama (jog):</span>
+          <button id="jogBack" class="ghost">◀</button>
+          <input id="jogSteps" type="number" value="64" min="1" max="2048" aria-label="Adım sayısı">
+          <button id="jogFwd" class="ghost">▶</button>
+          <span class="muted small">— sonra “Yeniden hizala”</span>
         </div>
       </div>
 

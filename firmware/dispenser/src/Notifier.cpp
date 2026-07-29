@@ -1,6 +1,7 @@
 #include "Notifier.h"
 #include "config.h"
 #include "secrets.h"
+#include "Tls.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
@@ -11,8 +12,8 @@
 
 Notifier* Notifier::instance_ = nullptr;
 
-// MQTT transport. For TLS we use WiFiClientSecure (setInsecure by default — see
-// docs/SECURITY.md; pin a CA for production).
+// MQTT transport. For TLS we use WiFiClientSecure, verified via configureTls()
+// (Mozilla CA bundle, or a pinned MQTT_CA_CERT). See docs/SECURITY.md.
 #if MQTT_USE_TLS
   static WiFiClientSecure mqttNet;
 #else
@@ -23,8 +24,13 @@ static PubSubClient mqtt(mqttNet);
 void Notifier::begin(Storage* storage) {
   storage_  = storage;
   instance_ = this;
+  tgOffset_ = storage_->loadTgOffset();   // resume point; backlog drained on 1st poll
 #if MQTT_USE_TLS
-  mqttNet.setInsecure();
+  #ifdef MQTT_CA_CERT
+    mqttNet.setCACert(MQTT_CA_CERT);       // pin a self-signed broker CA
+  #else
+    configureTls(mqttNet);                 // verify against the CA bundle
+  #endif
 #endif
   mqtt.setServer(MQTT_HOST, MQTT_PORT);
   mqtt.setCallback(&Notifier::mqttCallback);
@@ -35,6 +41,11 @@ void Notifier::loop() {
   if (WiFi.status() != WL_CONNECTED) return;
   if (!mqtt.connected()) ensureMqtt();
   mqtt.loop();
+
+  if (millis() - lastTgPoll_ >= TELEGRAM_POLL_INTERVAL_MS) {
+    lastTgPoll_ = millis();
+    pollTelegram();
+  }
 }
 
 void Notifier::ensureMqtt() {
@@ -99,7 +110,7 @@ String Notifier::urlencode(const String& s) {
 void Notifier::telegram(const String& text) {
   if (WiFi.status() != WL_CONNECTED) return;
   WiFiClientSecure client;
-  client.setInsecure();   // see docs/SECURITY.md — pin Telegram's CA for prod
+  configureTls(client);   // verify Telegram's certificate (see docs/SECURITY.md)
   HTTPClient https;
   String url = String("https://api.telegram.org/bot") + TELEGRAM_BOT_TOKEN + "/sendMessage";
   if (!https.begin(client, url)) return;
@@ -154,4 +165,77 @@ void Notifier::appendEvent(const String& state, const String& label, time_t when
 
 String Notifier::eventsJson() {
   return storage_->loadEventsJson();
+}
+
+// ── Telegram command polling (getUpdates) ─────────────────────────────────────
+void Notifier::pollTelegram() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  WiFiClientSecure client;
+  configureTls(client);
+  HTTPClient https;
+  String url = String("https://api.telegram.org/bot") + TELEGRAM_BOT_TOKEN +
+               "/getUpdates?timeout=0&limit=10&allowed_updates=%5B%22message%22%5D";
+  if (tgOffset_ > 0) url += "&offset=" + String(tgOffset_);
+
+  if (!https.begin(client, url)) return;
+  int code = https.GET();
+  if (code != 200) { https.end(); return; }
+
+  String payload = https.getString();
+  https.end();
+
+  JsonDocument doc;
+  if (deserializeJson(doc, payload) != DeserializationError::Ok) return;
+  if (!(doc["ok"] | false)) return;
+
+  time_t now = time(nullptr);
+  for (JsonObject upd : doc["result"].as<JsonArray>()) {
+    long updId = upd["update_id"] | 0;
+    tgOffset_ = updId + 1;
+
+    if (!tgPrimed_) continue;             // drain boot backlog silently
+
+    JsonObject msg = upd["message"];
+    if (msg.isNull()) continue;
+    long chatId = msg["chat"]["id"] | 0;
+    String text = String((const char*)(msg["text"] | ""));
+    text.trim();
+    if (text.startsWith("/")) handleTelegramCommand(text, chatId, now);
+  }
+
+  storage_->saveTgOffset(tgOffset_);
+  tgPrimed_ = true;
+}
+
+void Notifier::handleTelegramCommand(const String& raw, long chatId, time_t now) {
+  // Authorization: only the configured family group may command the device.
+  if (String(chatId) != String(TELEGRAM_ALLOWED_CHAT_ID)) return;
+
+  // Normalize: first token, strip any @botname suffix, lowercase.
+  String c = raw;
+  int sp = c.indexOf(' ');   if (sp > 0) c = c.substring(0, sp);
+  int at = c.indexOf('@');   if (at > 0) c = c.substring(0, at);
+  c.toLowerCase();
+
+  if (c == "/durum") {
+    telegram(statusProvider_ ? statusProvider_() : "Durum bilgisi yok.");
+  } else if (c == "/foto") {
+    requestCameraCapture("Manuel istek");
+    telegram("📸 Fotoğraf istendi.");
+  } else if (c == "/doz") {
+    dozConfirmUntil_ = now + DOZ_CONFIRM_SECONDS;
+    telegram("⚠️ Doz vermek için " + String(DOZ_CONFIRM_SECONDS) +
+             " sn içinde /doz_onay gönderin.");
+  } else if (c == "/doz_onay") {
+    if (dozConfirmUntil_ && now <= dozConfirmUntil_) {
+      dozConfirmUntil_ = 0;
+      if (cmdHandler_) cmdHandler_("dispense", "");
+      telegram("✅ Doz veriliyor.");
+    } else {
+      telegram("⌛ Onay süresi doldu. Yeniden /doz gönderin.");
+    }
+  } else if (c == "/yardim" || c == "/help" || c == "/start") {
+    telegram("Komutlar:\n/durum — durum\n/foto — fotoğraf\n/doz + /doz_onay — doz ver");
+  }
 }

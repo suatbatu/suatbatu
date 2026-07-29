@@ -19,6 +19,15 @@ what is and isn't protected.
 - **Camera node auth.** The ESP32-CAM's `/snapshot` and `/stream` endpoints
   require HTTP Basic auth (its own credentials), and it only ever *pushes*
   images out to Telegram — it does not accept inbound control.
+- **Verified outbound TLS.** Telegram (alerts, `/getUpdates` commands, camera
+  photos) and MQTT are certificate-verified via the built-in Mozilla root
+  bundle (`config.h` `TLS_USE_BUNDLE=1`), not `setInsecure()`. Pin a specific
+  root instead with `TLS_USE_BUNDLE=0` + `TELEGRAM_ROOT_CA`, and pin a
+  self-signed broker with `MQTT_CA_CERT`.
+- **Telegram command allow-list.** Incoming `/durum`, `/foto`, `/doz` commands
+  are accepted only from `TELEGRAM_ALLOWED_CHAT_ID`; `/doz` additionally
+  requires a `/doz_onay` confirmation within 60 s, so one stray tap can't
+  dispense.
 
 ## What the firmware does NOT give you (and how to cover it)
 

@@ -27,3 +27,14 @@
 #define MQTT_USE_TLS       true
 #define MQTT_USER          "pillpilot"
 #define MQTT_PASS          "broker-password"
+
+// ── TLS (optional overrides) ─────────────────────────────────────────────────
+// By default (config.h TLS_USE_BUNDLE=1) certs are verified against the built-in
+// Mozilla root bundle — nothing to set here. Only if you set TLS_USE_BUNDLE=0
+// do you need to pin Telegram's root, e.g. fetch it with:
+//   openssl s_client -showcerts -connect api.telegram.org:443 </dev/null
+// #define TELEGRAM_ROOT_CA "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n"
+//
+// For a self-signed MQTT broker, pin its CA to verify it (otherwise the bundle
+// is used). Leave undefined for a broker with a publicly-trusted cert:
+// #define MQTT_CA_CERT     "-----BEGIN CERTIFICATE-----\n...\n-----END CERTIFICATE-----\n"

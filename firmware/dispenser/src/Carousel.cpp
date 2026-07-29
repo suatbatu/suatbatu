@@ -69,6 +69,12 @@ bool Carousel::advanceOneSlot() {
   return true;
 }
 
+void Carousel::jog(long steps) {
+  if (steps == 0) return;
+  stepN(steps > 0 ? steps : -steps, steps > 0);
+  release();
+}
+
 bool Carousel::home() {
   if (!sensors_) return false;
 

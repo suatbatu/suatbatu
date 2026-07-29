@@ -19,3 +19,10 @@
 // ── Snapshot endpoint HTTP Basic auth (its OWN credentials) ──────────────────
 #define CAM_HTTP_USER      "viewer"
 #define CAM_HTTP_PASS      "change-me-different-from-dispenser"
+
+// ── TLS (optional) ───────────────────────────────────────────────────────────
+// Certs are verified against the built-in Mozilla bundle by default. To pin
+// instead, set TLS_USE_BUNDLE=0 in config.h and define TELEGRAM_ROOT_CA here.
+// For a self-signed MQTT broker, pin MQTT_CA_CERT.
+// #define TELEGRAM_ROOT_CA "-----BEGIN CERTIFICATE-----\n...\n"
+// #define MQTT_CA_CERT     "-----BEGIN CERTIFICATE-----\n...\n"

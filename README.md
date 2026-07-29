@@ -97,6 +97,19 @@ repo only specifies the interface the firmware depends on. See
    set the schedule, and run a **test dispense** and a **test miss** to confirm
    the Telegram alerts reach everyone before relying on it.
 
+## Remote control & alerts
+
+Two ways in, both for the caregivers — never the patient:
+
+- **Web UI** (`http://pillpilot.local/`): login, live status + battery, schedule
+  editor, test dispense, carousel jog for alignment, event log, and an embedded
+  camera snapshot.
+- **Telegram** (family group): the device sends `taken`/`missed`/`jam`/low-battery
+  alerts and camera photos, and accepts commands from the allow-listed group:
+  - `/durum` — current status (state, next dose, battery, IP)
+  - `/foto` — request a camera snapshot now
+  - `/doz` → `/doz_onay` — dispense on demand (two-step confirm, idle-only)
+
 ## Safety (please don't skip)
 
 - **Fail-safe, not fail-open.** On a jam or power loss the device stops and

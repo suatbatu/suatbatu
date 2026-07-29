@@ -85,3 +85,16 @@ void Storage::saveEventsJson(const String& json) {
   prefs_.putString("events", json);
   prefs_.end();
 }
+
+long Storage::loadTgOffset() {
+  prefs_.begin(NS, true);
+  long v = (long)prefs_.getLong("tg_offset", 0);
+  prefs_.end();
+  return v;
+}
+
+void Storage::saveTgOffset(long offset) {
+  prefs_.begin(NS, false);
+  prefs_.putLong("tg_offset", (int32_t)offset);
+  prefs_.end();
+}

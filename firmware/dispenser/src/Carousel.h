@@ -5,6 +5,7 @@
 // slot 0; without homing, position is unknown after a reset.
 #pragma once
 #include <Arduino.h>
+#include "config.h"
 #include "DoseSensors.h"
 
 class Carousel {
@@ -17,6 +18,11 @@ public:
 
   // Rotate forward by one compartment (360°/SLOTS). Returns true on completion.
   bool advanceOneSlot();
+
+  // Raw jog for mechanical alignment: move |steps| microsteps (sign = direction)
+  // WITHOUT changing the slot bookkeeping. Re-home afterwards to re-establish
+  // absolute position. Intended for lining the disc up to the drop opening.
+  void jog(long steps);
 
   int  currentSlot() const { return slot_; }
   void setSlot(int s)      { slot_ = ((s % CAROUSEL_SLOTS) + CAROUSEL_SLOTS) % CAROUSEL_SLOTS; }

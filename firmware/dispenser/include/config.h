@@ -68,6 +68,17 @@
 #define MAX_EVENTS             30    // event-log ring buffer size
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  Battery monitoring (optional 18650 UPS on PIN_VBAT_SENSE)
+// ─────────────────────────────────────────────────────────────────────────────
+#define VBAT_ENABLED           true
+#define VBAT_DIVIDER_RATIO     2.0f    // (R1+R2)/R2 of the sense divider
+#define VBAT_WARN_MV           3500    // Li-ion "getting low"
+#define VBAT_CRITICAL_MV       3300    // Li-ion "act now"
+#define VBAT_FULL_MV           4200    // for percent estimate
+#define VBAT_EMPTY_MV          3200
+#define VBAT_CHECK_INTERVAL_MS (60UL * 1000UL)
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  Web / auth
 // ─────────────────────────────────────────────────────────────────────────────
 #define WEB_PORT               80
@@ -83,3 +94,17 @@
 #define TOPIC_STATUS       DEVICE_ID "/status"       // publish periodic status
 #define TOPIC_CMD          DEVICE_ID "/cmd"          // subscribe: dispense/schedule
 #define TOPIC_CAM_CAPTURE  DEVICE_ID "/cam/capture"  // publish: ask cam for a photo
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  Telegram command polling
+// ─────────────────────────────────────────────────────────────────────────────
+#define TELEGRAM_POLL_INTERVAL_MS  3000   // getUpdates cadence
+#define DOZ_CONFIRM_SECONDS        60     // /doz must be confirmed with /doz_onay
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  TLS certificate verification (Telegram + MQTT). See docs/SECURITY.md.
+//  Default: validate against the arduino-esp32 built-in Mozilla root bundle
+//  (rotation-proof). Set TLS_USE_BUNDLE 0 to pin TELEGRAM_ROOT_CA from secrets.h.
+// ─────────────────────────────────────────────────────────────────────────────
+#define TLS_INSECURE    0    // 1 = skip verification (debug only — NOT for prod)
+#define TLS_USE_BUNDLE  1    // 1 = Mozilla CA bundle, 0 = pinned TELEGRAM_ROOT_CA

@@ -13,6 +13,10 @@
 #define JPEG_QUALITY     12      // lower = better quality, bigger file
 #define USE_FLASH_ON_CAPTURE  false  // avoid blinding an elderly person at night
 
+// TLS verification (Telegram + MQTT). See docs/SECURITY.md.
+#define TLS_INSECURE    0    // 1 = skip verification (debug only)
+#define TLS_USE_BUNDLE  1    // 1 = Mozilla CA bundle, 0 = pinned TELEGRAM_ROOT_CA
+
 // ── AI-Thinker ESP32-CAM camera pin map ──────────────────────────────────────
 #define PWDN_GPIO_NUM    32
 #define RESET_GPIO_NUM   -1

@@ -28,6 +28,10 @@ public:
   String loadEventsJson();
   void   saveEventsJson(const String& json);
 
+  // Telegram getUpdates offset (avoid replaying commands across reboots)
+  long loadTgOffset();
+  void saveTgOffset(long offset);
+
 private:
   Preferences prefs_;
 };

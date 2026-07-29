@@ -16,6 +16,21 @@
 #include "config.h"
 #include "secrets.h"
 
+#if !TLS_INSECURE && TLS_USE_BUNDLE
+extern const uint8_t rootca_crt_bundle_start[] asm("_binary_x509_crt_bundle_start");
+extern const uint8_t rootca_crt_bundle_end[]   asm("_binary_x509_crt_bundle_end");
+#endif
+static inline void configureTls(WiFiClientSecure& client) {
+#if TLS_INSECURE
+  client.setInsecure();
+#elif TLS_USE_BUNDLE
+  client.setCACertBundle(rootca_crt_bundle_start,
+                         (size_t)(rootca_crt_bundle_end - rootca_crt_bundle_start));
+#else
+  client.setCACert(TELEGRAM_ROOT_CA);   // define in secrets.h
+#endif
+}
+
 static WebServer      httpd(80);
 #if MQTT_USE_TLS
   static WiFiClientSecure mqttNet;
@@ -57,7 +72,7 @@ static void ledStatus(bool on) { digitalWrite(PIN_LED_RED, on ? LOW : HIGH); } /
 // ── Push a JPEG to Telegram via multipart/form-data (TLS) ─────────────────────
 static bool sendPhotoTelegram(camera_fb_t* fb, const String& caption) {
   WiFiClientSecure client;
-  client.setInsecure();                       // see docs/SECURITY.md
+  configureTls(client);                        // verify Telegram cert (docs/SECURITY.md)
   if (!client.connect("api.telegram.org", 443)) return false;
 
   String boundary = "----pillpilot" + String((uint32_t)esp_random(), HEX);
@@ -178,7 +193,11 @@ void setup() {
   if (MDNS.begin(MDNS_HOSTNAME)) MDNS.addService("http", "tcp", 80);
 
 #if MQTT_USE_TLS
-  mqttNet.setInsecure();
+  #ifdef MQTT_CA_CERT
+    mqttNet.setCACert(MQTT_CA_CERT);
+  #else
+    configureTls(mqttNet);
+  #endif
 #endif
   mqtt.setServer(MQTT_HOST, MQTT_PORT);
   mqtt.setCallback(onMqtt);

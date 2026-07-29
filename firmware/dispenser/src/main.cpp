@@ -20,6 +20,7 @@
 #include "Scheduler.h"
 #include "Carousel.h"
 #include "DoseSensors.h"
+#include "Battery.h"
 #include "Notifier.h"
 #include "WebInterface.h"
 
@@ -32,10 +33,12 @@ static Auth         auth;
 static Scheduler    scheduler;
 static Carousel     carousel;
 static DoseSensors  sensors;
+static Battery      battery;
 static Notifier     notifier;
 static WebInterface web;
 static RTC_DS3231   rtc;
 static bool         rtcOk = false;
+static uint32_t     lastBattCheck = 0;
 
 static int      activeDose   = -1;       // dose index currently being served
 static time_t   waitStarted  = 0;
@@ -96,6 +99,10 @@ static String statusJson() {
   doc["mqtt"]        = notifier.mqttConnected();
   doc["camUrl"]      = CAM_NODE_URL;
   doc["deviceId"]    = DEVICE_ID;
+#if VBAT_ENABLED
+  doc["battMv"]      = battery.millivolts();
+  doc["battPct"]     = battery.percent();
+#endif
 
   Dose nd; time_t when;
   if (scheduler.nextDose(time(nullptr), nd, when)) {
@@ -103,6 +110,27 @@ static String statusJson() {
     doc["nextTime"]  = isoLocal(when);
   }
   String out; serializeJson(doc, out);
+  return out;
+}
+
+// ── Human-readable status for the Telegram /durum command ─────────────────────
+static String telegramStatusText() {
+  const char* s = state == State::IDLE         ? "Beklemede"
+                : state == State::DISPENSING    ? "Veriliyor"
+                : state == State::WAIT_CONFIRM  ? "Onay bekleniyor"
+                : state == State::FAULT         ? "ARIZA"
+                : "Baslatiliyor";
+  String out = "💊 PillPilot durumu\n";
+  out += "Durum: " + String(s) + "\n";
+  out += "Bölme: " + String(carousel.currentSlot()) + "/" + String(CAROUSEL_SLOTS) + "\n";
+  Dose nd; time_t when;
+  if (scheduler.nextDose(time(nullptr), nd, when))
+    out += "Sonraki: " + String(nd.label) + " · " + isoLocal(when) + "\n";
+#if VBAT_ENABLED
+  out += "Pil: %" + String(battery.percent()) + " (" + String(battery.millivolts()) + " mV)\n";
+#endif
+  out += "Wi-Fi: " + WiFi.localIP().toString();
+  out += notifier.mqttConnected() ? " · MQTT bağlı" : " · MQTT yok";
   return out;
 }
 
@@ -145,15 +173,21 @@ void setup() {
   Serial.begin(115200);
   delay(200);
 
+#if ESP_ARDUINO_VERSION >= ESP_ARDUINO_VERSION_VAL(3, 0, 0)
+  // Core 3.x: the loop task WDT is already initialized — reconfigure its timeout.
   esp_task_wdt_config_t wdt = { .timeout_ms = WDT_TIMEOUT_S * 1000,
                                 .idle_core_mask = 0, .trigger_panic = true };
-  esp_task_wdt_init(&wdt);
+  esp_task_wdt_reconfigure(&wdt);
+#else
+  esp_task_wdt_init(WDT_TIMEOUT_S, true);
   esp_task_wdt_add(nullptr);
+#endif
 
   if (!LittleFS.begin(true)) Serial.println("[fs] LittleFS mount failed");
 
   storage.begin();
   sensors.begin();
+  battery.begin();
   carousel.begin(&sensors);
 
   WiFi.mode(WIFI_STA);
@@ -171,6 +205,7 @@ void setup() {
   scheduler.load();
   notifier.begin(&storage);
   notifier.setCommandHandler(onCommand);
+  notifier.setStatusTextProvider(telegramStatusText);
 
   // Home the carousel so absolute slot position is known.
   if (HOME_ON_BOOT) {
@@ -188,14 +223,10 @@ void setup() {
   hooks.setSchedule  = [](const String& j) { return scheduler.setJson(j); };
   hooks.dispenseNow  = []() { manualPending = true; return true; };
   hooks.jog          = [](int steps) {
-    // Small manual nudge for alignment/testing. Positive = forward.
+    // Raw fractional jog for mechanical alignment. Positive = forward.
+    // Bounded to ±one revolution; re-home afterwards to fix absolute position.
     if (steps == 0 || abs(steps) > STEPS_PER_REV) return false;
-    // Reuse advanceOneSlot fractionally via direct step is out of scope here;
-    // jog is implemented as whole-slot moves for safety.
-    int slots = steps > 0 ? 1 : -1;
-    if (slots > 0) carousel.advanceOneSlot();
-    else carousel.setSlot(carousel.currentSlot() - 1);
-    storage.saveSlot(carousel.currentSlot());
+    carousel.jog(steps);
     return true;
   };
   hooks.home       = []() { return carousel.home(); };
@@ -213,6 +244,18 @@ void loop() {
   notifier.loop();
 
   time_t now = time(nullptr);
+
+#if VBAT_ENABLED
+  if (millis() - lastBattCheck >= VBAT_CHECK_INTERVAL_MS) {
+    lastBattCheck = millis();
+    Battery::Level lvl = battery.level();
+    if (battery.worsened(lvl)) {
+      String msg = String(lvl == Battery::CRITICAL ? "🔋 Pil KRİTİK" : "🔋 Pil düşük")
+                 + " — %" + String(battery.percent()) + " (" + String(battery.millivolts()) + " mV)";
+      notifier.telegram(msg);
+    }
+  }
+#endif
 
   switch (state) {
     case State::IDLE: {
