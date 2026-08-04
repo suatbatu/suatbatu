@@ -1,0 +1,16 @@
+# Secrets & local config
+.env
+
+# Databases / data
+*.db
+*.db-wal
+*.db-shm
+data/
+*.sqlite
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/

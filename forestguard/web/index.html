@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ForestGuard</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='14' font-size='14'%3E%F0%9F%8C%B2%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand"><span class="logo">🌲</span> ForestGuard</div>
+    <div id="banner" class="banner level-ok">
+      <span id="banner-text">Loading…</span>
+    </div>
+    <div class="controls">
+      <span id="conn" class="pill" title="connection">…</span>
+      <span id="mode" class="pill" title="server mode"></span>
+      <button id="token-btn" class="btn" title="Set admin token">🔑</button>
+      <label class="auto"><input type="checkbox" id="autorefresh" checked /> auto</label>
+    </div>
+  </header>
+
+  <section id="tiles" class="tiles"></section>
+
+  <main class="grid">
+    <section class="col">
+      <h2>Nodes <span id="node-count" class="muted"></span></h2>
+      <div id="nodes" class="cards"></div>
+    </section>
+    <aside class="col side">
+      <h2>Active alerts</h2>
+      <div id="alerts" class="alerts"><p class="muted">None.</p></div>
+      <h2>Event log</h2>
+      <ol id="events" class="events"></ol>
+    </aside>
+  </main>
+
+  <footer id="foot">
+    <span id="cloud-status"></span>
+    <span id="updated" class="muted"></span>
+  </footer>
+
+  <!-- node detail / history modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modal-title">Node</h3>
+        <button id="modal-close" class="btn">✕</button>
+      </div>
+      <div class="modal-controls">
+        <label>Metric <select id="metric-select"></select></label>
+        <label>Window
+          <select id="window-select">
+            <option value="3600s">1 h</option>
+            <option value="21600s">6 h</option>
+            <option value="86400s" selected>24 h</option>
+            <option value="604800s">7 d</option>
+          </select>
+        </label>
+      </div>
+      <div id="chart" class="chart"></div>
+      <div id="modal-meta" class="modal-meta"></div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

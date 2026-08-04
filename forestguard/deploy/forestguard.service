@@ -1,0 +1,33 @@
+[Unit]
+Description=ForestGuard wildfire monitoring server
+Documentation=https://github.com/suatbatu/suatbatu
+After=network-online.target
+Wants=network-online.target
+# Wait for the SSD mount before starting (adjust to your mount unit if different).
+RequiresMountsFor=/mnt/ssd
+
+[Service]
+Type=simple
+User=forestguard
+Group=forestguard
+WorkingDirectory=/opt/forestguard
+EnvironmentFile=/etc/forestguard.env
+ExecStart=/usr/bin/python3 -m app.main
+Restart=on-failure
+RestartSec=3
+
+# --- Hardening ------------------------------------------------------------
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+# The DB lives on the SSD; grant write access only there.
+ReadWritePaths=/mnt/ssd/forestguard
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target
