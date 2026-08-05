@@ -1,0 +1,67 @@
+{
+  "expo": {
+    "name": "Bing",
+    "slug": "bing-network-scanner",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "bing",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0b1020",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0b1020"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.bing.networkscanner",
+      "infoPlist": {
+        "NSLocalNetworkUsageDescription": "Bing scans your local network to discover the devices connected to it.",
+        "NSBonjourServices": [
+          "_http._tcp",
+          "_https._tcp",
+          "_ssh._tcp",
+          "_ipp._tcp",
+          "_printer._tcp",
+          "_airplay._tcp",
+          "_googlecast._tcp",
+          "_raop._tcp",
+          "_workstation._tcp",
+          "_smb._tcp",
+          "_device-info._tcp"
+        ]
+      }
+    },
+    "android": {
+      "package": "com.bing.networkscanner",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4f8cff"
+      },
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_WIFI_STATE",
+        "android.permission.CHANGE_WIFI_MULTICAST_STATE",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-network",
+        {}
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
