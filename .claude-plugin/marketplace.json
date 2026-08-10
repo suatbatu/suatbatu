@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace-manifest.json",
+  "name": "humanizer",
+  "owner": {
+    "name": "suatbatu",
+    "url": "https://github.com/suatbatu"
+  },
+  "description": "The humanizer skill, installable as a Claude Code plugin.",
+  "plugins": [
+    {
+      "name": "humanizer",
+      "source": "./",
+      "description": "Strip the tells of AI-generated writing from text so it reads as if a person wrote it. Covers 30 patterns across substance, language, formatting, and voice.",
+      "license": "MIT",
+      "keywords": ["writing", "editing", "prose", "style", "humanize", "ai-detection"]
+    }
+  ]
+}

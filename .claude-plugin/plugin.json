@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "humanizer",
+  "description": "Strip the tells of AI-generated writing from text so it reads as if a person wrote it. Covers 30 patterns across substance, language, formatting, and voice.",
+  "version": "1.0.0",
+  "author": {
+    "name": "suatbatu",
+    "url": "https://github.com/suatbatu"
+  },
+  "homepage": "https://github.com/suatbatu/suatbatu",
+  "repository": "https://github.com/suatbatu/suatbatu",
+  "license": "MIT",
+  "keywords": ["writing", "editing", "prose", "style", "humanize", "ai-detection"]
+}
