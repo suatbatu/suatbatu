@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "Battery.h"
+#include "Drills.h"
 #include "Settings.h"
 #include "ShotDetector.h"
 #include "Storage.h"
@@ -93,6 +94,10 @@ const MenuItem MENU[] = {
        settings.activeProfile =
            (settings.activeProfile + MAX_PROFILES + (d > 0 ? 1 : -1)) % MAX_PROFILES;
      }},
+
+    {"Drill",
+     [](char* b, size_t n) { snprintf(b, n, "%s", drills.current().name); },
+     [](int8_t d) { drills.cycleActive(d); }},
 
     {"Sensitivity",
      [](char* b, size_t n) { snprintf(b, n, "%u", settings.profile().sensitivity); },
@@ -336,11 +341,16 @@ void Display::drawReady() {
     fmtSeconds(v, sizeof(v), settings.delayMode == DELAY_FIXED ? settings.delayFixedMs : 0);
     snprintf(buf, sizeof(buf), "Delay %s %ss", delayModeName(), v);
   }
-  oled.drawStr(0, 25, buf);
-
-  snprintf(buf, sizeof(buf), "Sens %u  Par %s  n=%lu", settings.profile().sensitivity,
-           settings.parEnabled ? "ON" : "off", static_cast<unsigned long>(storage.count()));
   oled.drawStr(0, 35, buf);
+
+  // The drill is what you are about to do; it earns the line above the delay.
+  const Drill& drill = drills.current();
+  if (drill.expectedShots > 0) {
+    snprintf(buf, sizeof(buf), "%s  %u rds", drill.name, drill.expectedShots);
+  } else {
+    snprintf(buf, sizeof(buf), "%s", drill.name);
+  }
+  oled.drawStr(0, 25, buf);
 
   // A live noise bar: point the mic downrange, watch it sit low, and you know
   // the sensitivity is not going to trip on wind before the beep.
@@ -396,7 +406,14 @@ void Display::drawReview() {
   oled.setFont(FONT_SMALL);
   fmtSeconds(a, sizeof(a), run.firstShotMs());
   fmtSeconds(b, sizeof(b), run.totalMs());
-  snprintf(buf, sizeof(buf), "n=%u  1st %s  tot %s", run.count(), a, b);
+  if (run.expectedShots() > 0) {
+    // "5/6" says more than "n=5" when the drill specified a round count, and a
+    // trailing "!" is the only comment the timer makes about it.
+    snprintf(buf, sizeof(buf), "%u/%u%s 1st %s tot %s", run.count(), run.expectedShots(),
+             run.shotCountMismatch() ? "!" : " ", a, b);
+  } else {
+    snprintf(buf, sizeof(buf), "n=%u  1st %s  tot %s", run.count(), a, b);
+  }
   oled.drawStr(0, 8, buf);
   oled.drawHLine(0, 11, 128);
 

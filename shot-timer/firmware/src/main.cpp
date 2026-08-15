@@ -7,6 +7,7 @@
 #include "Buttons.h"
 #include "Buzzer.h"
 #include "Display.h"
+#include "Drills.h"
 #include "Net.h"
 #include "Settings.h"
 #include "ShotDetector.h"
@@ -109,6 +110,7 @@ void setup() {
   digitalWrite(PIN_LED, LOW);
 
   settings.load();
+  drills.load();
   buttons.begin();
   buzzer.begin();
   battery.begin();

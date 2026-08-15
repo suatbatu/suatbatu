@@ -50,6 +50,10 @@ class TimerApp {
   void fireStartBeep();
   void closeString(const char* reason);
   void servicePar(int64_t nowUs);
+  // Resolves which par schedule is in force. A drill with par times overrides
+  // the global Par settings; the shipped "Free" drill has none, which is what
+  // makes the timer behave exactly as it did before drills existed.
+  uint8_t parSchedule(const uint16_t*& times) const;
   void emit(const char* type, const std::function<void(JsonObject)>& fill = nullptr);
 
   AppState state_ = AppState::Ready;

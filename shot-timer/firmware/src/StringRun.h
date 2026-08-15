@@ -10,6 +10,9 @@
 class StringRun {
  public:
   void begin(uint32_t id, int64_t beepAtUs);
+  // Stamped at the start of the string. The name is stored alongside the index
+  // so the history stays self-describing after a drill is renamed or replaced.
+  void setDrill(uint8_t index, const char* name, uint8_t expectedShots);
   void addShot(int64_t atUs);
   void end();
 
@@ -17,6 +20,10 @@ class StringRun {
   uint32_t id() const { return id_; }
   uint8_t count() const { return count_; }
   bool overflowed() const { return overflowed_; }
+  uint8_t expectedShots() const { return expectedShots_; }
+  // True only when the drill said how many rounds to expect and we got a
+  // different number — the timer stays quiet when it has nothing to say.
+  bool shotCountMismatch() const { return expectedShots_ > 0 && count_ != expectedShots_; }
 
   // Milliseconds from the start of the beep. Index is 0-based.
   uint32_t shotMs(uint8_t i) const { return i < count_ ? shots_[i] : 0; }
@@ -41,4 +48,7 @@ class StringRun {
   uint8_t count_ = 0;
   bool open_ = false;
   bool overflowed_ = false;
+  uint8_t drillIndex_ = 0;
+  uint8_t expectedShots_ = 0;
+  char drillName_[DRILL_NAME_LEN] = "";
 };

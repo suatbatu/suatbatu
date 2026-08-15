@@ -207,3 +207,36 @@ footer { padding: 18px 16px 28px; text-align: center; color: var(--muted); font-
 .diag { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; }
 .diag dt { color: var(--muted); font-size: 13px; }
 .diag dd { margin: 0; font: 500 13px/1.4 var(--mono); text-align: right; }
+
+/* ------------------------------------------------------------- chart --- */
+/* Container sized to include the x-axis band, so the card never grows its own
+   scrollbar just to show "run 12". */
+.chart { position: relative; margin: 4px 0 14px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+.g-grid { stroke: var(--line); stroke-width: 1; }
+.g-tick { fill: var(--muted); font: 9px var(--mono); }
+.g-endlabel { fill: var(--text); font: 600 10px var(--mono); }
+/* The par target is a reference, not a series: accent token, own text label. */
+.g-par { stroke: var(--accent); stroke-width: 1; opacity: .8; }
+.g-parlabel { fill: var(--accent); font: 600 9px var(--mono); }
+.g-cross { stroke: var(--muted); stroke-width: 1; opacity: .5; }
+.g-hit { fill: transparent; cursor: crosshair; }
+
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--muted); }
+.legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.legend__key { width: 14px; height: 3px; border-radius: 2px; }
+
+.tip {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 7px 9px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font: 11px/1.4 var(--mono);
+  color: var(--text);
+  pointer-events: none;
+  white-space: nowrap;
+}

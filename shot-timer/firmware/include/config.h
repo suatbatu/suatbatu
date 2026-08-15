@@ -9,7 +9,7 @@
 
 // ---------------------------------------------------------------- identity --
 #define FW_NAME "shot-timer"
-#define FW_VERSION "0.2.0"
+#define FW_VERSION "0.3.0"
 
 // ------------------------------------------------------------------- pins ---
 // Two I2S MEMS microphones share one bus. They are distinguished by their L/R
@@ -63,6 +63,8 @@
 #define MAX_PAR_TIMES 4
 #define MAX_PROFILES 6
 #define PROFILE_NAME_LEN 17
+#define MAX_DRILLS 8
+#define DRILL_NAME_LEN 17
 
 // The history is an append-only log, compacted when it outgrows its budget, so
 // "how many strings" is really "how much flash". 1.2 MB of the 1.875 MB

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "Drills.h"
 #include "Net.h"
 #include "Settings.h"
 #include "ShotDetector.h"
@@ -74,10 +75,23 @@ struct CsvState {
   bool eof = false;
 };
 
+// Drill names are user-supplied and may contain a comma or a quote, so the
+// field is always quoted and internal quotes are doubled, per RFC 4180.
+String csvQuote(const char* s) {
+  String out = "\"";
+  for (const char* p = s; p && *p; p++) {
+    if (*p == '"') out += '"';
+    out += *p;
+  }
+  out += '"';
+  return out;
+}
+
 void csvAppendString(String& out, const String& line) {
   JsonDocument doc;
   if (deserializeJson(doc, line)) return;
   const uint32_t id = doc["id"] | 0u;
+  const String drill = csvQuote(doc["drill"] | "");
   JsonArrayConst shots = doc["shots"];
   uint32_t prev = 0;
   uint8_t i = 0;
@@ -85,11 +99,11 @@ void csvAppendString(String& out, const String& line) {
     const uint32_t t = v.as<uint32_t>();
     const uint32_t split = i == 0 ? t : t - prev;
     char row[64];
-    snprintf(row, sizeof(row), "%lu,%u,%lu.%02lu,%lu.%02lu\n", static_cast<unsigned long>(id),
-             i + 1, static_cast<unsigned long>(t / 1000),
-             static_cast<unsigned long>((t % 1000) / 10), static_cast<unsigned long>(split / 1000),
+    snprintf(row, sizeof(row), ",%u,%lu.%02lu,%lu.%02lu\n", i + 1,
+             static_cast<unsigned long>(t / 1000), static_cast<unsigned long>((t % 1000) / 10),
+             static_cast<unsigned long>(split / 1000),
              static_cast<unsigned long>((split % 1000) / 10));
-    out += row;
+    out += String(id) + "," + drill + row;
     prev = t;
     i++;
   }
@@ -161,6 +175,13 @@ bool WebInterface::begin() {
     sendJson(request, 200, doc);
   });
 
+  server.on("/api/drills", HTTP_GET, [](AsyncWebServerRequest* request) {
+    if (!authed(request)) return;
+    JsonDocument doc;
+    drills.toJson(doc.to<JsonObject>());
+    sendJson(request, 200, doc);
+  });
+
   server.on("/api/strings", HTTP_GET, [](AsyncWebServerRequest* request) {
     if (!authed(request)) return;
     // Summaries only. The shot arrays are what make this big, and the history
@@ -200,7 +221,7 @@ bool WebInterface::begin() {
     if (!authed(request)) return;
     auto st = std::make_shared<CsvState>();
     st->file = LittleFS.open(PATH_STRINGS, "r");
-    st->pending = "string_id,shot,time_s,split_s\n";
+    st->pending = "string_id,drill,shot,time_s,split_s\n";
 
     AsyncWebServerResponse* res = request->beginChunkedResponse(
         "text/csv", [st](uint8_t* buffer, size_t maxLen, size_t) -> size_t {
@@ -262,6 +283,24 @@ bool WebInterface::begin() {
       });
   settingsHandler->setMethod(HTTP_POST);
   server.addHandler(settingsHandler);
+
+  auto* drillsHandler = new AsyncCallbackJsonWebHandler(
+      "/api/drills", [](AsyncWebServerRequest* request, JsonVariant& json) {
+        if (!authed(request)) return;
+        if (!json.is<JsonObject>()) {
+          request->send(400, "text/plain", "expected a JSON object");
+          return;
+        }
+        const bool ok = drills.applyJson(json.as<JsonObjectConst>());
+        drills.save();
+        JsonDocument doc;
+        JsonObject o = doc.to<JsonObject>();
+        drills.toJson(o);
+        o["accepted"] = ok;
+        sendJson(request, 200, doc);
+      });
+  drillsHandler->setMethod(HTTP_POST);
+  server.addHandler(drillsHandler);
 
   // ---- static UI ---------------------------------------------------------
   server.serveStatic("/", LittleFS, "/")

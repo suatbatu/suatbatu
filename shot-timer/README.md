@@ -26,9 +26,11 @@ feature list is either built or on the roadmap.
 | **Profiles** | Six named, editable profiles (Pistol, Rifle, Suppressed, Rimfire, Airsoft/CO2, Dry fire), each carrying its own sensitivity, refractory, echo and direction settings. |
 | **The numbers** | First-shot time, every split, total, best and worst split. Milliseconds throughout, displayed in hundredths like every other timer. |
 | **Par times** | Up to four par beeps per string, at a distinct higher pitch so they cannot be mistaken for the start signal. |
+| **Drills** | Eight named drills — Bill Drill, El Presidente, Doubles, Failure Drill, 1-Reload-1 all pre-seeded — each with its own par schedule and expected round count, plus a per-drill trend of your times. Every stored string is stamped with the drill it was run under. |
+| **Battery** | Smoothed reading off the divider, mapped through a real LiPo discharge curve rather than a linear one, on the OLED footer and in the API. |
 | **Review** | Scroll the whole string on the OLED, or open it in the web UI. |
 | **History** | An append-only log on flash — roughly 2 000 strings — exportable as CSV. |
-| **Web UI** | Live clock over a WebSocket, full settings, string history, detector diagnostics, CSV export. Password-protected. |
+| **Web UI** | Live clock over a WebSocket, full settings, drills and trends, string history, detector diagnostics, CSV export. Password-protected. |
 | **Display** | Contrast control, idle auto-dim, and a 180° flip so the same board works in a front-mount or a top-of-belt mount. |
 | **Works at a range** | SoftAP by default — ranges do not have Wi-Fi. Joins your network if you configure one, falls back to its own AP if it is not there. |
 

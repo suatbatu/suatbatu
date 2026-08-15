@@ -18,6 +18,7 @@
 
 <nav class="tabs" role="tablist">
   <button class="tab is-active" data-panel="live" role="tab">Live</button>
+  <button class="tab" data-panel="drills" role="tab">Drills</button>
   <button class="tab" data-panel="history" role="tab">History</button>
   <button class="tab" data-panel="settings" role="tab">Settings</button>
 </nav>
@@ -53,6 +54,56 @@
   <!-- Rejections are shown, not hidden: a working direction gate and a broken
        microphone otherwise look identical from the shooter's side. -->
   <p class="note" id="reject-note" hidden></p>
+</section>
+
+<!-- ----------------------------------------------------------- drills -- -->
+<section id="drills" class="panel">
+  <label>Drill
+    <select id="drill-select"></select>
+  </label>
+  <div class="row">
+    <button class="btn btn--go btn--sm" id="btn-drill-activate">Make active</button>
+    <span class="pill" id="drill-active-note"></span>
+  </div>
+
+  <form id="drill-form">
+    <fieldset>
+      <legend>Definition</legend>
+      <label>Name<input type="text" name="name" maxlength="16" autocomplete="off"></label>
+      <label>Expected rounds (0 = don't check)
+        <input type="number" name="expectedShots" min="0" max="120" step="1"></label>
+      <label>Par 1 (ms, 0 = none)<input type="number" name="par0" min="0" max="60000" step="100"></label>
+      <label>Par 2 (ms)<input type="number" name="par1" min="0" max="60000" step="100"></label>
+      <label>Par 3 (ms)<input type="number" name="par2" min="0" max="60000" step="100"></label>
+      <label>Par 4 (ms)<input type="number" name="par3" min="0" max="60000" step="100"></label>
+      <p class="note">
+        A drill with any par time overrides the global Par settings while it is
+        active. Leave them all at 0 and the Par settings apply as usual.
+      </p>
+      <button class="btn btn--go" type="submit">Save drill</button>
+      <p class="note" id="drill-status"></p>
+    </fieldset>
+  </form>
+
+  <fieldset>
+    <legend>Trend</legend>
+    <p class="note" id="trend-empty">No stored runs of this drill yet.</p>
+    <div id="trend" hidden>
+      <div class="legend" id="trend-legend"></div>
+      <div class="chart" id="trend-chart"></div>
+      <div class="summary">
+        <div><span class="summary__k">runs</span><span class="summary__v" id="trend-runs">0</span></div>
+        <div><span class="summary__k">best total</span><span class="summary__v" id="trend-best">&ndash;</span></div>
+        <div><span class="summary__k">best first</span><span class="summary__v" id="trend-first">&ndash;</span></div>
+      </div>
+      <!-- The table view the chart is obliged to have: every plotted number,
+           readable without relying on colour or hover. -->
+      <table class="shots" id="trend-table">
+        <thead><tr><th>run</th><th>first</th><th>total</th><th>shots</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </fieldset>
 </section>
 
 <!-- ---------------------------------------------------------- history -- -->

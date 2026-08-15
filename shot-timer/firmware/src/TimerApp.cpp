@@ -5,6 +5,7 @@
 
 #include "Battery.h"
 #include "Buzzer.h"
+#include "Drills.h"
 #include "Settings.h"
 #include "ShotDetector.h"
 #include "Storage.h"
@@ -71,6 +72,8 @@ void TimerApp::fireStartBeep() {
   const int64_t beepAtUs = buzzer.beep(settings.beepFreqHz, settings.beepMs, settings.beepVolume);
 
   run_.begin(storage.nextId(), beepAtUs);
+  const Drill& drill = drills.current();
+  run_.setDrill(drills.active(), drill.name, drill.expectedShots);
   lastShotAtUs_ = beepAtUs;
 
   detector.muteUntil(beepAtUs + static_cast<int64_t>(settings.beepMs) * 1000 +
@@ -107,16 +110,34 @@ void TimerApp::closeString(const char* reason) {
   emit("end", [&](JsonObject o) {
     o["reason"] = reason;
     o["saveFailed"] = saveFailed_;
+    if (run_.shotCountMismatch()) o["shotCountMismatch"] = true;
     run_.toJson(o["string"].to<JsonObject>());
   });
 }
 
+uint8_t TimerApp::parSchedule(const uint16_t*& times) const {
+  const Drill& d = drills.current();
+  if (d.parCount > 0) {
+    times = d.parMs;
+    return d.parCount;
+  }
+  if (settings.parEnabled) {
+    times = settings.parMs;
+    return settings.parCount;
+  }
+  times = nullptr;
+  return 0;
+}
+
 void TimerApp::servicePar(int64_t nowUs) {
-  if (!settings.parEnabled) return;
-  while (parFired_ < settings.parCount && parFired_ < MAX_PAR_TIMES) {
-    const uint16_t offsetMs = settings.parMs[parFired_];
+  const uint16_t* times = nullptr;
+  const uint8_t count = parSchedule(times);
+  if (!times || count == 0) return;
+
+  while (parFired_ < count && parFired_ < MAX_PAR_TIMES) {
+    const uint16_t offsetMs = times[parFired_];
     if (offsetMs == 0) {  // an unset slot ends the schedule
-      parFired_ = settings.parCount;
+      parFired_ = count;
       return;
     }
     const int64_t dueAt = run_.beepAtUs() + static_cast<int64_t>(offsetMs) * 1000;
@@ -226,6 +247,18 @@ void TimerApp::statusJson(JsonObject out) const {
   d["secondMic"] = st.secondMicPresent;
   d["profile"] = settings.profile().name;
   d["directionGate"] = settings.profile().directionGate;
+
+  JsonObject dr = out["drill"].to<JsonObject>();
+  dr["index"] = drills.active();
+  dr["name"] = drills.current().name;
+  dr["expectedShots"] = drills.current().expectedShots;
+  {
+    const uint16_t* times = nullptr;
+    const uint8_t n = parSchedule(times);
+    dr["parCount"] = n;
+    JsonArray par = dr["parMs"].to<JsonArray>();
+    for (uint8_t i = 0; i < n && times; i++) par.add(times[i]);
+  }
 
   if (battery.present()) {
     JsonObject b = out["battery"].to<JsonObject>();

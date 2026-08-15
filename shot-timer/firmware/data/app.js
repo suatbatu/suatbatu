@@ -22,6 +22,8 @@ const state = {
   pollTimer: null,
   settings: null,
   editingProfile: 0,
+  drills: null,
+  editingDrill: 0,
 };
 
 /* ----------------------------------------------------------------- tabs -- */
@@ -30,6 +32,7 @@ $$('.tab').forEach((tab) => {
     $$('.tab').forEach((t) => t.classList.toggle('is-active', t === tab));
     $$('.panel').forEach((p) => p.classList.toggle('is-active', p.id === tab.dataset.panel));
     if (tab.dataset.panel === 'history') loadHistory();
+    if (tab.dataset.panel === 'drills') loadDrills();
     setMeterPolling(tab.dataset.panel === 'settings');
   });
 });
@@ -308,6 +311,201 @@ $('#btn-clear').addEventListener('click', async () => {
   await fetch('/api/strings', { method: 'DELETE', credentials: 'same-origin' });
   loadHistory();
 });
+
+/* -------------------------------------------------------------- drills -- */
+const drillForm = $('#drill-form');
+
+async function loadDrills() {
+  const res = await fetch('/api/drills', { credentials: 'same-origin' });
+  if (!res.ok) return;
+  const d = await res.json();
+  state.drills = d;
+  if (state.editingDrill == null) state.editingDrill = d.activeDrill;
+
+  const sel = $('#drill-select');
+  sel.innerHTML = d.drills
+    .map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join('');
+  sel.value = String(state.editingDrill);
+  showDrill(state.editingDrill);
+  await loadTrend();
+}
+
+function showDrill(index) {
+  const d = state.drills?.drills?.[index];
+  if (!d) return;
+  state.editingDrill = index;
+  drillForm.elements.name.value = d.name;
+  drillForm.elements.expectedShots.value = d.expectedShots;
+  (d.parMs || []).forEach((v, i) => {
+    const el = drillForm.elements[`par${i}`];
+    if (el) el.value = v;
+  });
+  const active = state.drills.activeDrill === index;
+  $('#drill-active-note').textContent = active ? 'active' : `active: ${state.drills.drills[state.drills.activeDrill].name}`;
+  $('#drill-active-note').className = `pill ${active ? 'pill--ok' : ''}`;
+}
+
+$('#drill-select').addEventListener('change', async (e) => {
+  showDrill(Number(e.target.value));
+  await loadTrend();
+});
+
+$('#btn-drill-activate').addEventListener('click', async () => {
+  const out = await post('/api/drills', { activeDrill: state.editingDrill });
+  if (out) { state.drills = out; showDrill(state.editingDrill); }
+});
+
+drillForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const num = (n) => Number(drillForm.elements[n].value);
+  const out = await post('/api/drills', {
+    drill: {
+      index: state.editingDrill,
+      name: drillForm.elements.name.value,
+      expectedShots: num('expectedShots'),
+      parMs: [num('par0'), num('par1'), num('par2'), num('par3')],
+    },
+  });
+  $('#drill-status').textContent = out ? 'Saved.' : 'Save failed.';
+  if (out) {
+    state.drills = out;
+    const sel = $('#drill-select');
+    sel.innerHTML = out.drills
+      .map((x, i) => `<option value="${i}">${i + 1}. ${x.name}</option>`).join('');
+    sel.value = String(state.editingDrill);
+    showDrill(state.editingDrill);
+  }
+});
+
+/* --------------------------------------------------------------- trend -- */
+// Only the last MAX_TREND runs are plotted: a training trend is about the
+// recent past, and 200 points in 300 px of phone screen is a smear.
+const MAX_TREND = 20;
+
+async function loadTrend() {
+  const res = await fetch('/api/strings', { credentials: 'same-origin' });
+  if (!res.ok) return;
+  const { strings } = await res.json();
+  const name = state.drills?.drills?.[state.editingDrill]?.name;
+
+  // Matched on the stored name rather than the index, so renaming slot 3 does
+  // not silently graft its history onto a different drill.
+  const runs = strings
+    .filter((s) => s.drill && s.drill === name && s.count > 0)
+    .slice(-MAX_TREND);
+
+  $('#trend-empty').hidden = runs.length > 0;
+  $('#trend').hidden = runs.length === 0;
+  if (!runs.length) return;
+
+  const parMs = (state.drills.drills[state.editingDrill].parMs || [])[0] || 0;
+  drawTrend(runs, parMs);
+
+  $('#trend-runs').textContent = runs.length;
+  $('#trend-best').textContent = fmt(Math.min(...runs.map((r) => r.totalMs)));
+  $('#trend-first').textContent = fmt(Math.min(...runs.map((r) => r.firstMs)));
+  $('#trend-table tbody').innerHTML = runs
+    .map((r, i) => `<tr><td>${i + 1}</td><td>${fmt(r.firstMs)}</td><td>${fmt(r.totalMs)}</td><td>${r.count}</td></tr>`)
+    .reverse().join('');
+}
+
+// Two series on ONE shared axis — both are seconds, so there is no excuse for
+// a second scale. Colours are categorical slots 1 and 2, validated against
+// this UI's surface; the par line is a reference, not a series, so it wears
+// the accent token and carries its own text label.
+const SERIES = [
+  { key: 'firstMs', label: 'First shot', color: '#3987e5' },
+  { key: 'totalMs', label: 'Total', color: '#d95926' },
+];
+
+function drawTrend(runs, parMs) {
+  const W = 340, H = 150;
+  const padL = 30, padR = 46, padT = 10, padB = 24;
+  const x0 = padL, x1 = W - padR, y0 = padT, y1 = H - padB;
+
+  const values = runs.flatMap((r) => SERIES.map((s) => r[s.key] / 1000));
+  if (parMs > 0) values.push(parMs / 1000);
+  // A non-zero baseline is deliberate: the whole point of a training trend is
+  // tenths of a second, which a zero-based axis would flatten into a line.
+  // Both axis ticks are always labelled so the range is never implied.
+  let lo = Math.min(...values), hi = Math.max(...values);
+  const span = Math.max(hi - lo, 0.2);
+  lo = Math.max(0, lo - span * 0.15);
+  hi = hi + span * 0.15;
+
+  const sx = (i) => runs.length === 1
+    ? (x0 + x1) / 2
+    : x0 + (i * (x1 - x0)) / (runs.length - 1);
+  const sy = (v) => y1 - ((v - lo) / (hi - lo)) * (y1 - y0);
+
+  const parts = [];
+
+  // Gridlines: hairline, solid, recessive — never dashed.
+  const ticks = [lo, (lo + hi) / 2, hi];
+  ticks.forEach((v) => {
+    const y = sy(v).toFixed(1);
+    parts.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" class="g-grid"/>`);
+    parts.push(`<text x="${x0 - 6}" y="${y}" class="g-tick" text-anchor="end" dominant-baseline="middle">${v.toFixed(2)}</text>`);
+  });
+
+  if (parMs > 0) {
+    const y = sy(parMs / 1000).toFixed(1);
+    parts.push(`<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" class="g-par"/>`);
+    parts.push(`<text x="${x1 + 4}" y="${y}" class="g-parlabel" dominant-baseline="middle">par</text>`);
+  }
+
+  SERIES.forEach((s) => {
+    const pts = runs.map((r, i) => [sx(i), sy(r[s.key] / 1000)]);
+    if (pts.length > 1) {
+      const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
+      parts.push(`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`);
+    }
+    // End marker with a 2px surface ring so the two series stay legible where
+    // they cross, plus a single direct label at the end — never one per point.
+    const [ex, ey] = pts[pts.length - 1];
+    parts.push(`<circle cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" fill="${s.color}" stroke="var(--surface)" stroke-width="2"/>`);
+    parts.push(`<text x="${(ex + 8).toFixed(1)}" y="${ey.toFixed(1)}" class="g-endlabel" dominant-baseline="middle">${(runs[runs.length - 1][s.key] / 1000).toFixed(2)}</text>`);
+  });
+
+  parts.push(`<text x="${x0}" y="${H - 6}" class="g-tick">run 1</text>`);
+  if (runs.length > 1) {
+    parts.push(`<text x="${x1}" y="${H - 6}" class="g-tick" text-anchor="end">run ${runs.length}</text>`);
+  }
+
+  // Hover layer: a full-height hit band per run, wider than the marks.
+  parts.push(`<line id="trend-cross" class="g-cross" y1="${y0}" y2="${y1}" x1="0" x2="0" visibility="hidden"/>`);
+  runs.forEach((r, i) => {
+    const bandW = runs.length === 1 ? x1 - x0 : (x1 - x0) / (runs.length - 1);
+    parts.push(`<rect class="g-hit" x="${(sx(i) - bandW / 2).toFixed(1)}" y="${y0}" width="${bandW.toFixed(1)}" height="${y1 - y0}" data-i="${i}"/>`);
+  });
+
+  $('#trend-chart').innerHTML =
+    `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Run times for this drill">${parts.join('')}</svg>` +
+    `<div class="tip" id="trend-tip" hidden></div>`;
+
+  // Legend is always present for two series — identity is never colour alone.
+  $('#trend-legend').innerHTML = SERIES
+    .map((s) => `<span class="legend__item"><span class="legend__key" style="background:${s.color}"></span>${s.label}</span>`)
+    .join('');
+
+  const tip = $('#trend-tip');
+  const cross = $('#trend-cross');
+  $$('#trend-chart .g-hit').forEach((hit) => {
+    hit.addEventListener('pointerenter', () => {
+      const i = Number(hit.dataset.i);
+      const r = runs[i];
+      cross.setAttribute('x1', sx(i)); cross.setAttribute('x2', sx(i));
+      cross.setAttribute('visibility', 'visible');
+      tip.hidden = false;
+      tip.style.left = `${(sx(i) / W) * 100}%`;
+      tip.innerHTML = `<b>run ${i + 1}</b> · #${r.id}<br>first ${fmt(r.firstMs)} · total ${fmt(r.totalMs)}<br>${r.count} shots`;
+    });
+  });
+  $('#trend-chart').addEventListener('pointerleave', () => {
+    tip.hidden = true;
+    cross.setAttribute('visibility', 'hidden');
+  });
+}
 
 /* ------------------------------------------------------------ settings -- */
 const form = $('#settings-form');

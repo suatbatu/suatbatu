@@ -63,6 +63,11 @@ closed with code 1008. The token is regenerated on every boot.
     "lastLagSamples": 1, "lastAngleDeg": 3, "lastConfidence": 88,
     "secondMic": true, "profile": "Pistol", "directionGate": true
   },
+  "drill": {
+    "index": 1, "name": "Bill Drill", "expectedShots": 6,
+    "parCount": 1, "parMs": [2000]
+  },
+  "battery": {"volts": 3.91, "percent": 66, "low": false, "critical": false},
   "string": {
     "id": 17, "count": 6,
     "firstMs": 1180, "totalMs": 4045,
@@ -83,6 +88,13 @@ has the start cue that the random delay exists to take away.
 
 `levelPerMille` and `floorPerMille` are 0–1000 over an 80 dB window, for the
 level meter — not calibrated SPL.
+
+`drill.parMs` is the schedule **actually in force**, already resolved between
+the drill and the global Par settings, so a client never has to reimplement
+that precedence.
+
+`battery` is **absent entirely** when no cell is on the divider — a board on
+USB reports nothing rather than a fictional 0%.
 
 The `detector` object is diagnostics, and it exists because without it a
 correctly working direction gate and a broken microphone look identical from the
@@ -133,6 +145,29 @@ within a few milliseconds.
 
 `start` during a countdown or an open string means *abort*, matching the button.
 
+### `GET /api/drills` · `POST /api/drills`
+
+```json
+{"activeDrill": 1,
+ "drills": [{"name": "Bill Drill", "parCount": 1,
+             "parMs": [2000, 0, 0, 0], "expectedShots": 6}]}
+```
+
+`POST` accepts `activeDrill` and/or a `drill` sub-object addressed by `index`
+(omit it to edit the active one), exactly like profiles:
+
+```json
+{"drill": {"index": 1, "name": "Bill Drill", "parMs": [1800, 0, 0, 0],
+           "expectedShots": 6}}
+```
+
+`parCount` is derived from `parMs` when you send the array without it, so a
+client never has to keep the two in step.
+
+**A drill with any par time overrides the global Par settings while it is
+active.** The shipped `Free` drill has none, which is what makes the timer
+behave exactly as it did before drills existed.
+
 ### `GET /api/strings`
 
 Summaries of every stored string, **oldest first** — the order they sit in the
@@ -142,8 +177,13 @@ arrays are omitted:
 
 ```json
 {"strings": [{"id": 17, "count": 6, "firstMs": 1180, "totalMs": 4045,
-              "bestSplitMs": 190, "worstSplitMs": 410}]}
+              "bestSplitMs": 190, "worstSplitMs": 410,
+              "drill": "Bill Drill", "drillIx": 1, "expectedShots": 6}]}
 ```
+
+`drill` is the drill's **name as it was at the time of the run**, stored
+alongside the index so the history stays self-describing after a drill is
+renamed or replaced. Match on the name, not the index, when grouping runs.
 
 ### `GET /api/string?id=N`
 
@@ -160,10 +200,13 @@ Clears the history. Ids are not reused afterwards.
 The whole history, streamed:
 
 ```csv
-string_id,shot,time_s,split_s
-17,1,1.18,1.18
-17,2,1.45,0.27
+string_id,drill,shot,time_s,split_s
+17,"Bill Drill",1,1.18,1.18
+17,"Bill Drill",2,1.45,0.27
 ```
+
+The drill field is always quoted and internal quotes are doubled (RFC 4180) —
+drill names are user-supplied and may contain a comma.
 
 Shot 1's `split_s` is its time from the beep — the draw — matching how the
 device and every commercial timer report it.
@@ -179,7 +222,7 @@ All frames are JSON objects with a `type`.
 | `shot` | `index`, `atMs`, `splitMs` | a shot was detected |
 | `par` | `index`, `atMs` | a par beep sounded |
 | `tick` | `elapsedMs` | 5 Hz while a string is open |
-| `end` | `reason` (`manual`/`timeout`), `saveFailed`, `string` | string closed |
+| `end` | `reason` (`manual`/`timeout`), `saveFailed`, `shotCountMismatch`, `string` | string closed |
 
 `tick` exists so a browser can sweep a smooth clock without inventing numbers:
 interpolate between ticks, re-anchor on every one. Every value the UI displays

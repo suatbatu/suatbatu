@@ -12,6 +12,13 @@ void StringRun::begin(uint32_t id, int64_t beepAtUs) {
   overflowed_ = false;
 }
 
+void StringRun::setDrill(uint8_t index, const char* name, uint8_t expectedShots) {
+  drillIndex_ = index;
+  expectedShots_ = expectedShots;
+  strncpy(drillName_, name ? name : "", sizeof(drillName_) - 1);
+  drillName_[sizeof(drillName_) - 1] = '\0';
+}
+
 void StringRun::addShot(int64_t atUs) {
   if (!open_) return;
   if (count_ >= MAX_SHOTS_PER_STRING) {
@@ -65,6 +72,11 @@ void StringRun::toJson(JsonObject out, bool includeShots) const {
   out["bestSplitMs"] = bestSplitMs();
   out["worstSplitMs"] = worstSplitMs();
   if (overflowed_) out["overflowed"] = true;
+  if (drillName_[0]) {
+    out["drill"] = drillName_;
+    out["drillIx"] = drillIndex_;
+  }
+  if (expectedShots_ > 0) out["expectedShots"] = expectedShots_;
   if (includeShots) {
     JsonArray arr = out["shots"].to<JsonArray>();
     for (uint8_t i = 0; i < count_; i++) arr.add(shots_[i]);

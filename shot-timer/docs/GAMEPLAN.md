@@ -33,6 +33,7 @@ What exists and how it was verified:
 | LittleFS image | builds | `pio run -t buildfs` |
 | Battery monitoring (A6) | built | compiles; **reading unverified against a meter** |
 | CI: host tests, web lint, firmware + LittleFS build, size report | written | runs once the project is its own repo |
+| Drills engine (workstream B) | built | compiles; chart palette validated against the UI surface |
 | Docs: architecture, detection, API, wiring, BOM, roadmap | current | reviewed against code this session |
 | **Field behaviour** | **unproven** | nothing — it has never heard a gun |
 
@@ -166,8 +167,12 @@ machinery. Runs while workstream A waits on parts and range days.
   a filter over data already saved.
 - **B4 — device UI.** Menu item to pick the active drill by name. Nothing
   fancier on 128×64.
-- **Done when:** a drill can be created in the browser, run from the device
-  START button, and its history trend renders. Version bump to 0.3.0.
+- ✅ **Done (v0.3.0).** B1–B4 all built: eight drills in their own NVS key,
+  par precedence resolved in `TimerApp::parSchedule()`, drill name+index+
+  expected-count stamped onto every stored string, a Drills tab with editor
+  and a validated two-series trend chart, a `Drill` menu item on the device,
+  and a `drill` column in the CSV export. Owner checkpoint outstanding: run
+  one on real hardware.
 
 ## Workstream C — video sync (browser-only)
 
