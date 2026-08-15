@@ -47,6 +47,8 @@ h1 { margin: 0; font-size: 17px; letter-spacing: .04em; text-transform: lowercas
 }
 .pill--ok { background: rgba(53,196,106,.16); color: var(--go); }
 .pill--bad { background: rgba(224,83,61,.16); color: var(--bad); }
+.pill--warn { background: rgba(242,177,52,.16); color: var(--accent); }
+header { flex-wrap: wrap; }
 
 /* ------------------------------------------------------------- tabs --- */
 .tabs { display: flex; border-bottom: 1px solid var(--line); }

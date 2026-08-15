@@ -127,6 +127,7 @@ function applyStatus(st) {
     state.frozenMs = st.elapsedMs || 0;
   }
   if (st.detector) renderDetector(st.detector);
+  renderBattery(st.battery);
   renderState();
   renderShots();
 }
@@ -220,6 +221,17 @@ function renderDetector(d) {
     const maxLag = state.settings ? state.settings.maxLagSamples : '?';
     gateNote.textContent = `On. Accepting arrivals within ±${maxLag} samples of centre.`;
   }
+}
+
+// Absent `battery` means no cell on the divider — a board on USB, or one not
+// built yet. Showing "0%" there would read as a warning rather than a
+// non-measurement, so the badge is hidden instead.
+function renderBattery(b) {
+  const el = $('#battery-badge');
+  if (!b) { el.hidden = true; return; }
+  el.hidden = false;
+  el.textContent = `${b.percent}% · ${b.volts.toFixed(2)}V`;
+  el.className = `pill ${b.critical ? 'pill--bad' : (b.low ? 'pill--warn' : '')}`;
 }
 
 function flashPar() {
@@ -422,6 +434,7 @@ function setMeterPolling(on) {
     $('#meter-bar').style.width = `${(st.levelPerMille || 0) / 10}%`;
     $('#meter-floor').style.left = `${(st.floorPerMille || 0) / 10}%`;
     if (st.detector) renderDetector(st.detector);
+    renderBattery(st.battery);
   }, 250);
 }
 

@@ -11,9 +11,11 @@ bottom, and know what to do next and what not to touch.
 **Decisions already made** (do not re-litigate without the owner asking):
 
 - Hardware **is being built** — plan hardware steps with owner checkpoints.
-- Active software tracks, chosen by the owner: **Drills engine**,
-  **Video sync**, **BLE + PractiScore**. (A host audio simulator was offered
-  and not chosen; do not build it unless asked.)
+- Active software tracks, chosen by the owner, **in this order**:
+  **A (hardware) → B (drills) → D (BLE + PractiScore) → C (video sync)**.
+  (A host audio simulator was offered and not chosen; do not build it unless
+  asked.)
+- **CI is in**, at `.github/workflows/ci.yml`.
 - The project moves to a **standalone GitHub repo** once the owner creates it
   (the CI token cannot — repo creation returns 403).
 
@@ -29,6 +31,8 @@ What exists and how it was verified:
 | Two-mic TDOA direction gate, echo guard, 6 profiles | built | 25 host assertions in `tools/test_tdoa.cpp` |
 | Web UI: live WS clock, history, settings, diagnostics, CSV | built | `node --check`, HTML parse |
 | LittleFS image | builds | `pio run -t buildfs` |
+| Battery monitoring (A6) | built | compiles; **reading unverified against a meter** |
+| CI: host tests, web lint, firmware + LittleFS build, size report | written | runs once the project is its own repo |
 | Docs: architecture, detection, API, wiring, BOM, roadmap | current | reviewed against code this session |
 | **Field behaviour** | **unproven** | nothing — it has never heard a gun |
 
@@ -130,21 +134,22 @@ so each step gives a testable result before the next.
 | A3 | **One** microphone (mic A, L/R→GND) | none | level meter jumps on a clap; `FATAL: microphone/I2S init failed` never appears |
 | A4 | Piezo on GPIO 4 | none | start beep fires; no phantom shot at t=0 (beep mute working) |
 | A5 | **Second** microphone (L/R→3V3), 120 mm apart on a bar | none | Detector panel: "Second microphone: detected"; clap ahead → angle ≈ 0°, confidence > 50%; clap from the side → angle swings out |
-| A6 | Battery + divider on GPIO 1 | **new work**: read VBAT, show % on OLED footer + `/api/status` | reported voltage matches a multimeter within ~0.1 V |
+| A6 | Battery + divider on GPIO 1 | ✅ **done** — smoothed ADC, LiPo discharge curve, OLED footer, `/api/status`, web badge | reported voltage matches a multimeter within ~0.1 V |
 | A7 | Enclosure v1, both mounts (front + top) | none | buttons usable one-handed; flip setting matches the top mount |
 | A8 | Buzzer cavity + `beepFreqHz` sweep | none | **measured** SPL at 30 cm with a phone meter, number written into `BOM.md` |
 | A9 | Range day 1: pistol, one shooter | none | `accepted` == round count per string; splits plausible vs a reference timer if available |
 | A10 | Range day 2: two shooters, adjacent bays, gate on | tune from data | gate accepts own shots, rejects neighbour's; note the angles/confidences it reported |
 | A11 | Replace estimated thresholds with measured ones | update `absoluteFloor()` table + shipped profiles + `micOffsetMs` | — |
 
-A6 is the only new firmware in this stream and can be written any time.
-A9–A11 are what turns "built, unproven" into "validated" — until then the
-README's honest-status section stays as it is.
+A6 was the only new firmware in this stream and is now written. Everything
+remaining in A needs the owner and a soldering iron. A9–A11 are what turns
+"built, unproven" into "validated" — until then the README's honest-status
+section stays as it is.
 
-## Workstream B — drills engine (recommended first software track)
+## Workstream B — drills engine
 
 Smallest of the three tracks, pure firmware+UI, builds directly on the par
-machinery. Do this one first to keep momentum while BLE research proceeds.
+machinery. Runs while workstream A waits on parts and range days.
 
 - **B1 — model.** A drill = name + par schedule (up to `MAX_PAR_TIMES` beeps)
   + expected shot count + notes. Store as NDJSON on LittleFS (same pattern as
@@ -219,19 +224,18 @@ it runs research-first.
   mode vs Wi-Fi mode) rather than degraded both. Measure first.
 - **Done when:** D4 passes. Version 0.5.0.
 
-## Suggested sequence
+## Sequence (owner's order)
 
 ```
-now ──▶ Step 0 (owner creates repo, Opus migrates)
-     ──▶ B (drills)          ── small, keeps shipping while D1 researches
+done ──▶ CI + A6 (battery)
+     ──▶ B (drills)          ── firmware + UI, no hardware needed
+     ──▶ D (BLE/PractiScore) ── research first, phone checkpoint last
      ──▶ C (video sync)      ── browser-only, owner tests on a phone
-     ──▶ D (BLE/PractiScore) ── research first, hardware checkpoint last
  A runs in parallel throughout, paced by parts arriving and range days.
  A11 (measured thresholds) lands whenever the range data exists.
 ```
 
-B, C, D are independent — reorder freely if the owner says so. Within each,
-the listed order is dependency order.
+Within each workstream the listed order is dependency order.
 
 ## Checkpoint protocol with the owner
 

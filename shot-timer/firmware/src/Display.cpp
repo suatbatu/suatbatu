@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "Battery.h"
 #include "Settings.h"
 #include "ShotDetector.h"
 #include "Storage.h"
@@ -296,6 +297,14 @@ void Display::tick() {
 void Display::drawFooter() {
   oled.setFont(FONT_SMALL);
   oled.drawStr(0, 63, netLine_);
+
+  // Right-aligned so it never collides with a long IP address on the left.
+  // Nothing is drawn at all when there is no battery on the divider — a board
+  // on USB should not display a fictional "0%".
+  if (!battery.present()) return;
+  char buf[12];
+  snprintf(buf, sizeof(buf), battery.low() ? "! %u%%" : "%u%%", battery.percent());
+  oled.drawStr(128 - oled.getStrWidth(buf), 63, buf);
 }
 
 void Display::drawReady() {

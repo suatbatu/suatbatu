@@ -1,0 +1,127 @@
+# CI for shot-timer.
+#
+# Paths are relative to the repository root, which assumes this project *is*
+# the repository. While it still lives as a subdirectory of another repo,
+# GitHub will not run this file at all (workflows are only read from the root
+# `.github/workflows`) — it starts working the moment the project is split out
+# into its own repo. See docs/GAMEPLAN.md step 0.
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  host-tests:
+    name: Host tests (direction gate)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # The maths behind the direction gate is the one part of this firmware
+      # that cannot be debugged on a range without burning fifty rounds
+      # discovering it was wrong. It runs on every push, in seconds, no board.
+      - name: Run tests
+        run: ./tools/run_tests.sh
+
+  web-ui:
+    name: Web UI syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Check JavaScript parses
+        run: node --check firmware/data/app.js
+
+      - name: Check HTML is well-formed
+        run: |
+          python3 - <<'PY'
+          import html.parser, sys
+
+          VOID = {"meta", "link", "br", "hr", "img", "input", "source", "area",
+                  "base", "col", "embed", "param", "track", "wbr"}
+
+          class Check(html.parser.HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.stack = []
+                  self.errors = []
+
+              def handle_starttag(self, tag, attrs):
+                  if tag not in VOID:
+                      self.stack.append(tag)
+
+              def handle_endtag(self, tag):
+                  if self.stack and self.stack[-1] == tag:
+                      self.stack.pop()
+                  else:
+                      self.errors.append(f"unexpected </{tag}>, open: {self.stack[-3:]}")
+
+          p = Check()
+          with open("firmware/data/index.html") as f:
+              p.feed(f.read())
+          if p.stack:
+              p.errors.append(f"unclosed tags: {p.stack}")
+          for e in p.errors:
+              print("ERROR:", e)
+          sys.exit(1 if p.errors else 0)
+          PY
+
+  firmware:
+    name: Firmware build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # The toolchain is ~1 GB and unchanging; without this every run spends
+      # several minutes re-downloading Xtensa GCC.
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.platformio
+            ~/.cache/pip
+          key: pio-${{ runner.os }}-${{ hashFiles('firmware/platformio.ini') }}
+          restore-keys: pio-${{ runner.os }}-
+
+      - name: Install PlatformIO
+        run: pip install --upgrade platformio
+
+      - name: Build firmware
+        working-directory: firmware
+        run: pio run
+
+      - name: Build LittleFS image
+        working-directory: firmware
+        run: pio run -t buildfs
+
+      # Flash and RAM headroom are load-bearing on this target: the app slot is
+      # 3 MB and BLE is still to come. Surfacing the numbers on every build
+      # makes a regression obvious in the log rather than at flash time.
+      - name: Report sizes
+        working-directory: firmware
+        run: pio run -t size | grep -E "RAM:|Flash:"
+
+      - name: Upload build artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            firmware/.pio/build/shottimer/firmware.bin
+            firmware/.pio/build/shottimer/littlefs.bin
+          if-no-files-found: error
+          retention-days: 14

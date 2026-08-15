@@ -1,7 +1,9 @@
 #include "TimerApp.h"
 
 #include <esp_timer.h>
+#include <math.h>
 
+#include "Battery.h"
 #include "Buzzer.h"
 #include "Settings.h"
 #include "ShotDetector.h"
@@ -224,6 +226,14 @@ void TimerApp::statusJson(JsonObject out) const {
   d["secondMic"] = st.secondMicPresent;
   d["profile"] = settings.profile().name;
   d["directionGate"] = settings.profile().directionGate;
+
+  if (battery.present()) {
+    JsonObject b = out["battery"].to<JsonObject>();
+    b["volts"] = roundf(battery.volts() * 100.0f) / 100.0f;
+    b["percent"] = battery.percent();
+    b["low"] = battery.low();
+    b["critical"] = battery.critical();
+  }
   // Note: the time remaining in a countdown is deliberately never published.
   // Anyone who can see it has the start cue the random delay exists to remove.
   if (saveFailed_) out["saveFailed"] = true;

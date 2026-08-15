@@ -3,6 +3,7 @@
 // of the way of the audio task.
 #include <Arduino.h>
 
+#include "Battery.h"
 #include "Buttons.h"
 #include "Buzzer.h"
 #include "Display.h"
@@ -110,6 +111,7 @@ void setup() {
   settings.load();
   buttons.begin();
   buzzer.begin();
+  battery.begin();
 
   if (!display.begin()) log_w("no OLED found — running headless");
   if (!storage.begin()) log_w("LittleFS mount failed — history and web UI unavailable");
@@ -134,6 +136,7 @@ void loop() {
   handleButtons();
 
   app.loop();
+  battery.tick();
   net.loop();
   web.loop();
   display.tick();
