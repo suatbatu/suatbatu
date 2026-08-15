@@ -9,6 +9,7 @@
 #include "Buzzer.h"
 #include "Display.h"
 #include "Drills.h"
+#include "ImpulseDetector.h"
 #include "Net.h"
 #include "Settings.h"
 #include "ShotDetector.h"
@@ -119,6 +120,10 @@ void setup() {
   if (!display.begin()) log_w("no OLED found — running headless");
   if (!storage.begin()) log_w("LittleFS mount failed — history and web UI unavailable");
   if (!detector.begin()) fatal("microphone/I2S init failed");
+  // Optional. Its absence is a build choice, not a fault — profiles that ask
+  // for impulse detection report it unavailable rather than silently
+  // detecting nothing. Must follow display.begin(), which owns the I2C bus.
+  impulse.begin();
 
   net.begin();
   display.setNetLine(net.statusLine().c_str());

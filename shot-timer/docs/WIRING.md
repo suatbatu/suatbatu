@@ -20,6 +20,7 @@ there, not here.
 | Button UP | 6 | To GND, internal pull-up |
 | Button DOWN | 7 | To GND, internal pull-up |
 | Battery sense | 1 | ADC1, via a 100 k / 100 k divider from VBAT |
+| LIS3DH INT1 | 14 | Optional accelerometer; interrupt only, data is on I2C |
 | Activity LED | 21 | Through 330 Ω to GND |
 
 Avoid GPIO 0, 19, 20, 43, 44, 45, 46 and the 26–32 range on the S3 — they are
@@ -72,6 +73,32 @@ microphones, so how you mount them *is* the algorithm:
   with a scrap of acoustic mesh behind it is right; a layer of felt also helps
   the clipping situation described in [`BOM.md`](BOM.md).
 
+## Accelerometer (optional)
+
+For impulse / dry-fire detection. It shares the display's I2C bus, so it costs
+one extra wire.
+
+```
+LIS3DH           ESP32-S3
+──────           ────────
+VIN      ─────── 3V3
+GND      ─────── GND
+SCL      ─────── GPIO 9      (shared with the OLED)
+SDA      ─────── GPIO 8      (shared with the OLED)
+INT1     ─────── GPIO 14     ← this is what carries the timing
+SA0      ─────── float/GND (0x18) or 3V3 (0x19); both are probed
+```
+
+The firmware probes both addresses at boot. If nothing answers `WHO_AM_I` with
+`0x33`, impulse detection reports itself unavailable and the acoustic path is
+unaffected — a build without this part is a supported configuration, not a
+fault.
+
+**Mounting is the whole feature.** The sensor must be mechanically coupled to
+the firearm to feel a trigger break; on a belt it will feel nothing. Either
+mount the timer on the gun, or put the LIS3DH on a short cable as a separate
+puck. See [`DETECTION.md`](DETECTION.md).
+
 ## Buzzer
 
 ```
@@ -120,7 +147,9 @@ firmware maps the pin but does not yet read it — that is
 4. Open the web UI's Settings tab and watch the level meter. Tap a microphone
    port — the bar should jump and settle. If it sits pegged, a mic is wired to
    the wrong slot or an L/R pin is floating.
-5. Check the **Detector** panel. With both microphones fitted, "Second
+5. If a LIS3DH is fitted, the boot log says `LIS3DH at 0x18` (or `0x19`). Tap
+   the sensor sharply and "Impulse events" in the Detector panel should climb.
+6. Check the **Detector** panel. With both microphones fitted, "Second
    microphone" should read *detected*. Clap once directly in front of the array:
    "Last angle" should read near 0° and "Last correlation" above 50%. Clap from
    one side and the angle should swing out. If it does not, `micSpacingMm` does

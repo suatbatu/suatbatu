@@ -177,6 +177,18 @@
       </label>
       <label>Name<input type="text" name="profileName" maxlength="16" autocomplete="off"></label>
 
+      <label>Shot sensor
+        <select name="shotSource">
+          <option value="0">Microphone</option>
+          <option value="1">Accelerometer (dry fire)</option>
+          <option value="2">Both</option>
+        </select>
+      </label>
+      <p class="note" id="source-note"></p>
+
+      <label>Impulse threshold (1 = slide slam only, 10 = trigger break)
+        <input type="number" name="impulseThreshold" min="1" max="10" step="1"></label>
+
       <label>Sensitivity (1 = muzzle blast only, 10 = dry fire)
         <input type="range" name="sensitivity" min="1" max="10" step="1">
         <output name="sensitivity-out"></output>

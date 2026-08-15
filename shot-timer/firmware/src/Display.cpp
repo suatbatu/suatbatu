@@ -8,6 +8,7 @@
 
 #include "Battery.h"
 #include "Drills.h"
+#include "ImpulseDetector.h"
 #include "Settings.h"
 #include "ShotDetector.h"
 #include "Storage.h"
@@ -104,6 +105,31 @@ const MenuItem MENU[] = {
      [](int8_t d) {
        settings.profile().sensitivity =
            stepClamped<uint8_t>(settings.profile().sensitivity, d, 1, 1, 10);
+     }},
+
+    {"Sensor",
+     [](char* b, size_t n) {
+       const ShotSource s = settings.profile().shotSource;
+       // Say "no IMU" rather than "impulse" when the part is not fitted: the
+       // setting is real, the capability is not, and the screen should not
+       // imply the timer is listening to something that is not there.
+       if (impulseEnabled(s) && !impulse.present()) {
+         snprintf(b, n, "%s!", shotSourceName(s));
+         return;
+       }
+       snprintf(b, n, "%s", shotSourceName(s));
+     },
+     [](int8_t d) {
+       const int next = (static_cast<int>(settings.profile().shotSource) + (d > 0 ? 1 : 2)) % 3;
+       settings.profile().shotSource = static_cast<ShotSource>(next);
+     }},
+
+    {"Impulse thr",
+     [](char* b, size_t n) { snprintf(b, n, "%u", settings.profile().impulseThreshold); },
+     [](int8_t d) {
+       settings.profile().impulseThreshold =
+           stepClamped<uint8_t>(settings.profile().impulseThreshold, d, 1, 1, 10);
+       impulse.applyThreshold();
      }},
 
     {"Direction",
@@ -322,7 +348,14 @@ void Display::drawReady() {
   const DetectorStats st = detector.stats();
   // "DIR 25" only when the gate can actually do something — with one
   // microphone fitted it would be a lie.
-  if (settings.profile().directionGate && st.secondMicPresent) {
+  const ShotSource src = settings.profile().shotSource;
+  if (impulseEnabled(src) && !impulse.present()) {
+    snprintf(buf, sizeof(buf), "NO IMU");
+  } else if (src == ShotSource::Impulse) {
+    snprintf(buf, sizeof(buf), "IMU %u", settings.profile().impulseThreshold);
+  } else if (src == ShotSource::Both) {
+    snprintf(buf, sizeof(buf), "MIC+IMU");
+  } else if (settings.profile().directionGate && st.secondMicPresent) {
     snprintf(buf, sizeof(buf), "DIR %u", settings.profile().maxOffAxisDeg);
   } else if (settings.profile().directionGate) {
     snprintf(buf, sizeof(buf), "DIR 1MIC");

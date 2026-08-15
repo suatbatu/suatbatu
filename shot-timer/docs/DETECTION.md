@@ -200,6 +200,83 @@ hundredth of a second displayed, but not zero. `micOffsetMs` applies a fixed
 correction if you characterise it against a reference timer. It ships at 0
 because guessing at a calibration is worse than admitting there isn't one.
 
+## Impulse detection — the dry-fire answer
+
+Dry fire is the case the acoustic detector handles worst. A trigger break is
+barely above room noise, which is exactly where every false trigger lives too;
+sensitivity 10 asks the detector to distinguish a click from a footstep on
+level alone, and it will sometimes get that wrong in both directions.
+
+A trigger break is a **mechanical** event, so an accelerometer sidesteps the
+problem rather than straining against it. An optional LIS3DH on the display's
+existing I2C bus provides a second, independent shot source.
+
+### ⚠️ It has to be coupled to the firearm
+
+This is the honest limit of the feature, and no amount of threshold tuning
+changes it: **a timer clipped to your belt will not feel a trigger break in a
+gun held at arm's length.** The impulse path is only useful when the sensor is
+mechanically coupled to the firearm — the timer mounted on a rail, or the
+LIS3DH on a short cable as a separate puck attached to the gun.
+
+For **live fire** the picture is friendlier: recoil is a large impulse that
+reaches a hand-held or body-worn timer, though damped and delayed by whatever
+is between. That is why `Both` mode exists rather than only `Impulse`.
+
+### How it works
+
+The sensor does the detecting; the firmware does the timestamping.
+
+- The LIS3DH's INT1 generator is configured with its **high-pass filter
+  enabled** — without it, gravity is a permanent 1 g and the interrupt would
+  never stop firing.
+- The interrupt is **not latched**. A latched interrupt has to be cleared over
+  I2C before the next event can fire, which would put a blocking bus
+  transaction in the detection path. Unlatched, INT1 pulses and a software
+  refractory does the de-bouncing.
+- An **ISR timestamps the rising edge** with `esp_timer_get_time()` and pushes
+  it to a queue. It does nothing else: no I2C, no allocation, no logging.
+  The I2C bus is touched only at setup and by the tuning meter.
+
+Range and resolution: the driver selects **±4 g**, where one threshold LSB is
+32 mg. Threshold 1 is ~1.3 g (a slide slam or a dropped timer); threshold 10 is
+~0.13 g (a trigger break on a coupled sensor). ±4 g rather than ±16 g because
+the fine LSB is worth more here than headroom we would only use on a slam.
+
+**Timing is about a millisecond**, not sub-millisecond. The accelerometer
+samples at 1.344 kHz, so the interrupt can only be as precise as its 0.74 ms
+sample interval. That is comfortably finer than the hundredths a timer
+displays, and an order of magnitude coarser than the acoustic path's
+sample-counter timestamps. Worth knowing before comparing an impulse split
+against an acoustic one.
+
+## Two sources, one string
+
+Each profile picks its sensor: `Acoustic` (the default, and what every
+commercial timer does), `Impulse`, or `Both`.
+
+In `Both` mode one physical shot produces two candidates a few milliseconds
+apart — recoil reaches the accelerometer essentially instantly, the muzzle
+blast reaches the microphone after it. Deciding which candidate is a second
+shot and which is the same shot detected twice is a small amount of logic with
+a large blast radius: a wrong answer either doubles every shot in the string or
+swallows a genuine fast split.
+
+The rule is **first arrival wins**: a candidate within 30 ms of the last
+accepted shot is the same event, and is dropped. 30 ms sits comfortably inside
+the fastest human split (~0.12 s) and comfortably outside the few milliseconds
+separating recoil from its own report.
+
+Holding candidates back to prefer the more accurate source would buy a
+millisecond of timestamp quality at the cost of delaying every shot by the
+window — a bad trade on a device whose job is to feel instant.
+
+Because the acoustic path defers by one DMA block while the interrupt is
+immediate, candidates can arrive out of *time* order, so the rule compares
+absolute differences and never lets the reference walk backwards. That, and
+the window edges, are covered by
+[`tools/test_shotmerge.cpp`](../tools/test_shotmerge.cpp).
+
 ## Beep muting
 
 The buzzer is centimetres from the microphones and is, by design, the loudest
@@ -210,10 +287,15 @@ that window small and to be distinguishable by ear.
 
 ## Profiles
 
-All four detection parameters — sensitivity, refractory, echo rejection, and the
-direction gate — live in a profile, not in global settings. Six ship by default
-(Pistol, Rifle, Suppressed, Rimfire, Airsoft/CO2, Dry fire) and all of them are
-editable and renameable.
+Every detection parameter — sensitivity, refractory, echo rejection, the
+direction gate, **and which sensor decides a shot happened** — lives in a
+profile, not in global settings. Six ship by default (Pistol, Rifle,
+Suppressed, Rimfire, Airsoft/CO2, Dry fire) and all of them are editable and
+renameable.
+
+`Dry fire` is the one profile that ships on the accelerometer. With no LIS3DH
+fitted it reports itself unavailable — on the OLED, in the web UI and in the
+API — rather than arming a sensor that is not there and recording nothing.
 
 The shipped numbers are reasoned starting points, not measurements. Correct them
 with a real gun.
@@ -231,7 +313,10 @@ with a real gun.
 4. `last angle` should read near 0° for your own shots. If it does not, your
    microphone spacing setting does not match the hardware, or the two ports are
    not on the axis you think they are.
-5. Point the array **at the shooter**, not downrange, with the two microphone
+5. For impulse mode: put the sensor **on the gun**, set the threshold as low as
+   it will go without the timer's own handling tripping it, and check
+   "Impulse events" in the Detector panel against your actual trigger pulls.
+6. Point the array **at the shooter**, not downrange, with the two microphone
    ports on a horizontal line. That puts your muzzle blast at 0° and the
    neighbouring bays out at 40–80°, which is exactly the separation the gate
    needs.

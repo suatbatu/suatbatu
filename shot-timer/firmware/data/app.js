@@ -213,10 +213,28 @@ function renderDetector(d) {
     ['Last arrival lag', `${d.lastLagSamples || 0} samples`],
     ['Last angle', `${d.lastAngleDeg || 0}°`],
     ['Last correlation', `${d.lastConfidence || 0}%`],
+    ['Shot sensor', d.shotSource || '–'],
+    ['Accelerometer', d.impulseAvailable ? 'detected' : 'not fitted'],
+    ['Impulse events', d.impulseDetected || 0],
   ];
   $('#diag').innerHTML = rows
     .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
     .join('');
+
+  // The accelerometer is optional hardware, so a profile can ask for a sensor
+  // that is not on the board. Say so where the setting is, not in a log.
+  const srcNote = $('#source-note');
+  if (srcNote) {
+    if (d.shotSource === 'acoustic') {
+      srcNote.textContent = 'Microphone only — what every commercial timer does.';
+    } else if (!d.impulseAvailable) {
+      srcNote.textContent = 'No accelerometer detected on this board. This profile will '
+        + 'record nothing from the impulse sensor.';
+    } else {
+      srcNote.textContent = 'The accelerometer only feels a trigger break if it is '
+        + 'mechanically coupled to the firearm. A timer on your belt will not.';
+    }
+  }
 
   const gateNote = $('#gate-note');
   if (!d.directionGate) {
@@ -713,7 +731,7 @@ function drawTrend(runs, parMs) {
 const form = $('#settings-form');
 
 const PROFILE_FIELDS = ['sensitivity', 'refractoryMs', 'echoRejectDb', 'echoDecayMs',
-                        'directionGate', 'maxOffAxisDeg'];
+                        'directionGate', 'maxOffAxisDeg', 'shotSource', 'impulseThreshold'];
 
 async function loadSettings() {
   const res = await fetch('/api/settings', { credentials: 'same-origin' });
@@ -778,6 +796,8 @@ form.addEventListener('submit', async (e) => {
       echoDecayMs: num('echoDecayMs'),
       directionGate: form.elements.directionGate.checked,
       maxOffAxisDeg: num('maxOffAxisDeg'),
+      shotSource: num('shotSource'),
+      impulseThreshold: num('impulseThreshold'),
     },
     micSpacingMm: num('micSpacingMm'),
     micOffsetMs: num('micOffsetMs'),

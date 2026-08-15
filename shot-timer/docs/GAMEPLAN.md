@@ -19,9 +19,10 @@ bottom, and know what to do next and what not to touch.
 - The project moves to a **standalone GitHub repo** once the owner creates it.
   The session's GitHub token lacks `Administration: write` — `create_repository`
   returns 403 — so this is the owner's to do, twice confirmed.
-- An **earlier, separate shot timer** by the same owner (DELTA / MAK87, June
-  2026) exists on their Mac. Its findings are in [`PRIOR_ART.md`](PRIOR_ART.md);
-  its source is not reachable from here. Nothing from it has been adopted yet.
+- The earlier **DELTA / MAK87** timer is **superseded** (owner, 2026-08-15).
+  This project is the single line of development; DELTA's brand is not carried
+  over. Its transferable ideas are in [`PRIOR_ART.md`](PRIOR_ART.md) — IMU
+  dry-fire has been adopted, four others remain available.
 
 ---
 
@@ -40,6 +41,7 @@ What exists and how it was verified:
 | Drills engine (workstream B) | built | compiles; chart palette validated against the UI surface |
 | BLE / AMG Commander dialect (workstream D) | built | compiles; **never tested against any client** |
 | Video sync (workstream C) | built | `node --check`, HTML parse; **never opened on a phone** |
+| Impulse / dry-fire detection (LIS3DH) | built | compiles; 19 host assertions on the merge rule; **no sensor has ever been tapped** |
 | Docs: architecture, detection, API, wiring, BOM, roadmap | current | reviewed against code this session |
 | **Field behaviour** | **unproven** | nothing — it has never heard a gun |
 
@@ -141,6 +143,7 @@ so each step gives a testable result before the next.
 | A3 | **One** microphone (mic A, L/R→GND) | none | level meter jumps on a clap; `FATAL: microphone/I2S init failed` never appears |
 | A4 | Piezo on GPIO 4 | none | start beep fires; no phantom shot at t=0 (beep mute working) |
 | A5 | **Second** microphone (L/R→3V3), 120 mm apart on a bar | none | Detector panel: "Second microphone: detected"; clap ahead → angle ≈ 0°, confidence > 50%; clap from the side → angle swings out |
+| A5b | **LIS3DH** on the I2C bus, INT1 → GPIO 14 (optional) | none | boot log shows `LIS3DH at 0x18`; Detector panel "Accelerometer: detected"; tapping it climbs "Impulse events". Then mount it **on the gun** and dry-fire a string under the Dry fire profile |
 | A6 | Battery + divider on GPIO 1 | ✅ **done** — smoothed ADC, LiPo discharge curve, OLED footer, `/api/status`, web badge | reported voltage matches a multimeter within ~0.1 V |
 | A7 | Enclosure v1, both mounts (front + top) | none | buttons usable one-handed; flip setting matches the top mount |
 | A8 | Buzzer cavity + `beepFreqHz` sweep | none | **measured** SPL at 30 cm with a phone meter, number written into `BOM.md` |

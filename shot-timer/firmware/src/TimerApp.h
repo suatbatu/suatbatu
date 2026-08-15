@@ -12,6 +12,7 @@
 #include <functional>
 
 #include "AppState.h"
+#include "ShotMerge.h"
 #include "StringRun.h"
 
 class TimerApp {
@@ -54,6 +55,10 @@ class TimerApp {
   // the global Par settings; the shipped "Free" drill has none, which is what
   // makes the timer behave exactly as it did before drills existed.
   uint8_t parSchedule(const uint16_t*& times) const;
+  // Drains both shot sources and applies the merge rule. Returns how many new
+  // shots landed in the open string.
+  uint8_t ingestShots();
+  void recordShot(int64_t atUs);
   void emit(const char* type, const std::function<void(JsonObject)>& fill = nullptr);
 
   AppState state_ = AppState::Ready;
@@ -63,6 +68,7 @@ class TimerApp {
   int64_t beepDueAtUs_ = 0;   // Countdown: when the start beep should fire
   int64_t lastShotAtUs_ = 0;  // Running: for the auto-stop timeout
   uint8_t parFired_ = 0;      // how many par beeps have already sounded
+  MergeState merge_;
   bool saveFailed_ = false;
 
   volatile bool pendingStart_ = false;

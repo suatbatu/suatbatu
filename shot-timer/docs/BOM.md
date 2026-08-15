@@ -69,7 +69,8 @@ An unmeasured loudness claim is worth nothing.
 
 ## Optional
 
-| Part | For |
-|---|---|
-| Ambient light sensor (BH1750) | Automatic contrast, the last piece of the SG Timer's display story |
-| Piezo step-up driver / transformer | Getting past ~95 dB |
+| Part | For | ≈ Cost |
+|---|---|---|
+| **LIS3DH accelerometer breakout** | Impulse / dry-fire detection. Shares the display's I2C bus; one extra wire for INT1. Only useful mounted **on the firearm** — see [`DETECTION.md`](DETECTION.md) | $5 |
+| Ambient light sensor (BH1750) | Automatic contrast, the last piece of the SG Timer's display story | $3 |
+| Piezo step-up driver / transformer | Getting past ~95 dB | $3 |

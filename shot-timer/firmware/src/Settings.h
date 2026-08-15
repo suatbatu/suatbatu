@@ -9,6 +9,7 @@
 #include <ArduinoJson.h>
 #include <stdint.h>
 
+#include "ShotMerge.h"
 #include "config.h"
 
 enum StartDelayMode : uint8_t {
@@ -35,6 +36,11 @@ struct Profile {
   // splits. Ignored when only one microphone is fitted.
   bool directionGate = false;
   uint8_t maxOffAxisDeg = 25;
+
+  // Which sensor decides a shot happened. Impulse mode needs a LIS3DH coupled
+  // to the firearm; see docs/DETECTION.md before selecting it.
+  ShotSource shotSource = ShotSource::Acoustic;
+  uint8_t impulseThreshold = 8;  // 1 (slide slam only) .. 10 (trigger break)
 };
 
 struct Settings {

@@ -6,6 +6,7 @@
 #include "Battery.h"
 #include "Buzzer.h"
 #include "Drills.h"
+#include "ImpulseDetector.h"
 #include "Settings.h"
 #include "ShotDetector.h"
 #include "Storage.h"
@@ -60,6 +61,7 @@ void TimerApp::requestStart() {
   saveFailed_ = false;
   parFired_ = 0;
   detector.drain();
+  impulse.drain();
 
   const uint32_t delayMs = settings.nextStartDelayMs();
   beepDueAtUs_ = esp_timer_get_time() + static_cast<int64_t>(delayMs) * 1000;
@@ -78,7 +80,13 @@ void TimerApp::fireStartBeep() {
 
   detector.muteUntil(beepAtUs + static_cast<int64_t>(settings.beepMs) * 1000 +
                      BEEP_MUTE_TAIL_US);
-  detector.arm();
+
+  // Only the sources this profile actually uses get armed. An unarmed source
+  // costs nothing and, more importantly, cannot contribute a phantom shot.
+  merge_.reset();
+  const ShotSource source = settings.profile().shotSource;
+  if (acousticEnabled(source)) detector.arm();
+  if (impulseEnabled(source)) impulse.arm();
 
   enter(AppState::Running);
   emit("beep", nullptr);
@@ -89,6 +97,7 @@ void TimerApp::requestStop() {
     // Aborted before the beep: there is no string to keep.
     buzzer.stop();
     detector.disarm();
+    impulse.disarm();
     enter(AppState::Ready);
     return;
   }
@@ -97,9 +106,9 @@ void TimerApp::requestStop() {
 
 void TimerApp::closeString(const char* reason) {
   detector.disarm();
-  // Anything already in the queue was fired before the stop, so it counts.
-  int64_t atUs;
-  while (detector.popShot(atUs)) run_.addShot(atUs);
+  impulse.disarm();
+  // Anything already queued was fired before the stop, so it counts.
+  ingestShots();
   run_.end();
 
   if (settings.autoSave && run_.count() > 0) {
@@ -177,20 +186,7 @@ void TimerApp::loop() {
       break;
 
     case AppState::Running: {
-      int64_t atUs;
-      while (detector.popShot(atUs)) {
-        const uint8_t before = run_.count();
-        run_.addShot(atUs);
-        if (run_.count() == before) continue;  // string is full
-        lastShotAtUs_ = atUs;
-        const uint8_t index = run_.count() - 1;
-        emit("shot", [&](JsonObject o) {
-          o["index"] = index;
-          o["atMs"] = run_.shotMs(index);
-          o["splitMs"] = run_.splitMs(index);
-        });
-      }
-
+      ingestShots();
       servicePar(nowUs);
 
       if (settings.autoStopSec > 0) {
@@ -208,6 +204,41 @@ void TimerApp::loop() {
     default:
       break;
   }
+}
+
+// One physical shot can be detected by both sources a few milliseconds apart.
+// The merge rule that decides whether a candidate is a second shot or the same
+// shot heard twice lives in ShotMerge.h and is host-tested — getting it wrong
+// either doubles every shot or swallows genuine fast splits.
+uint8_t TimerApp::ingestShots() {
+  uint8_t added = 0;
+  int64_t atUs;
+  while (detector.popShot(atUs)) {
+    if (!shouldAcceptShot(merge_, atUs, SHOT_MERGE_WINDOW_US)) continue;
+    recordShot(atUs);
+    added++;
+  }
+  while (impulse.popShot(atUs)) {
+    if (!shouldAcceptShot(merge_, atUs, SHOT_MERGE_WINDOW_US)) continue;
+    recordShot(atUs);
+    added++;
+  }
+  return added;
+}
+
+void TimerApp::recordShot(int64_t atUs) {
+  const uint8_t before = run_.count();
+  run_.addShot(atUs);
+  if (run_.count() == before) return;  // string is full
+  noteAcceptedShot(merge_, atUs);
+  lastShotAtUs_ = atUs;
+
+  const uint8_t index = run_.count() - 1;
+  emit("shot", [&](JsonObject o) {
+    o["index"] = index;
+    o["atMs"] = run_.shotMs(index);
+    o["splitMs"] = run_.splitMs(index);
+  });
 }
 
 void TimerApp::openMenu() {
@@ -247,6 +278,9 @@ void TimerApp::statusJson(JsonObject out) const {
   d["secondMic"] = st.secondMicPresent;
   d["profile"] = settings.profile().name;
   d["directionGate"] = settings.profile().directionGate;
+  d["shotSource"] = shotSourceName(settings.profile().shotSource);
+  d["impulseAvailable"] = impulse.present();
+  d["impulseDetected"] = impulse.detected();
 
   JsonObject dr = out["drill"].to<JsonObject>();
   dr["index"] = drills.active();

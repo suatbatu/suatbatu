@@ -29,10 +29,14 @@ way:
 
 ## 2. What DELTA has that this project does not
 
-Ranked by what they would actually be worth here. **None of these are committed
-to** — they are candidates.
+Ranked by what they would actually be worth here. Item 1 has since been **adopted**; the rest remain candidates.
 
-1. **IMU dry-fire detection (LIS3DH).** The strongest idea in the document.
+1. ✅ **IMU dry-fire detection (LIS3DH) — ADOPTED, v0.6.0.** The strongest idea
+   in the document, and now built: optional sensor on the existing I2C bus, its
+   own threshold interrupt, ISR timestamping, per-profile sensor selection and
+   a host-tested merge rule. One thing the original framing understated and our
+   docs now state plainly: it only works with the sensor mechanically coupled
+   to the firearm. The rationale, unchanged, was:
    Dry fire is the case our acoustic detector handles worst — sensitivity 10
    means trusting a click barely above room noise, which is also where every
    false trigger lives. An accelerometer on the frame sidesteps the problem
@@ -97,16 +101,18 @@ Recorded so nobody "harmonises" them backwards later.
   in USD and should probably carry a lira column, since that is where the parts
   are actually being bought.
 
-## 5. The question this raises
+## 5. Resolved: DELTA is superseded
 
-There are now two shot timer projects by the same owner, each with things the
-other lacks. That is a decision for the owner, not a technical problem to solve
-quietly — recorded here so the next session asks rather than assumes:
+The owner's decision, 2026-08-15: **DELTA is superseded and this project
+continues.** Its brand is not carried over, and this repository is the single
+line of development.
 
-- Is DELTA superseded by this build, a parallel track, or the branded product
-  this one feeds into?
-- If DELTA continues, does its **brand** (DELTA, cyan `#22D3C5` on graphite
-  `#14181C`) apply here? Our web UI currently uses its own dark palette.
-- Its native **iOS app** already decodes AMG frames. If that app is alive, our
-  BLE layer has a ready-made test client — which would close the D4 checkpoint
-  far faster than waiting on PractiScore.
+That leaves this document as an ideas ledger rather than a merge plan. Section 2
+is the standing list; item 1 has been taken, and the remaining four (OTA, audio
+capture as regression fixtures, visual start, multiple beep profiles) stay
+available to pull whenever they earn a slot on the roadmap.
+
+One practical note survives the decision: DELTA's iOS app already decodes AMG
+frames. If that build still runs on a phone, it is a ready-made client for our
+BLE layer and would close the D4 checkpoint far faster than waiting on
+PractiScore.

@@ -23,7 +23,7 @@ constexpr char NS[] = "shottimer";
 constexpr char KEY_BLOB[] = "cfg";
 // Bump when the struct layout changes so old blobs are discarded instead of
 // being reinterpreted as garbage.
-constexpr uint32_t BLOB_VERSION = 3;
+constexpr uint32_t BLOB_VERSION = 4;
 
 struct Blob {
   uint32_t version;
@@ -51,14 +51,19 @@ void seedProfiles(Profile* p) {
     uint16_t refractoryMs;
     uint8_t echoRejectDb;
     uint16_t echoDecayMs;
+    ShotSource source;
   };
   static const Seed seeds[MAX_PROFILES] = {
-      {"Pistol", 5, 25, 10, 120},      // centrefire handgun, outdoor bay
-      {"Rifle", 4, 20, 10, 140},       // louder still, and echoes harder
-      {"Suppressed", 8, 25, 8, 100},   // no muzzle blast, just the action
-      {"Rimfire", 8, 20, 8, 100},      // quiet, sharp, fast
-      {"Airsoft/CO2", 9, 20, 6, 80},   // barely above room noise
-      {"Dry fire", 10, 30, 4, 60},     // a trigger click at a metre
+      {"Pistol", 5, 25, 10, 120, ShotSource::Acoustic},
+      {"Rifle", 4, 20, 10, 140, ShotSource::Acoustic},
+      {"Suppressed", 8, 25, 8, 100, ShotSource::Acoustic},
+      {"Rimfire", 8, 20, 8, 100, ShotSource::Acoustic},
+      {"Airsoft/CO2", 9, 20, 6, 80, ShotSource::Acoustic},
+      // The one profile that ships on the accelerometer: a trigger click at a
+      // metre is the case the microphone is worst at, and the case a coupled
+      // accelerometer is best at. Falls back gracefully — with no LIS3DH
+      // fitted, impulse mode reports itself unavailable rather than pretending.
+      {"Dry fire", 10, 30, 4, 60, ShotSource::Impulse},
   };
   for (uint8_t i = 0; i < MAX_PROFILES; i++) {
     p[i] = Profile();
@@ -67,6 +72,7 @@ void seedProfiles(Profile* p) {
     p[i].refractoryMs = seeds[i].refractoryMs;
     p[i].echoRejectDb = seeds[i].echoRejectDb;
     p[i].echoDecayMs = seeds[i].echoDecayMs;
+    p[i].shotSource = seeds[i].source;
   }
 }
 }  // namespace
@@ -175,6 +181,8 @@ void Settings::toJson(JsonObject out) const {
     p["echoDecayMs"] = profiles[i].echoDecayMs;
     p["directionGate"] = profiles[i].directionGate;
     p["maxOffAxisDeg"] = profiles[i].maxOffAxisDeg;
+    p["shotSource"] = static_cast<uint8_t>(profiles[i].shotSource);
+    p["impulseThreshold"] = profiles[i].impulseThreshold;
   }
 
   out["delayMode"] = static_cast<uint8_t>(delayMode);
@@ -238,6 +246,15 @@ bool Settings::applyJson(JsonObjectConst in) {
       if (p["directionGate"].is<bool>()) t.directionGate = p["directionGate"];
       if (p["maxOffAxisDeg"].is<uint8_t>())
         t.maxOffAxisDeg = clampTo<uint8_t>(p["maxOffAxisDeg"], 5, 89);
+      if (p["shotSource"].is<uint8_t>()) {
+        const uint8_t s = p["shotSource"];
+        if (s <= static_cast<uint8_t>(ShotSource::Both))
+          t.shotSource = static_cast<ShotSource>(s);
+        else
+          ok = false;
+      }
+      if (p["impulseThreshold"].is<uint8_t>())
+        t.impulseThreshold = clampTo<uint8_t>(p["impulseThreshold"], 1, 10);
     }
   }
 

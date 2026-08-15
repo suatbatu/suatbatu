@@ -9,7 +9,7 @@
 
 // ---------------------------------------------------------------- identity --
 #define FW_NAME "shot-timer"
-#define FW_VERSION "0.5.0"
+#define FW_VERSION "0.6.0"
 
 // ------------------------------------------------------------------- pins ---
 // Two I2S MEMS microphones share one bus. They are distinguished by their L/R
@@ -20,9 +20,22 @@
 #define PIN_I2S_WS 16
 #define PIN_I2S_DIN 17
 
-// SSD1306 128x64 OLED, hardware I2C. Shared with the optional light sensor.
+// SSD1306 128x64 OLED, hardware I2C. Shared with the optional LIS3DH.
 #define PIN_I2C_SDA 8
 #define PIN_I2C_SCL 9
+
+// Optional LIS3DH accelerometer for impulse (dry-fire) detection. It sits on
+// the display's I2C bus — no extra bus, one extra wire for the interrupt. The
+// INT1 line is what carries the timing; the bus is only used at setup.
+#define PIN_IMU_INT 14
+#define LIS3DH_ADDR_PRIMARY 0x18  // SA0 low
+#define LIS3DH_ADDR_ALT 0x19      // SA0 high
+
+// How far apart two candidates from different sources must be to count as two
+// shots rather than one shot heard twice. 30 ms is comfortably inside the
+// fastest human split (~0.12 s) and comfortably outside the few milliseconds
+// that separate a recoil impulse from its own muzzle blast.
+#define SHOT_MERGE_WINDOW_US 30000
 
 // Piezo sounder driven by an LEDC channel (square wave, not a DAC tone).
 #define PIN_BUZZER 4

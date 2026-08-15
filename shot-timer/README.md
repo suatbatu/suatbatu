@@ -23,6 +23,7 @@ feature list is either built or on the roadmap.
 | **Random start delay** | Uniform 1.0–4.0 s by default, from the hardware RNG. Fixed and instant modes too. The remaining delay is never shown on the screen or published over the API — displaying it would hand back the start cue the randomness exists to remove. |
 | **Direction gate** | Two microphones 120 mm apart, cross-correlated to measure which direction each bang came from. Off-axis sounds — the next bay — are rejected; anything the gate cannot confidently place is kept. |
 | **Echo rejection** | Each shot raises a decaying guard scaled to *its own* peak, so a wall reflection is swallowed while a genuine fast split passes. Better than the fixed blanking window most timers use, because it does not cap your rate of fire. |
+| **Impulse (dry-fire) detection** | An optional LIS3DH accelerometer as a second shot source, because a trigger break is a mechanical event and the microphone is worst at exactly that case. Per-profile: microphone, accelerometer, or both. **Only works with the sensor coupled to the firearm** — see [`docs/DETECTION.md`](docs/DETECTION.md). |
 | **Profiles** | Six named, editable profiles (Pistol, Rifle, Suppressed, Rimfire, Airsoft/CO2, Dry fire), each carrying its own sensitivity, refractory, echo and direction settings. |
 | **The numbers** | First-shot time, every split, total, best and worst split. Milliseconds throughout, displayed in hundredths like every other timer. |
 | **Par times** | Up to four par beeps per string, at a distinct higher pitch so they cannot be mistaken for the start signal. |
@@ -75,10 +76,12 @@ counter**, not from when the DMA block happened to arrive; see
 firmware/          PlatformIO project (ESP32-S3, Arduino core 3.x)
   src/             Detector, timer state machine, display, storage, web server
     Tdoa.h         Direction-finding maths — no Arduino deps, host-testable
+    ShotMerge.h    Two-source merge rule — no Arduino deps, host-testable
   data/            Web UI, uploaded to LittleFS
   include/         Pin map and limits
 tools/
-  test_tdoa.cpp    Host tests for the direction gate
+  test_tdoa.cpp      Host tests for the direction gate
+  test_shotmerge.cpp Host tests for the two-source merge rule
   run_tests.sh
 docs/
   ARCHITECTURE.md  How the pieces fit and why they are split that way
@@ -129,10 +132,10 @@ AP lets any passer-by fire the buzzer into the middle of someone's string. See
 cd tools && ./run_tests.sh
 ```
 
-Host-side, no board and no toolchain download. They cover the direction gate's
-correlation and geometry — the part with sign conventions and circular indexing
-in it, which cannot be debugged on a range without burning fifty rounds finding
-out it was wrong.
+Host-side, no board and no toolchain download. Forty assertions over the two
+pieces of logic that cannot be debugged at a range without burning ammunition
+to discover they were wrong: the direction gate's correlation and geometry, and
+the rule that decides whether two sensors saw two shots or one shot twice.
 
 ## Controls
 
@@ -161,6 +164,11 @@ Known limitations, none of them hidden:
 - **Shots during a beep are not recorded.** The microphones hear the buzzer
   centimetres away far better than anything downrange, so detection is muted for
   the tone plus 40 ms. Every single-microphone-array timer makes this trade.
+- **Impulse detection needs the sensor on the gun.** A timer clipped to your
+  belt will not feel a trigger break in a gun held at arm's length, and no
+  threshold setting changes that. Live-fire recoil does reach a body-worn
+  timer, damped — which is why `Both` mode exists. With no LIS3DH fitted, a
+  profile asking for it says so on the screen rather than recording nothing.
 - **The direction gate needs two microphones.** With one fitted it detects that
   the second channel is silent and fails open — no rejection, no false
   rejection either. The UI says which state it is in rather than leaving you to

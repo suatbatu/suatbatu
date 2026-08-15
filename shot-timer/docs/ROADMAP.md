@@ -14,7 +14,7 @@ Commander on detection quality, not just matching them on features.
 |---|---|---|
 | Smart sensor: isolates *your* shots on a busy range | Two-microphone cross-correlation direction gate, fails open on low confidence | ✅ **built** (host-tested; needs field validation) |
 | Echo filtering | Decaying per-shot guard scaled to that shot's own peak, not a fixed blanking window | ✅ **built** |
-| Detects AEG, CO2, suppressed, rimfire, dry fire | Sensitivity 1–10 over a ratio *and* an absolute floor | ✅ built, ⚠️ thresholds not yet measured against real guns |
+| Detects AEG, CO2, suppressed, rimfire, dry fire | Sensitivity 1–10 over a ratio *and* an absolute floor, **plus an optional accelerometer** for dry fire | ✅ built, ⚠️ thresholds not yet measured against real guns |
 | Custom profiles per caliber/scenario | Six named, editable profiles carrying all four detection parameters | ✅ **built** |
 | Sun-readable display, auto-backlight via light sensor | 128×64 OLED, contrast control, idle auto-dim, 180° flip for top-of-belt | 🟡 no ambient sensor yet |
 | Session history, 1 000 000 shots | Append-only log, compacted at 1.2 MB, ~2 000 strings, CSV export | 🟡 large, not *that* large |
@@ -69,6 +69,12 @@ The detector is written and unit-tested. It has never heard a gun.
    unquantified error, and the README says so.
 
 ## Phase 3 — close the remaining SG features
+
+15. ✅ **Impulse / dry-fire detection — built** (adopted from
+    [`PRIOR_ART.md`](PRIOR_ART.md)). Optional LIS3DH on the existing I2C bus,
+    hardware threshold interrupt, ISR timestamping, per-profile sensor
+    selection, host-tested merge rule. Needs the sensor coupled to the firearm;
+    a belt-mounted timer feels nothing. Unproven — nothing has tapped it yet.
 
 9. **Battery life.** Monitoring is built (smoothed ADC, real LiPo curve, shown
    on the OLED and in the API); *management* is not. Light-sleep between strings
