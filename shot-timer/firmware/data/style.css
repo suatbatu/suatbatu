@@ -240,3 +240,49 @@ footer { padding: 18px 16px 28px; text-align: center; color: var(--muted); font-
   pointer-events: none;
   white-space: nowrap;
 }
+
+/* ------------------------------------------------------------- video --- */
+video {
+  display: block;
+  width: 100%;
+  max-height: 46vh;
+  margin: 10px 0;
+  background: #000;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.filebtn { position: relative; cursor: pointer; margin: 0; color: var(--text); }
+
+/* Shot markers on the video timeline. A single series, so no legend — the
+   number on each marker is the identity channel, never the colour alone. */
+.tl { position: relative; height: 34px; margin: 4px 0 14px; }
+.tl__track {
+  position: absolute;
+  inset: 14px 0 auto 0;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+}
+.tl__mark {
+  position: absolute;
+  top: -9px;
+  transform: translateX(-50%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border: 2px solid var(--surface);
+  border-radius: 10px;
+  background: #3987e5;
+  color: #fff;
+  font: 600 11px/1 var(--mono);
+  cursor: pointer;
+}
+.tl__head {
+  position: absolute;
+  top: 6px;
+  width: 2px;
+  height: 20px;
+  background: var(--text);
+  border-radius: 1px;
+  pointer-events: none;
+}

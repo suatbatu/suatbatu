@@ -32,6 +32,7 @@ feature list is either built or on the roadmap.
 | **History** | An append-only log on flash — roughly 2 000 strings — exportable as CSV. |
 | **Web UI** | Live clock over a WebSocket, full settings, drills and trends, string history, detector diagnostics, CSV export. Password-protected. |
 | **Display** | Contrast control, idle auto-dim, and a 180° flip so the same board works in a front-mount or a top-of-belt mount. |
+| **Video sync** | Overlay your shots on video: record in the page and the beep anchors it automatically, or load a clip from your camera app and mark t=0 once. Tap a marker to jump to that shot. |
 | **Bluetooth** | Speaks the AMG Lab Commander BLE dialect, so PractiScore and anything else that already talks to a Commander can talk to this. Off by default — see [`docs/BLE_PROTOCOL.md`](docs/BLE_PROTOCOL.md). |
 | **Works at a range** | SoftAP by default — ranges do not have Wi-Fi. Joins your network if you configure one, falls back to its own AP if it is not there. |
 
@@ -174,6 +175,14 @@ Known limitations, none of them hidden:
   reference implementation, compiles, and has not been tested against
   PractiScore or a phone. `docs/BLE_PROTOCOL.md` carries the verification
   checklist and marks exactly which fields are confirmed and which are not.
+- **In-page video recording needs HTTPS.** The timer serves plain HTTP over its
+  own access point, so browsers block `getUserMedia` there. The Video tab
+  detects this, says so plainly, and gives you the load-a-file path instead —
+  which works everywhere and produces the same overlay.
+- **Video marker placement is tens of milliseconds, not sub-millisecond.** It
+  depends on the browser aligning a WebSocket event with a video frame. Good for
+  watching your draw; the numbers in the table are the device's and are
+  unaffected.
 - **Not a match timer.** See the warning at the top.
 
 ## Licence

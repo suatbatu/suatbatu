@@ -9,7 +9,7 @@
 
 // ---------------------------------------------------------------- identity --
 #define FW_NAME "shot-timer"
-#define FW_VERSION "0.3.0"
+#define FW_VERSION "0.5.0"
 
 // ------------------------------------------------------------------- pins ---
 // Two I2S MEMS microphones share one bus. They are distinguished by their L/R

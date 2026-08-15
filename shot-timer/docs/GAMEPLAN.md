@@ -21,7 +21,7 @@ bottom, and know what to do next and what not to touch.
 
 ---
 
-## Current state (v0.2.0, verified 2026-08-15)
+## Current state (v0.5.0, verified 2026-08-15)
 
 What exists and how it was verified:
 
@@ -35,6 +35,7 @@ What exists and how it was verified:
 | CI: host tests, web lint, firmware + LittleFS build, size report | written | runs once the project is its own repo |
 | Drills engine (workstream B) | built | compiles; chart palette validated against the UI surface |
 | BLE / AMG Commander dialect (workstream D) | built | compiles; **never tested against any client** |
+| Video sync (workstream C) | built | `node --check`, HTML parse; **never opened on a phone** |
 | Docs: architecture, detection, API, wiring, BOM, roadmap | current | reviewed against code this session |
 | **Field behaviour** | **unproven** | nothing — it has never heard a gun |
 
@@ -197,8 +198,14 @@ is already timestamped and pushed over the WebSocket.
   on plain HTTP, the honest fallbacks are: document it, or record with the
   native camera app and align manually — decide with the owner, don't
   silently ship a broken tab.
-- **Done when:** the owner records a dry-fire string on a phone and scrubs
-  to each click via the markers. Version 0.4.0.
+- ✅ **C1–C4 done.** Both capture paths, a marker timeline with tap-to-seek, a
+  table view of the same numbers, download for in-page recordings, and an
+  explicit on-screen explanation when the secure-context rule blocks in-page
+  capture. Nothing is stored on the device — a 1.875 MB LittleFS is not a video
+  store.
+- **Owner checkpoint, OUTSTANDING:** record a dry-fire string on a real phone
+  (either path) and scrub to each click via the markers. Report which path the
+  phone actually offered.
 
 ## Workstream D — BLE + PractiScore (research-heavy, highest leverage)
 
@@ -245,14 +252,18 @@ it runs research-first.
 
 ```
 done ──▶ CI + A6 (battery)
-     ──▶ B (drills)          ── firmware + UI, no hardware needed
-     ──▶ D (BLE/PractiScore) ── research first, phone checkpoint last
-     ──▶ C (video sync)      ── browser-only, owner tests on a phone
- A runs in parallel throughout, paced by parts arriving and range days.
- A11 (measured thresholds) lands whenever the range data exists.
+done ──▶ B (drills)
+done ──▶ D (BLE/PractiScore)
+done ──▶ C (video sync)
+next ──▶ A (hardware), the only workstream left — and the only one that can
+         turn any of the above from "built" into "works"
 ```
 
-Within each workstream the listed order is dependency order.
+**Every software workstream is now built and none of it is proven.** The next
+session's job is not more features; it is walking the owner through workstream
+A's checkpoints, then D4 (PractiScore on a phone) and C's phone test, and
+folding what comes back into the thresholds. Resist adding to the scorecard
+until something on it has been confirmed on hardware.
 
 ## Checkpoint protocol with the owner
 

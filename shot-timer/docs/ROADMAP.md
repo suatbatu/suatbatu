@@ -23,7 +23,7 @@ Commander on detection quality, not just matching them on features.
 | ~100 h battery | Battery *monitoring* built; power management not addressed | 🟡 |
 | Water and dust resistant, survives drops | No enclosure yet | ❌ |
 | Bluetooth + NFC, PractiScore integration | AMG Commander BLE dialect over Nordic UART, plus Wi-Fi + WebSocket | 🟡 **built, never tested against a client** |
-| Video sync with shot data overlaid | Every shot already timestamped against a monotonic clock | ❌ (web-UI work, not firmware) |
+| Video sync with shot data overlaid | Record in-page (anchored on the beep) or load a clip and mark t=0; tappable shot markers on a timeline | ✅ **built** — in-page capture needs HTTPS, the file path does not |
 | Custom drills + community library | Eight named drills with par schedules, expected round counts, and per-drill trends | ✅ **built** (no community library) |
 | Wireless charging | — | 🚫 **out of scope by decision** |
 
@@ -84,9 +84,12 @@ The detector is written and unit-tested. It has never heard a gun.
     and the firmware serves it. What remains is not code: pair a phone with
     PractiScore Log and confirm the times match. Until that happens this is
     "built, unproven" and the scorecard says so.
-12. **Video sync.** Capture with `getUserMedia` in the web UI, anchor on the
-    `beep` event, overlay shot markers on the playback timeline. Pure browser
-    work — the firmware already emits everything needed.
+12. ✅ **Video sync — built.** Both paths: `getUserMedia` + `MediaRecorder`
+    anchored on the `beep` event where the browser allows it, and a load-a-file
+    path with a one-tap manual anchor where it does not (which is the normal
+    case on the device's own plain-HTTP access point). Serving the UI over
+    HTTPS would make path A the default — a possible future step, and one that
+    costs a certificate story on a device with no clock.
 13. ✅ **Drills — built.** Eight named drills with par schedules, expected round
     counts, per-drill trend charts, and a drill stamp on every stored string. A
     shared community library is the only part not done, and it needs somewhere

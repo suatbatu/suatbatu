@@ -33,6 +33,7 @@ $$('.tab').forEach((tab) => {
     $$('.panel').forEach((p) => p.classList.toggle('is-active', p.id === tab.dataset.panel));
     if (tab.dataset.panel === 'history') loadHistory();
     if (tab.dataset.panel === 'drills') loadDrills();
+    if (tab.dataset.panel === 'video') openVideo();
     setMeterPolling(tab.dataset.panel === 'settings');
   });
 });
@@ -79,6 +80,7 @@ function handleEvent(msg) {
     case 'beep':
       state.clockAnchor = { perf: performance.now(), elapsedMs: 0 };
       state.string = blankString();
+      videoOnBeep();
       renderShots();
       break;
 
@@ -105,6 +107,9 @@ function handleEvent(msg) {
       renderShots();
       renderState();
       if (msg.saveFailed) $('#settings-status').textContent = 'String was not saved (storage full?).';
+      // A string just finished; if the video tab is recording, it is almost
+      // certainly the one the user wants overlaid.
+      if (video.armed || video.blobUrl) fillVideoStrings();
       break;
   }
 }
@@ -319,6 +324,195 @@ $('#btn-clear').addEventListener('click', async () => {
   await fetch('/api/strings', { method: 'DELETE', credentials: 'same-origin' });
   loadHistory();
 });
+
+/* --------------------------------------------------------------- video -- */
+/* Every shot is already timestamped against the device's monotonic clock, so
+ * overlaying them on a video is only ever a question of where t=0 sits in the
+ * footage. Two ways to establish that:
+ *
+ *   A. record here, and anchor automatically on the `beep` event;
+ *   B. load a file recorded with anything, and mark t=0 by hand.
+ *
+ * B exists because A is not always available: getUserMedia requires a secure
+ * context, and the device serves plain HTTP over its own access point. Rather
+ * than ship a tab that silently does nothing, the UI detects that and says so.
+ */
+const video = {
+  recorder: null,
+  chunks: [],
+  recStartPerf: 0,
+  anchorSec: null,   // video time that corresponds to the beep
+  blobUrl: null,
+  run: null,         // the string being overlaid
+  armed: false,      // recording, waiting for a beep to anchor on
+};
+
+const canCapture = () =>
+  window.isSecureContext && !!navigator.mediaDevices?.getUserMedia && !!window.MediaRecorder;
+
+function openVideo() {
+  const note = $('#video-mode');
+  if (canCapture()) {
+    $('#btn-rec').hidden = false;
+    note.textContent = 'Record here and the beep anchors the overlay automatically.';
+  } else {
+    $('#btn-rec').hidden = true;
+    // Name the actual cause. "Camera unavailable" would send someone hunting
+    // for a permissions prompt that is never going to appear.
+    note.textContent = window.isSecureContext
+      ? 'This browser has no camera recording API. Record with your camera app and load the file below.'
+      : 'In-page recording needs HTTPS, and the timer serves plain HTTP over its own access point — '
+        + 'so record with your camera app and load the file below, then mark t=0 once.';
+  }
+  fillVideoStrings();
+}
+
+async function fillVideoStrings() {
+  const sel = $('#video-string');
+  const res = await fetch('/api/strings', { credentials: 'same-origin' });
+  if (!res.ok) return;
+  const { strings } = await res.json();
+  const recent = strings.slice(-25).reverse();
+  sel.innerHTML = recent
+    .map((s) => `<option value="${s.id}">#${s.id} · ${s.count} shots · ${fmt(s.totalMs)}s${s.drill ? ` · ${s.drill}` : ''}</option>`)
+    .join('');
+  if (recent.length) selectVideoString(recent[0].id);
+}
+
+$('#video-string').addEventListener('change', (e) => selectVideoString(Number(e.target.value)));
+
+async function selectVideoString(id) {
+  const res = await fetch(`/api/string?id=${id}`, { credentials: 'same-origin' });
+  if (!res.ok) return;
+  video.run = await res.json();
+  renderVideoShots();
+  renderTimeline();
+}
+
+function renderVideoShots() {
+  const shots = video.run?.shots || [];
+  $('#video-shots tbody').innerHTML = shots.map((t, i) => {
+    const split = i === 0 ? t : t - shots[i - 1];
+    return `<tr data-i="${i}"><td>${i + 1}</td><td>${fmt(t)}</td><td>${i === 0 ? `${fmt(split)} draw` : fmt(split)}</td></tr>`;
+  }).join('');
+  $$('#video-shots tbody tr').forEach((tr) => {
+    tr.addEventListener('click', () => seekToShot(Number(tr.dataset.i)));
+  });
+}
+
+function renderTimeline() {
+  const player = $('#player');
+  const shots = video.run?.shots || [];
+  const tl = $('#tl');
+  const ready = shots.length > 0 && video.anchorSec != null && player.duration > 0;
+  tl.hidden = !ready;
+  if (!ready) return;
+
+  const track = tl.querySelector('.tl__track');
+  track.innerHTML = shots.map((ms, i) => {
+    const at = video.anchorSec + ms / 1000;
+    const pct = Math.max(0, Math.min(100, (at / player.duration) * 100));
+    return `<button class="tl__mark" style="left:${pct}%" data-i="${i}" title="shot ${i + 1} · ${fmt(ms)}s">${i + 1}</button>`;
+  }).join('');
+  track.querySelectorAll('.tl__mark').forEach((m) => {
+    m.addEventListener('click', () => seekToShot(Number(m.dataset.i)));
+  });
+}
+
+function seekToShot(i) {
+  const player = $('#player');
+  const shots = video.run?.shots || [];
+  if (video.anchorSec == null || !shots[i]) return;
+  // A shot is easier to see just before it happens than exactly on it.
+  player.currentTime = Math.max(0, video.anchorSec + shots[i] / 1000 - 0.25);
+  player.play().catch(() => {});
+}
+
+$('#player').addEventListener('loadedmetadata', renderTimeline);
+$('#player').addEventListener('timeupdate', () => {
+  const player = $('#player');
+  if (!player.duration) return;
+  $('#tl-head').style.left = `${(player.currentTime / player.duration) * 100}%`;
+});
+
+/* --- mode B: a file plus a manual anchor --------------------------------- */
+$('#video-file').addEventListener('change', (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  if (video.blobUrl) URL.revokeObjectURL(video.blobUrl);
+  video.blobUrl = URL.createObjectURL(file);
+  video.anchorSec = null;
+  $('#player').src = video.blobUrl;
+  $('#anchor-row').hidden = false;
+  $('#anchor-note').textContent = 'Scrub to the beep, then press this once.';
+  $('#btn-download').hidden = true;
+  renderTimeline();
+});
+
+$('#btn-anchor').addEventListener('click', () => {
+  video.anchorSec = $('#player').currentTime;
+  $('#anchor-note').textContent = `t=0 at ${video.anchorSec.toFixed(2)}s`;
+  renderTimeline();
+});
+
+/* --- mode A: record here, anchor on the beep ----------------------------- */
+$('#btn-rec').addEventListener('click', async () => {
+  if (video.recorder && video.recorder.state === 'recording') {
+    video.recorder.stop();
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }, audio: false,
+    });
+    // Let the browser pick if our preferred container is unsupported (Safari
+    // records mp4, not webm) rather than failing outright.
+    const mime = ['video/webm;codecs=vp9', 'video/webm', ''].find(
+      (m) => m === '' || MediaRecorder.isTypeSupported(m));
+    video.chunks = [];
+    video.recorder = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+    video.recorder.ondataavailable = (ev) => { if (ev.data.size) video.chunks.push(ev.data); };
+    video.recorder.onstop = () => {
+      stream.getTracks().forEach((tr) => tr.stop());
+      const blob = new Blob(video.chunks, { type: video.recorder.mimeType });
+      if (video.blobUrl) URL.revokeObjectURL(video.blobUrl);
+      video.blobUrl = URL.createObjectURL(blob);
+      $('#player').src = video.blobUrl;
+      $('#player').muted = false;
+      $('#btn-rec').textContent = 'Record next string';
+      $('#btn-download').hidden = false;
+      video.armed = false;
+      renderTimeline();
+    };
+    video.recorder.start();
+    video.recStartPerf = performance.now();
+    video.armed = true;
+    video.anchorSec = null;
+    $('#player').srcObject = stream;
+    $('#player').muted = true;
+    $('#player').play().catch(() => {});
+    $('#btn-rec').textContent = 'Stop recording';
+    $('#anchor-row').hidden = false;
+    $('#anchor-note').textContent = 'Recording — start a string and the beep sets t=0.';
+  } catch (err) {
+    $('#video-mode').textContent = `Camera unavailable: ${err.name}. Load a file instead.`;
+  }
+});
+
+$('#btn-download').addEventListener('click', () => {
+  if (!video.blobUrl) return;
+  const a = document.createElement('a');
+  a.href = video.blobUrl;
+  a.download = `shot-timer-${video.run?.id ?? 'string'}.webm`;
+  a.click();
+});
+
+// Called from the beep event while recording: this is the whole trick.
+function videoOnBeep() {
+  if (!video.armed) return;
+  video.anchorSec = (performance.now() - video.recStartPerf) / 1000;
+  $('#anchor-note').textContent = `t=0 at ${video.anchorSec.toFixed(2)}s (from the beep)`;
+}
 
 /* -------------------------------------------------------------- drills -- */
 const drillForm = $('#drill-form');

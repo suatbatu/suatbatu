@@ -20,6 +20,7 @@
 <nav class="tabs" role="tablist">
   <button class="tab is-active" data-panel="live" role="tab">Live</button>
   <button class="tab" data-panel="drills" role="tab">Drills</button>
+  <button class="tab" data-panel="video" role="tab">Video</button>
   <button class="tab" data-panel="history" role="tab">History</button>
   <button class="tab" data-panel="settings" role="tab">Settings</button>
 </nav>
@@ -105,6 +106,49 @@
       </table>
     </div>
   </fieldset>
+</section>
+
+<!-- ------------------------------------------------------------ video -- -->
+<section id="video" class="panel">
+  <p class="note" id="video-mode"></p>
+
+  <div class="row">
+    <button class="btn btn--sm" id="btn-rec" hidden>Record next string</button>
+    <label class="filebtn btn btn--sm">Load a video
+      <input type="file" id="video-file" accept="video/*" hidden>
+    </label>
+    <button class="btn btn--sm" id="btn-download" hidden>Download</button>
+  </div>
+
+  <video id="player" playsinline controls></video>
+
+  <div class="row" id="anchor-row" hidden>
+    <button class="btn btn--sm" id="btn-anchor">Set t=0 here</button>
+    <span class="note" id="anchor-note"></span>
+  </div>
+
+  <label>String to overlay
+    <select id="video-string"></select>
+  </label>
+
+  <!-- Markers are positioned by time; the numbers on them are the identity
+       channel, so nothing depends on seeing the colour. -->
+  <div class="tl" id="tl" hidden>
+    <div class="tl__track"></div>
+    <div class="tl__head" id="tl-head"></div>
+  </div>
+  <table class="shots" id="video-shots">
+    <thead><tr><th>#</th><th>time</th><th>split</th></tr></thead>
+    <tbody></tbody>
+  </table>
+
+  <p class="note">
+    Marker placement is only as good as the browser's alignment between a
+    WebSocket event and a video frame &mdash; tens of milliseconds, not the
+    sub-millisecond the detector works to. Good for watching your draw; not a
+    scoring instrument. The times in the table come from the device and are
+    unaffected.
+  </p>
 </section>
 
 <!-- ---------------------------------------------------------- history -- -->
