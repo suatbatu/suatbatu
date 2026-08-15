@@ -1,0 +1,768 @@
+<title>shot-timer</title>
+
+<style>
+/* ── Tokens ───────────────────────────────────────────────────────────────
+   The device's own web UI is the design system this inherits: amber signal on
+   slate, the same greens and reds it uses for best/worst splits. The light
+   palette is derived from it rather than invented, so the brochure and the
+   thing it describes read as one product. */
+:root {
+  color-scheme: light;
+  --ground:      #ECEEF1;
+  --surface:     #FFFFFF;
+  --surface-2:   #E2E6EB;
+  --panel:       #14181E;   /* the instrument face — dark in both themes */
+  --panel-ink:   #EEF2F6;
+  --panel-muted: #8B98A7;
+  --line:        #D2D8DF;
+  --line-strong: #B3BCC7;
+  --ink:         #12161B;
+  --muted:       #57636F;
+  --signal:      #9A6605;   /* amber, darkened to hold contrast on paper */
+  --signal-soft: rgba(242,177,52,.18);
+  --go:          #177C41;
+  --warn:        #B33C29;
+  --blue:        #2A78D6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground:      #0D0F12;
+    --surface:     #161A20;
+    --surface-2:   #1F242C;
+    --panel:       #05070A;
+    --panel-ink:   #EEF2F6;
+    --panel-muted: #9AA6B4;
+    --line:        #2C333D;
+    --line-strong: #3D4652;
+    --ink:         #EEF2F6;
+    --muted:       #9AA6B4;
+    --signal:      #F2B134;
+    --signal-soft: rgba(242,177,52,.14);
+    --go:          #35C46A;
+    --warn:        #E0533D;
+    --blue:        #3987E5;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground:      #0D0F12;
+  --surface:     #161A20;
+  --surface-2:   #1F242C;
+  --panel:       #05070A;
+  --panel-ink:   #EEF2F6;
+  --panel-muted: #9AA6B4;
+  --line:        #2C333D;
+  --line-strong: #3D4652;
+  --ink:         #EEF2F6;
+  --muted:       #9AA6B4;
+  --signal:      #F2B134;
+  --signal-soft: rgba(242,177,52,.14);
+  --go:          #35C46A;
+  --warn:        #E0533D;
+  --blue:        #3987E5;
+}
+
+/* ── Type ─────────────────────────────────────────────────────────────────
+   Monospace is the display voice, not a code style: a measuring instrument
+   speaks in tabular figures, and every label on this page is an instrument
+   marking. The sans carries prose only. */
+:root {
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "Roboto Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font: 16px/1.6 var(--sans);
+  -webkit-text-size-adjust: 100%;
+  font-variant-numeric: tabular-nums;
+}
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+h1, h2, h3 { text-wrap: balance; margin: 0; letter-spacing: -.02em; }
+h1 { font-size: clamp(38px, 6vw, 62px); line-height: 1.02; font-weight: 800; }
+h2 { font-size: clamp(24px, 3.2vw, 32px); font-weight: 750; line-height: 1.15; }
+h3 { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+p  { margin: 0; }
+
+.eyebrow {
+  font: 600 11px/1 var(--mono);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lede { font-size: clamp(17px, 2vw, 19px); color: var(--muted); max-width: 62ch; }
+
+/* ── Rhythm ───────────────────────────────────────────────────────────── */
+section { padding: 60px 0; border-top: 1px solid var(--line); }
+.stack   { display: flex; flex-direction: column; gap: 18px; }
+.stack-l { display: flex; flex-direction: column; gap: 34px; }
+.head    { display: flex; flex-direction: column; gap: 10px; margin-bottom: 34px; max-width: 68ch; }
+
+/* ── Hero ─────────────────────────────────────────────────────────────── */
+header { padding: 68px 0 60px; }
+.hero { display: grid; grid-template-columns: 1.05fr .95fr; gap: 48px; align-items: center; }
+@media (max-width: 860px) { .hero { grid-template-columns: 1fr; gap: 36px; } }
+
+.brandline {
+  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.brand { font: 700 14px/1 var(--mono); letter-spacing: .08em; }
+.ver {
+  font: 600 11px/1 var(--mono); letter-spacing: .1em;
+  color: var(--signal); border: 1px solid var(--signal);
+  padding: 5px 8px; border-radius: 3px;
+}
+
+/* The instrument face: the most characteristic thing in this subject's world
+   is the readout itself, so the hero shows it rather than describing it. */
+.dial {
+  background: var(--panel);
+  color: var(--panel-ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  padding: 22px 24px 20px;
+  box-shadow: 0 18px 42px -28px rgba(0,0,0,.75);
+}
+.dial__top {
+  display: flex; justify-content: space-between;
+  font: 600 10px/1 var(--mono); letter-spacing: .18em;
+  color: var(--panel-muted); text-transform: uppercase;
+}
+.dial__time {
+  font: 700 clamp(56px, 11vw, 92px)/1 var(--mono);
+  letter-spacing: -.03em;
+  margin: 12px 0 2px;
+  text-align: center;
+}
+.dial__unit { font-size: .38em; color: var(--panel-muted); letter-spacing: 0; }
+.dial__rows { margin-top: 16px; border-top: 1px solid rgba(255,255,255,.1); }
+.dial__row {
+  display: grid; grid-template-columns: 2.2em 1fr 1fr;
+  gap: 8px; padding: 5px 0;
+  font: 400 13px/1.3 var(--mono);
+  border-bottom: 1px solid rgba(255,255,255,.055);
+}
+.dial__row span:nth-child(1) { color: var(--panel-muted); }
+.dial__row span:nth-child(n+2) { text-align: right; }
+.dial__row.is-best  span:nth-child(3) { color: var(--go); }
+.dial__row.is-worst span:nth-child(3) { color: var(--warn); }
+.dial__cap {
+  margin-top: 14px; font: 400 11px/1.5 var(--mono);
+  color: var(--panel-muted);
+}
+
+/* ── Status strip ─────────────────────────────────────────────────────── */
+.status {
+  border: 1px solid var(--signal);
+  background: var(--signal-soft);
+  border-radius: 5px;
+  padding: 20px 22px;
+  display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start;
+}
+@media (max-width: 620px) { .status { grid-template-columns: 1fr; gap: 12px; } }
+.status__tag {
+  font: 700 11px/1 var(--mono); letter-spacing: .16em; text-transform: uppercase;
+  color: var(--signal); white-space: nowrap; padding-top: 3px;
+}
+.status p + p { margin-top: 8px; }
+
+/* ── Cards & grids ────────────────────────────────────────────────────── */
+.grid  { display: grid; gap: 18px; }
+.g2 { grid-template-columns: repeat(2, 1fr); }
+.g3 { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 860px) { .g3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 620px) { .g2, .g3 { grid-template-columns: 1fr; } }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 20px;
+  display: flex; flex-direction: column; gap: 9px;
+}
+.card p { color: var(--muted); font-size: 14.5px; line-height: 1.55; }
+.card__n {
+  font: 700 11px/1 var(--mono); letter-spacing: .12em;
+  color: var(--signal);
+}
+
+/* Chain: the four questions are a genuine sequence — each stage only runs on
+   what survived the last — so the numbering encodes something true. */
+.chain { counter-reset: step; }
+.chain .card::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  font: 700 11px/1 var(--mono); letter-spacing: .12em; color: var(--signal);
+}
+
+/* ── Function lists ───────────────────────────────────────────────────── */
+.fn { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.fn li {
+  display: grid; grid-template-columns: 15px 1fr; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid var(--line);
+  font-size: 14.5px; line-height: 1.5;
+}
+.fn li:last-child { border-bottom: 0; }
+.fn b { font-weight: 650; }
+.fn small { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+.tick { color: var(--go); font: 700 13px/1.5 var(--mono); }
+.plus { color: var(--signal); font: 700 13px/1.5 var(--mono); }
+
+.needs {
+  display: inline-block; margin-top: 5px;
+  font: 600 10px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--signal); border: 1px solid var(--line-strong);
+  border-radius: 3px; padding: 4px 6px;
+}
+
+/* ── Tables ───────────────────────────────────────────────────────────── */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 5px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14.5px; }
+caption { caption-side: bottom; padding: 12px 16px; text-align: left; color: var(--muted); font-size: 13px; }
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+thead th {
+  font: 600 10.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); background: var(--surface-2); white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; font-family: var(--mono); }
+td small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.45; margin-top: 3px; }
+.pin { font-family: var(--mono); font-weight: 650; }
+tfoot td { font-weight: 700; background: var(--surface-2); border-top: 1px solid var(--line-strong); }
+
+/* ── Figure ───────────────────────────────────────────────────────────── */
+figure { margin: 0; }
+figure .scroll { padding: 20px; }
+svg { display: block; width: 100%; height: auto; max-width: 100%; }
+figcaption { margin-top: 12px; color: var(--muted); font-size: 13.5px; max-width: 70ch; }
+
+.note {
+  border-left: 2px solid var(--signal);
+  padding: 2px 0 2px 16px;
+  color: var(--muted);
+  font-size: 14.5px;
+  max-width: 70ch;
+}
+
+footer { padding: 44px 0 64px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+footer .mono { font-family: var(--mono); }
+
+a { color: var(--signal); text-underline-offset: 2px; }
+:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; border-radius: 2px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="brandline">
+    <span class="brand">shot-timer</span>
+    <span class="ver">v0.6.0</span>
+    <span class="eyebrow">ESP32-S3 · open source · MIT</span>
+  </div>
+
+  <div class="hero">
+    <div class="stack">
+      <h1>A shot timer that knows which bang was yours.</h1>
+      <p class="lede">
+        Two microphones, 120&nbsp;mm apart, cross-correlated to work out which
+        direction every bang came from — so the bay next door stays out of your
+        splits. Plus echo rejection that doesn't cap your rate of fire, an
+        accelerometer for dry fire, and a web interface on any phone.
+      </p>
+      <p class="lede">
+        Roughly <b>$30–45</b> in parts. The feature that justifies a $330
+        commercial timer, on a board you can build in an evening.
+      </p>
+    </div>
+
+    <div class="dial" role="img" aria-label="The timer's readout at the end of a six-shot string: total 4.05 seconds, first shot 1.18, best split 0.19, worst 0.41.">
+      <div class="dial__top"><span>Running</span><span>Bill Drill</span></div>
+      <div class="dial__time">4.05<span class="dial__unit">s</span></div>
+      <div class="dial__rows">
+        <div class="dial__row"><span>1</span><span>1.18</span><span>draw</span></div>
+        <div class="dial__row"><span>2</span><span>1.45</span><span>+0.27</span></div>
+        <div class="dial__row is-best"><span>3</span><span>1.64</span><span>+0.19</span></div>
+        <div class="dial__row"><span>4</span><span>2.10</span><span>+0.46</span></div>
+        <div class="dial__row is-worst"><span>5</span><span>3.64</span><span>+1.54</span></div>
+        <div class="dial__row"><span>6</span><span>4.05</span><span>+0.41</span></div>
+      </div>
+      <p class="dial__cap">6/6 rounds · first 1.18 · best split 0.19</p>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="status">
+    <span class="status__tag">Build status</span>
+    <div>
+      <p><b>Firmware complete and compile-verified. It has never heard a gun.</b></p>
+      <p>
+        Every threshold in this document is a reasoned starting point, not a
+        measurement. The detection maths is covered by 40 host-side assertions;
+        the Bluetooth layer has never met a client; the enclosure acoustics —
+        the thing that makes a timer audible through ear protection — are
+        unbuilt. Treat this as a buildable design, not a finished product.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────────────── TLDR ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">TL;DR</span>
+    <h2>Six lines</h2>
+  </div>
+
+  <ul class="fn" style="max-width:76ch">
+    <li><span class="tick">1</span><div><b>It times shots.</b> Random start beep, then every shot recorded to the millisecond — first shot, each split, total, best and worst.</div></li>
+    <li><span class="tick">2</span><div><b>It ignores the next bay.</b> Two microphones measure the arrival-time difference of each bang and reject anything off the shooter's axis.</div></li>
+    <li><span class="tick">3</span><div><b>It ignores echoes without slowing you down.</b> Each shot raises a decaying guard scaled to its own peak, instead of a fixed blanking window that would cap your rate of fire.</div></li>
+    <li><span class="tick">4</span><div><b>It handles dry fire properly.</b> An optional accelerometer treats a trigger break as what it is — a mechanical event — rather than straining to hear it.</div></li>
+    <li><span class="tick">5</span><div><b>It talks to your phone.</b> Its own Wi-Fi access point serves a full web interface; it also speaks the AMG Commander Bluetooth dialect, so PractiScore can read it.</div></li>
+    <li><span class="tick">6</span><div><b>It keeps your data.</b> ~2,000 strings on flash, named drills with trend charts, CSV export, and video overlay.</div></li>
+  </ul>
+</section>
+
+<!-- ────────────────────────────────────────────── WHAT IT DOES ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">What the device does</span>
+    <h2>Four questions, in order</h2>
+    <p class="lede">
+      A shot timer has one hard job: decide <em>when</em> a bang happened, to a
+      hundredth of a second, in a place full of other bangs. Four questions hide
+      inside that, and each stage only runs on what survived the one before it.
+    </p>
+  </div>
+
+  <div class="grid g2 chain">
+    <div class="card">
+      <h3>Is it loud enough?</h3>
+      <p>
+        A per-sample envelope follower with instant attack, measured against a
+        noise floor that adapts to the range — and that deliberately stops
+        tracking during a string, so six fast shots can't walk the threshold up
+        and lose the last two.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Is it a shot, or shot&nbsp;1 off a wall?</h3>
+      <p>
+        Each shot raises a guard 10&nbsp;dB below its own peak that decays over
+        ~120&nbsp;ms. A reflection at a third the amplitude is swallowed; a
+        genuine second shot at full level passes straight through.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Is it <em>your</em> shot?</h3>
+      <p>
+        The two microphones are cross-correlated over a 128-sample window around
+        each onset. 120&nbsp;mm of spacing spans 17 samples across the full
+        0–90°, so a 25° acceptance window is a real gate. It fails <em>open</em>
+        on any uncertainty — a dropped shot is worse than a neighbour's.
+      </p>
+    </div>
+    <div class="card">
+      <h3>When exactly?</h3>
+      <p>
+        Times come from the I2S <em>sample counter</em>, not from when the CPU
+        got round to looking. That removes the scheduling jitter — hundreds of
+        microseconds, sometimes milliseconds — that a naive timestamp puts
+        straight into your split.
+      </p>
+    </div>
+  </div>
+
+  <p class="note" style="margin-top:26px">
+    Everything above runs in a dedicated real-time task that never allocates,
+    never touches the network, and never waits on anything. A phone refreshing
+    the live view cannot cost you a split.
+  </p>
+</section>
+
+<!-- ──────────────────────────────────────────────── FUNCTIONS ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">Functions</span>
+    <h2>Core and optional</h2>
+    <p class="lede">
+      Core works with the core parts list, out of the box. Optional means it
+      needs an add-on part, or ships switched off.
+    </p>
+  </div>
+
+  <div class="grid g2">
+    <div class="stack">
+      <span class="eyebrow" style="color:var(--go)">Core — works out of the box</span>
+      <ul class="fn">
+        <li><span class="tick">✓</span><div><b>Random start delay</b><small>1.0–4.0&nbsp;s from the hardware RNG. Fixed and instant modes too. The time remaining is never displayed or published — showing it would hand back the cue the randomness exists to remove.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Shot detection with echo rejection</b><small>Adaptive threshold, decaying per-shot echo guard, configurable refractory.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Direction gate</b><small>Rejects off-axis bangs. Works with the two microphones in the core list; with one fitted it detects that and fails open.</small></div></li>
+        <li><span class="tick">✓</span><div><b>The numbers</b><small>First shot, every split, total, best and worst split, in hundredths.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Par times</b><small>Up to four per string, at a higher pitch so they can't be mistaken for the start signal.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Six detection profiles</b><small>Pistol, Rifle, Suppressed, Rimfire, Airsoft/CO2, Dry fire — each with its own thresholds. Switch guns with one control, not four.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Eight drills with trends</b><small>Bill Drill, El&nbsp;Presidente, Doubles, Failure Drill, 1-Reload-1 pre-loaded. Par schedule, expected round count, and a chart of your times per drill.</small></div></li>
+        <li><span class="tick">✓</span><div><b>History and export</b><small>~2,000 strings on flash, surviving power loss. CSV export.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Web interface</b><small>Its own access point — ranges don't have Wi-Fi. Live clock, settings, history, diagnostics. Password-protected; refuses to serve without one.</small></div></li>
+        <li><span class="tick">✓</span><div><b>On-device review</b><small>Scroll the whole string on the OLED. Three buttons, one-handed.</small></div></li>
+        <li><span class="tick">✓</span><div><b>Battery gauge</b><small>Mapped through a real lithium discharge curve, not a linear one.</small></div></li>
+        <li><span class="tick">✓</span><div><b>180° screen flip</b><small>One setting, so the same board works front-mounted or read off your belt.</small></div></li>
+      </ul>
+    </div>
+
+    <div class="stack">
+      <span class="eyebrow" style="color:var(--signal)">Optional — add-on part, or off by default</span>
+      <ul class="fn">
+        <li><span class="plus">+</span><div><b>Impulse (dry-fire) detection</b><small>An accelerometer as a second shot source. A trigger break is barely above room noise but is a decisive mechanical event. Per profile: microphone, accelerometer, or both.</small><span class="needs">Needs LIS3DH · must be mounted on the firearm</span></div></li>
+        <li><span class="plus">+</span><div><b>Bluetooth / PractiScore</b><small>Speaks the AMG Lab Commander dialect, so apps that already talk to a Commander can talk to this. Ships off — Wi-Fi and BLE share one radio and that cost isn't measured yet.</small><span class="needs">No extra parts · off by default</span></div></li>
+        <li><span class="plus">+</span><div><b>Video sync</b><small>Overlay shot markers on video. Record in the page and the beep anchors it automatically, or load a clip and mark t=0 once. Tap a marker to jump to that shot.</small><span class="needs">No extra parts · browser only</span></div></li>
+        <li><span class="plus">+</span><div><b>Automatic screen contrast</b><small>Ambient light sensor on the same I2C bus, for bright sun and dark indoor bays.</small><span class="needs">Needs BH1750 · roadmap</span></div></li>
+        <li><span class="plus">+</span><div><b>Louder buzzer</b><small>At 3.3&nbsp;V a piezo sits well below its rated output. A step-up driver plus a tuned cavity is what gets you audible through ear protection.</small><span class="needs">Needs step-up driver</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────────────── BOM ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">Bill of materials</span>
+    <h2>What it costs</h2>
+  </div>
+
+  <div class="stack-l">
+    <div>
+      <div class="scroll">
+        <table>
+          <caption>Core — everything needed for a working timer. Rough 2026 hobbyist single-unit prices, for orientation only.</caption>
+          <thead>
+            <tr><th>Part</th><th>Why this one</th><th class="num">≈ Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>ESP32-S3-DevKitC-1</b><small>N8R2 or N16R8</small></td>
+              <td>Chosen over the classic ESP32 for a cleaner I2S peripheral and native USB serial.<small>The partition table assumes 8&nbsp;MB flash. With both radios, a 4&nbsp;MB board is tight.</small></td>
+              <td class="num">$8–12</td>
+            </tr>
+            <tr>
+              <td><b>2 × INMP441</b><small>I2S MEMS microphone</small></td>
+              <td>Both sit on one bus, told apart by their L/R pin — the second costs three solder joints and no GPIO.<small>Buy a matched pair: the gate correlates the two channels against each other.</small></td>
+              <td class="num">$6–12</td>
+            </tr>
+            <tr>
+              <td><b>SSD1306 OLED</b><small>128×64, I2C, 0.96"</small></td>
+              <td>Any 0x3C module.</td>
+              <td class="num">$4</td>
+            </tr>
+            <tr>
+              <td><b>Piezo sounder</b><small>3–5&nbsp;V, ≥95&nbsp;dB @ 10&nbsp;cm</small></td>
+              <td>A <em>sounder</em> with a resonant cavity, not a bare disc.<small>Loudness is an enclosure problem more than an electrical one.</small></td>
+              <td class="num">$2–4</td>
+            </tr>
+            <tr>
+              <td>3 × tactile buttons<small>12&nbsp;mm</small></td>
+              <td>Make START physically distinguishable — it gets pressed one-handed, without looking.</td>
+              <td class="num">$2</td>
+            </tr>
+            <tr>
+              <td>LiPo 1200–2500&nbsp;mAh + TP4056<small>or 18650 + holder</small></td>
+              <td>Any single cell; the gauge is calibrated for lithium.</td>
+              <td class="num">$8</td>
+            </tr>
+            <tr>
+              <td>2 × 100&nbsp;kΩ, LED + 330&nbsp;Ω</td>
+              <td>Battery sense divider and activity indicator.</td>
+              <td class="num">—</td>
+            </tr>
+            <tr>
+              <td>Enclosure, belt clip</td>
+              <td>Print it. The buzzer cavity is part of the acoustic design, not just a shell.</td>
+              <td class="num">—</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="2">Core total</td><td class="num">≈ $30–45</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <div class="scroll">
+        <table>
+          <caption>Optional add-ons.</caption>
+          <thead>
+            <tr><th>Part</th><th>Unlocks</th><th class="num">≈ Cost</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>LIS3DH</b><small>accelerometer breakout</small></td><td>Impulse / dry-fire detection. Shares the display's I2C bus; one extra wire for the interrupt.</td><td class="num">$5</td></tr>
+            <tr><td><b>BH1750</b><small>ambient light sensor</small></td><td>Automatic screen contrast.</td><td class="num">$3</td></tr>
+            <tr><td><b>Piezo step-up driver</b></td><td>Getting past ~95&nbsp;dB.</td><td class="num">$3</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="2">Fully loaded</td><td class="num">≈ $41–56</td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>On the microphones.</b> A gunshot at the shooter's position is
+      150–165&nbsp;dB&nbsp;SPL and no hobbyist MEMS part survives that linearly —
+      an INMP441 clips hard on every centrefire shot. That is fine, and the
+      firmware is built around it: the detector thresholds on an envelope and
+      times the <em>onset</em>, and a clipped transient still has a perfectly
+      well-defined leading edge. It only becomes a limit if you later want to
+      identify shots by their spectral <em>shape</em>, which needs a signal that
+      has one.
+    </p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────────── WIRING ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">Wiring scheme</span>
+    <h2>One I2S bus, one I2C bus, one interrupt</h2>
+    <p class="lede">
+      Two things here are not obvious, and both are marked in amber below: the
+      second microphone needs no extra pins, and the accelerometer's timing does
+      not travel over I2C.
+    </p>
+  </div>
+
+  <div class="stack-l">
+    <figure>
+      <div class="scroll">
+        <svg viewBox="0 0 920 560" role="img" aria-label="Wiring diagram: two I2S microphones share one three-wire bus and are distinguished by their L slash R pin, the OLED and optional accelerometer share one I2C bus, the accelerometer's INT1 line carries shot timing on its own GPIO, and the piezo, buttons and battery divider each take one pin.">
+            <defs>
+              <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor"/>
+              </marker>
+              <marker id="ar-sig" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#C08010"/>
+              </marker>
+            </defs>
+
+            <!-- Components -->
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="360" y="150" width="200" height="200" rx="4" stroke-width="2"/>
+              <rect x="40" y="60" width="170" height="58" rx="4"/>
+              <rect x="40" y="242" width="170" height="58" rx="4"/>
+              <rect x="716" y="60" width="170" height="56" rx="4"/>
+              <rect x="716" y="150" width="170" height="56" rx="4" stroke-dasharray="5 4"/>
+              <rect x="716" y="270" width="170" height="54" rx="4"/>
+              <rect x="360" y="430" width="200" height="54" rx="4"/>
+              <rect x="40" y="400" width="200" height="80" rx="4"/>
+            </g>
+
+            <!-- Component labels -->
+            <g font-family="ui-monospace, Menlo, monospace" font-size="12.5" fill="currentColor">
+              <text x="460" y="196" text-anchor="middle" font-size="15" font-weight="700">ESP32-S3</text>
+              <text x="460" y="220" text-anchor="middle" font-size="11" opacity=".62">48 kHz stereo I2S</text>
+              <text x="460" y="238" text-anchor="middle" font-size="11" opacity=".62">detector · state machine</text>
+              <text x="460" y="256" text-anchor="middle" font-size="11" opacity=".62">Wi-Fi AP · web UI · BLE</text>
+
+              <text x="56" y="86">Mic A · INMP441</text>
+              <text x="56" y="105" font-size="11" opacity=".62">L/R → GND (left slot)</text>
+              <text x="56" y="268">Mic B · INMP441</text>
+              <text x="56" y="287" font-size="11" opacity=".62">L/R → 3V3 (right slot)</text>
+
+              <text x="732" y="84">OLED 128×64</text>
+              <text x="732" y="103" font-size="11" opacity=".62">SSD1306 · 0x3C</text>
+              <text x="732" y="174">LIS3DH</text>
+              <text x="732" y="193" font-size="11" opacity=".62">optional · 0x18 / 0x19</text>
+              <text x="732" y="294">Piezo sounder</text>
+              <text x="732" y="313" font-size="11" opacity=".62">in a tuned cavity</text>
+
+              <text x="376" y="454">START · UP · DOWN</text>
+              <text x="376" y="473" font-size="11" opacity=".62">to GND, internal pull-ups</text>
+
+              <text x="56" y="426">Battery</text>
+              <text x="56" y="446" font-size="11" opacity=".62">1S LiPo or 18650</text>
+              <text x="56" y="464" font-size="11" opacity=".62">100k / 100k divider → ADC1</text>
+            </g>
+
+            <!-- Connections -->
+            <g fill="none" stroke="currentColor" stroke-width="1.5" opacity=".85">
+              <path d="M210 89 H 250 V 190 H 358" marker-end="url(#ar)"/>
+              <path d="M210 271 H 250 V 190"/>
+              <path d="M560 180 H 640 V 88 H 714" marker-end="url(#ar)"/>
+              <path d="M640 180 H 714" marker-end="url(#ar)"/>
+              <path d="M560 297 H 714" marker-end="url(#ar)"/>
+              <path d="M460 428 V 352" marker-end="url(#ar)"/>
+              <path d="M240 440 H 300 V 320 H 358" marker-end="url(#ar)"/>
+            </g>
+
+            <!-- The one path that carries meaning: shot timing bypasses the bus -->
+            <g fill="none" stroke="#C08010" stroke-width="2">
+              <path d="M760 206 V 234 H 562" marker-end="url(#ar-sig)"/>
+              <path d="M26 60 H 16 V 300 H 26"/>
+            </g>
+
+            <!-- Bus labels -->
+            <g font-family="ui-monospace, Menlo, monospace" font-size="11" fill="currentColor" opacity=".8">
+              <text x="256" y="168">GPIO 15/16/17</text>
+              <text x="256" y="182">I2S shared</text>
+              <text x="648" y="136">I2C · GPIO 8/9</text>
+              <text x="580" y="288">GPIO 4 · LEDC</text>
+              <text x="470" y="400">GPIO 5/6/7</text>
+              <text x="306" y="312">GPIO 1</text>
+            </g>
+
+            <!-- Amber: the two things that are not obvious -->
+            <g font-family="ui-monospace, Menlo, monospace" font-size="11.5" fill="#C08010" font-weight="600">
+              <text x="40" y="34">120 mm apart, horizontal — this spacing IS the direction gate</text>
+              <text x="56" y="162">one shared 3-wire bus,</text>
+              <text x="56" y="178">no extra GPIO</text>
+              <text x="572" y="252">INT1 · GPIO 14 — the timing</text>
+            </g>
+          </svg>
+      </div>
+      <figcaption>
+        The direction gate is geometry, so how the microphones are mounted
+        <em>is</em> the algorithm. The accelerometer sits on the display's I2C
+        bus, but its shot timing arrives on a dedicated interrupt line — putting
+        it on the bus would mean a blocking transaction in the detection path.
+      </figcaption>
+    </figure>
+
+    <div>
+      <div class="scroll">
+        <table>
+          <caption>Pin map. These live in one place in the firmware — <span class="pin">firmware/include/config.h</span> — and should be changed there, not here.</caption>
+          <thead>
+            <tr><th>Function</th><th class="num">GPIO</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>I2S BCLK</td><td class="num pin">15</td><td>Shared by both microphones</td></tr>
+            <tr><td>I2S WS</td><td class="num pin">16</td><td>Shared by both microphones</td></tr>
+            <tr><td>I2S DIN</td><td class="num pin">17</td><td>Shared by both microphones</td></tr>
+            <tr><td>Mic A L/R</td><td class="num pin">—</td><td>Tie to <b>GND</b> — transmits in the left slot</td></tr>
+            <tr><td>Mic B L/R</td><td class="num pin">—</td><td>Tie to <b>3V3</b> — transmits in the right slot</td></tr>
+            <tr><td>I2C SDA</td><td class="num pin">8</td><td>ESP32-S3 default, so <span class="pin">Wire</span> needs no persuading</td></tr>
+            <tr><td>I2C SCL</td><td class="num pin">9</td><td>OLED and LIS3DH share it</td></tr>
+            <tr><td>Piezo +</td><td class="num pin">4</td><td>LEDC channel; piezo − to GND</td></tr>
+            <tr><td>Button START</td><td class="num pin">5</td><td rowspan="3">To GND, internal pull-ups. 25&nbsp;ms software debounce, 700&nbsp;ms long-press.</td></tr>
+            <tr><td>Button UP</td><td class="num pin">6</td></tr>
+            <tr><td>Button DOWN</td><td class="num pin">7</td></tr>
+            <tr><td>Battery sense</td><td class="num pin">1</td><td>ADC1, via a 100k/100k divider from VBAT</td></tr>
+            <tr><td>LIS3DH INT1</td><td class="num pin">14</td><td>Optional. Interrupt only — data is on I2C</td></tr>
+            <tr><td>Activity LED</td><td class="num pin">21</td><td>Through 330&nbsp;Ω to GND</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="grid g3">
+      <div class="card">
+        <span class="card__n">MOUNTING</span>
+        <h3>Point the array at the shooter</h3>
+        <p>
+          Not downrange. That puts your muzzle blast at 0° and the neighbouring
+          bays out at 40–80° — exactly the separation the gate needs. Measure
+          the spacing between the <em>ports</em>, not the breakout boards.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card__n">ACOUSTICS</span>
+        <h3>Keep the mics off the buzzer</h3>
+        <p>
+          Opposite faces if you can. Detection is muted while the beep sounds,
+          and the further apart the ports are, the shorter that mute window can
+          safely be. Never seal a MEMS mic in — it needs a port.
+        </p>
+      </div>
+      <div class="card">
+        <span class="card__n">POWER</span>
+        <h3>Tame the piezo spike</h3>
+        <p>
+          A piezo is capacitive, so the drive edge produces a current spike. If
+          the rail sags enough to reset the board when the buzzer fires — it
+          happens on thin breadboard wiring — add 100&nbsp;Ω in series and
+          100&nbsp;µF across the rail.
+        </p>
+      </div>
+    </div>
+
+    <p class="note">
+      <b>Avoid</b> GPIO 0, 19, 20, 43–46 and the 26–32 range on the S3 — they
+      are strapping pins, USB, or wired to internal flash and PSRAM.
+    </p>
+  </div>
+</section>
+
+<!-- ────────────────────────────────────────────── HONEST LIMITS ── -->
+<section>
+  <div class="head">
+    <span class="eyebrow">Before you build it</span>
+    <h2>What it can't do</h2>
+    <p class="lede">
+      Stated here rather than discovered at the range. None of these are bugs;
+      they are the shape of the design.
+    </p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Shots during the beep aren't recorded</h3>
+      <p>
+        The microphones hear the buzzer centimetres away far better than
+        anything downrange, so detection is muted for the tone plus 40&nbsp;ms.
+        Every single-array timer makes this trade.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Dry-fire detection needs the sensor on the gun</h3>
+      <p>
+        A timer clipped to your belt will not feel a trigger break in a gun held
+        at arm's length, and no threshold setting changes that. Live-fire recoil
+        does reach a body-worn timer, damped — which is why "both sensors" mode
+        exists.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Beep-to-first-shot has an uncalibrated offset</h3>
+      <p>
+        Split <em>differences</em> are good to well under a millisecond. The
+        constant offset from acoustic travel and microphone group delay is a few
+        milliseconds and has not been measured against a reference timer. A
+        setting exists to trim it once it has.
+      </p>
+    </div>
+    <div class="card">
+      <h3>It is not a match timer</h3>
+      <p>
+        A hobbyist range tool. Don't score a sanctioned match with it — and
+        until the enclosure acoustics are built and measured, expect it to be
+        quieter than anything you can buy.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="stack">
+    <p class="mono">shot-timer v0.6.0 · ESP32-S3 · MIT licence</p>
+    <p>
+      Full documentation lives with the source: detection algorithms and their
+      accuracy limits, the Bluetooth wire format, architecture, the parts list,
+      wiring, and the build roadmap.
+    </p>
+    <p class="mono" style="color:var(--signal)">
+      Firmware complete · never fired at · thresholds unmeasured
+    </p>
+  </div>
+</footer>
+
+</div>

@@ -133,9 +133,11 @@ VBAT ──[100k]──┬──[100k]── GND
 ```
 
 The divider halves the voltage so a 4.2 V cell reads 2.1 V, inside ADC1's range.
-`VBAT_DIVIDER_RATIO` in `config.h` is the compensating factor. Note that the
-firmware maps the pin but does not yet read it — that is
-[`ROADMAP.md`](ROADMAP.md) phase 1.4.
+`VBAT_DIVIDER_RATIO` in `config.h` is the compensating factor.
+
+The firmware reads it: oversampled, smoothed, and mapped through a real LiPo
+discharge curve rather than a linear one. Below 2.5 V it reports "no battery"
+rather than 0%, so a board on USB does not display a fictional flat cell.
 
 ## First power-up checklist
 

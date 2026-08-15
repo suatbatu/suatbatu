@@ -93,6 +93,7 @@ docs/
   ROADMAP.md       The SG Timer 2 scorecard and what is left
   GAMEPLAN.md      The execution plan: workstreams, invariants, checkpoints
   PRIOR_ART.md     What the earlier DELTA/MAK87 build corroborates and offers
+  brochure.html    One-page product sheet: TLDR, functions, BOM, wiring
 hardware/          Enclosure and mounting notes
 ```
 
