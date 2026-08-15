@@ -16,8 +16,12 @@ bottom, and know what to do next and what not to touch.
   (A host audio simulator was offered and not chosen; do not build it unless
   asked.)
 - **CI is in**, at `.github/workflows/ci.yml`.
-- The project moves to a **standalone GitHub repo** once the owner creates it
-  (the CI token cannot — repo creation returns 403).
+- The project moves to a **standalone GitHub repo** once the owner creates it.
+  The session's GitHub token lacks `Administration: write` — `create_repository`
+  returns 403 — so this is the owner's to do, twice confirmed.
+- An **earlier, separate shot timer** by the same owner (DELTA / MAK87, June
+  2026) exists on their Mac. Its findings are in [`PRIOR_ART.md`](PRIOR_ART.md);
+  its source is not reachable from here. Nothing from it has been adopted yet.
 
 ---
 
