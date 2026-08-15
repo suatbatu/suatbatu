@@ -1,0 +1,16 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/
+.clang_complete
+.gcc-flags.json
+compile_commands.json
+
+# Secrets — every repo copy keeps its own, none of them get committed.
+firmware/include/secrets.h
+
+# OS noise
+.DS_Store
+Thumbs.db
+*~

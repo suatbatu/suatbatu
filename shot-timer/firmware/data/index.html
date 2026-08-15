@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0f12">
+<title>shot-timer</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header>
+  <h1>shot&#8209;timer</h1>
+  <span id="conn" class="pill pill--bad">offline</span>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="tab is-active" data-panel="live" role="tab">Live</button>
+  <button class="tab" data-panel="history" role="tab">History</button>
+  <button class="tab" data-panel="settings" role="tab">Settings</button>
+</nav>
+
+<main>
+
+<!-- ------------------------------------------------------------- live -- -->
+<section id="live" class="panel is-active">
+  <div id="state" class="state">ready</div>
+
+  <div class="clock" id="clock">0.00</div>
+
+  <div class="summary">
+    <div><span class="summary__k">shots</span><span class="summary__v" id="sum-count">0</span></div>
+    <div><span class="summary__k">first</span><span class="summary__v" id="sum-first">&ndash;</span></div>
+    <div><span class="summary__k">best split</span><span class="summary__v" id="sum-best">&ndash;</span></div>
+  </div>
+
+  <div class="controls">
+    <button id="btn-start" class="btn btn--go">Start</button>
+    <button id="btn-stop" class="btn">Stop</button>
+  </div>
+
+  <p class="note" id="countdown-note" hidden>
+    Waiting for the start signal. The delay is not shown &mdash; that is the point of it.
+  </p>
+
+  <table class="shots">
+    <thead><tr><th>#</th><th>time</th><th>split</th></tr></thead>
+    <tbody id="shots"></tbody>
+  </table>
+</section>
+
+<!-- ---------------------------------------------------------- history -- -->
+<section id="history" class="panel">
+  <div class="row">
+    <a class="btn btn--sm" href="/api/export.csv">Export CSV</a>
+    <button class="btn btn--sm btn--danger" id="btn-clear">Clear history</button>
+  </div>
+  <ul class="strings" id="strings"></ul>
+  <p class="note" id="history-empty">No strings stored yet.</p>
+</section>
+
+<!-- --------------------------------------------------------- settings -- -->
+<section id="settings" class="panel">
+  <form id="settings-form">
+    <fieldset>
+      <legend>Start signal</legend>
+      <label>Delay mode
+        <select name="delayMode">
+          <option value="0">Random</option>
+          <option value="1">Fixed</option>
+          <option value="2">Instant</option>
+        </select>
+      </label>
+      <label>Random delay min (ms)<input type="number" name="delayMinMs" min="0" max="30000" step="100"></label>
+      <label>Random delay max (ms)<input type="number" name="delayMaxMs" min="0" max="30000" step="100"></label>
+      <label>Fixed delay (ms)<input type="number" name="delayFixedMs" min="0" max="30000" step="100"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Detection</legend>
+      <label>Sensitivity (1 = muzzle blast only, 10 = dry fire)
+        <input type="range" name="sensitivity" min="1" max="10" step="1">
+        <output name="sensitivity-out"></output>
+      </label>
+      <div class="meter" title="live input level against the noise floor">
+        <div class="meter__floor" id="meter-floor"></div>
+        <div class="meter__bar" id="meter-bar"></div>
+      </div>
+      <label>Blanking after a shot (ms)<input type="number" name="blankingMs" min="20" max="500" step="10"></label>
+      <label>Microphone offset (ms)<input type="number" name="micOffsetMs" min="-200" max="200" step="1"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Par</legend>
+      <label class="checkbox"><input type="checkbox" name="parEnabled"> Par beeps enabled</label>
+      <label>Par 1 (ms)<input type="number" name="par0" min="0" max="60000" step="100"></label>
+      <label>Par 2 (ms)<input type="number" name="par1" min="0" max="60000" step="100"></label>
+      <label>Par 3 (ms)<input type="number" name="par2" min="0" max="60000" step="100"></label>
+      <label>Par 4 (ms)<input type="number" name="par3" min="0" max="60000" step="100"></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Buzzer &amp; string</legend>
+      <label>Beep frequency (Hz)<input type="number" name="beepFreqHz" min="500" max="6000" step="50"></label>
+      <label>Beep length (ms)<input type="number" name="beepMs" min="50" max="2000" step="10"></label>
+      <label>Volume (1&ndash;10)<input type="number" name="beepVolume" min="1" max="10" step="1"></label>
+      <label>Auto-stop after silence (s, 0 = manual)<input type="number" name="autoStopSec" min="0" max="600" step="1"></label>
+      <label class="checkbox"><input type="checkbox" name="autoSave"> Save every string automatically</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Network</legend>
+      <label>Wi-Fi SSID (blank = always run as an access point)<input type="text" name="wifiSsid" maxlength="32" autocomplete="off"></label>
+      <label>Wi-Fi password<input type="password" name="wifiPass" maxlength="64" autocomplete="new-password" placeholder="unchanged"></label>
+      <label>Web username<input type="text" name="webUser" maxlength="16" autocomplete="off"></label>
+      <label>Web password (min 8 characters)<input type="password" name="webPass" maxlength="32" autocomplete="new-password" placeholder="unchanged"></label>
+      <p class="note">Network changes take effect on the next restart.</p>
+    </fieldset>
+
+    <button class="btn btn--go" type="submit">Save settings</button>
+    <p class="note" id="settings-status"></p>
+  </form>
+</section>
+
+</main>
+
+<footer>
+  <span id="fw"></span>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>
