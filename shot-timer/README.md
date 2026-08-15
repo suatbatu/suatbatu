@@ -32,6 +32,7 @@ feature list is either built or on the roadmap.
 | **History** | An append-only log on flash — roughly 2 000 strings — exportable as CSV. |
 | **Web UI** | Live clock over a WebSocket, full settings, drills and trends, string history, detector diagnostics, CSV export. Password-protected. |
 | **Display** | Contrast control, idle auto-dim, and a 180° flip so the same board works in a front-mount or a top-of-belt mount. |
+| **Bluetooth** | Speaks the AMG Lab Commander BLE dialect, so PractiScore and anything else that already talks to a Commander can talk to this. Off by default — see [`docs/BLE_PROTOCOL.md`](docs/BLE_PROTOCOL.md). |
 | **Works at a range** | SoftAP by default — ranges do not have Wi-Fi. Joins your network if you configure one, falls back to its own AP if it is not there. |
 
 ## Architecture
@@ -84,6 +85,7 @@ docs/
   BOM.md           Parts list
   WIRING.md        Pin map and build notes
   API.md           REST + WebSocket reference
+  BLE_PROTOCOL.md  The AMG Commander dialect, and what is / isn't confirmed
   ROADMAP.md       The SG Timer 2 scorecard and what is left
   GAMEPLAN.md      The execution plan: workstreams, invariants, checkpoints
 hardware/          Enclosure and mounting notes
@@ -168,6 +170,10 @@ Known limitations, none of them hidden:
   under a millisecond; the constant offset from acoustic travel and microphone
   group delay is not measured. `micOffsetMs` exists to trim it once you
   characterise it against a reference timer.
+- **The BLE layer has never met a client.** It is written from a public
+  reference implementation, compiles, and has not been tested against
+  PractiScore or a phone. `docs/BLE_PROTOCOL.md` carries the verification
+  checklist and marks exactly which fields are confirmed and which are not.
 - **Not a match timer.** See the warning at the top.
 
 ## Licence

@@ -34,6 +34,7 @@ What exists and how it was verified:
 | Battery monitoring (A6) | built | compiles; **reading unverified against a meter** |
 | CI: host tests, web lint, firmware + LittleFS build, size report | written | runs once the project is its own repo |
 | Drills engine (workstream B) | built | compiles; chart palette validated against the UI surface |
+| BLE / AMG Commander dialect (workstream D) | built | compiles; **never tested against any client** |
 | Docs: architecture, detection, API, wiring, BOM, roadmap | current | reviewed against code this session |
 | **Field behaviour** | **unproven** | nothing — it has never heard a gun |
 
@@ -221,9 +222,20 @@ it runs research-first.
   string end — into the AMG frame format. One source of truth: a thin
   adapter subscribed to the same `TimerApp::onEvent` sink the web interface
   uses. The detector task is untouched (invariant 1).
-- **D4 — owner checkpoint.** PractiScore Log on a real phone pairs, receives
-  a dry-fire string, shows correct times. This cannot be verified without a
-  phone; do not claim it works before this step.
+- ✅ **D1 done.** `docs/BLE_PROTOCOL.md` — UUIDs, ASCII commands and all three
+  frame layouts, derived from the MIT-licensed `DenisZhadan/AmgLabCommander`
+  Android reference. Every field is marked confirmed / likely / unverified,
+  including a decoder bug in the reference app that this firmware deliberately
+  does not reproduce.
+- ✅ **D2–D3 done.** `BleTimer` serves Nordic UART with the bundled BLE stack
+  (no new registry dependency), emits `01 05` / `01 03` / `01 08`, answers
+  `REQ STRING HEX`, and accepts `COM START` and `SET SENSITIVITY`. Inbound
+  commands are queued for the main loop, never dispatched on the BLE host
+  task. Off by default.
+- **D4 — owner checkpoint, OUTSTANDING.** PractiScore Log on a real phone
+  pairs, receives a dry-fire string, shows correct times. This cannot be
+  verified without a phone; do not claim it works before this step. The full
+  checklist is at the end of `docs/BLE_PROTOCOL.md`.
 - **Wi-Fi/BLE coexistence risk:** both share the S3 radio. If the timer
   stutters with both up, the honest resolution is a settings toggle (BLE
   mode vs Wi-Fi mode) rather than degraded both. Measure first.

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "BleTimer.h"
 #include "Drills.h"
 #include "Net.h"
 #include "Settings.h"
@@ -63,6 +64,10 @@ void sendStatus(AsyncWebServerRequest* request) {
   o["ip"] = net.ipString();
   o["ap"] = net.isAp();
   o["heap"] = ESP.getFreeHeap();
+  JsonObject b = o["ble"].to<JsonObject>();
+  b["active"] = ble.active();
+  b["connected"] = ble.connected();
+  b["name"] = settings.bleName;
   sendJson(request, 200, doc);
 }
 

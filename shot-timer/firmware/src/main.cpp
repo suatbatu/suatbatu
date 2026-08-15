@@ -4,6 +4,7 @@
 #include <Arduino.h>
 
 #include "Battery.h"
+#include "BleTimer.h"
 #include "Buttons.h"
 #include "Buzzer.h"
 #include "Display.h"
@@ -122,7 +123,13 @@ void setup() {
   net.begin();
   display.setNetLine(net.statusLine().c_str());
 
-  app.onEvent([](const JsonDocument& doc) { web.pushEvent(doc); });
+  // One event sink, two subscribers. Both run in loop() context, so neither
+  // can race the state machine that produced the event.
+  app.onEvent([](const JsonDocument& doc) {
+    web.pushEvent(doc);
+    ble.onTimerEvent(doc);
+  });
+  ble.begin();
   if (!web.begin()) {
     // Not fatal: the device works standalone. The screen says why the web UI
     // is missing so it does not look like a network problem.
@@ -141,6 +148,7 @@ void loop() {
   battery.tick();
   net.loop();
   web.loop();
+  ble.loop();
   display.tick();
   updateLed();
 

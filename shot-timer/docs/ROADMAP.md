@@ -20,11 +20,11 @@ Commander on detection quality, not just matching them on features.
 | Session history, 1 000 000 shots | Append-only log, compacted at 1.2 MB, ~2 000 strings, CSV export | 🟡 large, not *that* large |
 | Remote control from the phone | Full web UI over a WebSocket | ✅ built |
 | 110 dB acoustic amplifier, loudest made | Firmware drives the piezo correctly at a configurable resonance | ❌ **acoustics unbuilt — the biggest gap** |
-| ~100 h battery | Not addressed | ❌ |
+| ~100 h battery | Battery *monitoring* built; power management not addressed | 🟡 |
 | Water and dust resistant, survives drops | No enclosure yet | ❌ |
-| Bluetooth + NFC, PractiScore integration | Wi-Fi + WebSocket instead | ❌ |
+| Bluetooth + NFC, PractiScore integration | AMG Commander BLE dialect over Nordic UART, plus Wi-Fi + WebSocket | 🟡 **built, never tested against a client** |
 | Video sync with shot data overlaid | Every shot already timestamped against a monotonic clock | ❌ (web-UI work, not firmware) |
-| Custom drills + community library | Par machinery accepts four beeps | ❌ |
+| Custom drills + community library | Eight named drills with par schedules, expected round counts, and per-drill trends | ✅ **built** (no community library) |
 | Wireless charging | — | 🚫 **out of scope by decision** |
 
 ## Phase 1 — the physical timer (the gap that matters most now)
@@ -70,22 +70,27 @@ The detector is written and unit-tested. It has never heard a gun.
 
 ## Phase 3 — close the remaining SG features
 
-9. **Battery life.** Light-sleep between strings with the detector task still
-   running; drop the Wi-Fi radio when no client is connected. The honest
+9. **Battery life.** Monitoring is built (smoothed ADC, real LiPo curve, shown
+   on the OLED and in the API); *management* is not. Light-sleep between strings
+   with the detector task still running; drop the Wi-Fi radio when no client is
+   connected — and now also weigh whether BLE and Wi-Fi should both be up. The honest
    expectation is a long day, not the SG's 100 hours — an ESP32-S3 with a radio
    is a different animal. Report what is measured.
 10. **Ambient light sensor** (BH1750 on the existing I2C bus) driving contrast
     automatically, which is the last piece of the SG's display story that is not
     just panel choice.
-11. **Bluetooth LE + PractiScore.** The AMG/CE/SG protocol is what PractiScore
-    Log talks to. Emulating it drops this timer into an existing workflow and is
-    the single highest-leverage software feature left. Needs the wire format
-    reverse-engineered from the PractiScore community documentation first.
+11. ✅ **Bluetooth LE + PractiScore — built.** The wire format is documented in
+    [`BLE_PROTOCOL.md`](BLE_PROTOCOL.md) from a public reference implementation,
+    and the firmware serves it. What remains is not code: pair a phone with
+    PractiScore Log and confirm the times match. Until that happens this is
+    "built, unproven" and the scorecard says so.
 12. **Video sync.** Capture with `getUserMedia` in the web UI, anchor on the
     `beep` event, overlay shot markers on the playback timeline. Pure browser
     work — the firmware already emits everything needed.
-13. **Drills.** Named par sequences (Bill drill, El Presidente, 1R1) stored as
-    schedules, plus per-drill history so the trend over sessions is visible.
+13. ✅ **Drills — built.** Eight named drills with par schedules, expected round
+    counts, per-drill trend charts, and a drill stamp on every stored string. A
+    shared community library is the only part not done, and it needs somewhere
+    to share *to* — a decision for later.
 14. **Bigger history.** If 2 000 strings is not enough, move from NDJSON to a
     packed binary record; the same partition would hold an order of magnitude
     more.
@@ -98,11 +103,11 @@ The detector is written and unit-tested. It has never heard a gun.
 
 ## Where the remaining effort actually pays
 
-Everything in phase 1. The detection stack is now the part of this project that
-is *ahead* of a commercial timer on paper and completely unproven in practice,
-and no amount of further firmware changes that. Build the array, build the
-enclosure, make it loud, then go and shoot with it and let phase 2 tell you
-which of these numbers were wrong.
+Everything in phase 1, and it is now the *only* thing that pays. The software
+side of this scorecard is largely done: detection, profiles, drills, history,
+web UI and BLE are all built. Every one of them is unproven, and no further
+firmware changes that. Build the array, build the enclosure, make it loud, pair
+a phone — then let phase 2 tell you which of these numbers were wrong.
 
 ---
 

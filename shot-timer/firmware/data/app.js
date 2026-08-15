@@ -229,6 +229,14 @@ function renderDetector(d) {
 // Absent `battery` means no cell on the divider — a board on USB, or one not
 // built yet. Showing "0%" there would read as a warning rather than a
 // non-measurement, so the badge is hidden instead.
+function renderBle(b) {
+  const el = $('#ble-badge');
+  if (!b || !b.active) { el.hidden = true; return; }
+  el.hidden = false;
+  el.textContent = b.connected ? 'BT linked' : 'BT';
+  el.className = `pill ${b.connected ? 'pill--ok' : ''}`;
+}
+
 function renderBattery(b) {
   const el = $('#battery-badge');
   if (!b) { el.hidden = true; return; }
@@ -590,6 +598,8 @@ form.addEventListener('submit', async (e) => {
     beepVolume: num('beepVolume'),
     autoStopSec: num('autoStopSec'),
     autoSave: form.elements.autoSave.checked,
+    bleEnabled: form.elements.bleEnabled.checked,
+    bleName: form.elements.bleName.value,
     displayFlipped: form.elements.displayFlipped.checked,
     displayContrast: num('displayContrast'),
     autoDim: form.elements.autoDim.checked,
@@ -608,7 +618,8 @@ form.addEventListener('submit', async (e) => {
   if (!out) {
     status.textContent = 'Save failed.';
   } else if (out.accepted === false) {
-    status.textContent = 'Saved, but at least one value was rejected (web password must be 8+ characters).';
+    status.textContent = 'Saved, but at least one value was rejected — a web password must be '
+      + '8+ characters, and a Bluetooth name must start with "Commander" or "AMG Lab Comm".';
   } else {
     status.textContent = 'Saved.';
     form.elements.wifiPass.value = '';
@@ -633,6 +644,7 @@ function setMeterPolling(on) {
     $('#meter-floor').style.left = `${(st.floorPerMille || 0) / 10}%`;
     if (st.detector) renderDetector(st.detector);
     renderBattery(st.battery);
+    renderBle(st.ble);
   }, 250);
 }
 

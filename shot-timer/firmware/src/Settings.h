@@ -71,6 +71,14 @@ struct Settings {
   uint16_t autoStopSec = 30;  // stop a string after this much silence; 0 = manual only
   bool autoSave = true;
 
+  // --- bluetooth ---
+  // Off by default: Wi-Fi and BLE share one radio on the S3, and the timer
+  // should not pay a coexistence cost nobody has measured yet.
+  bool bleEnabled = false;
+  // Must start with "COMMANDER" or "AMG LAB COMM" for name-filtering clients
+  // (PractiScore and friends) to find it. See docs/BLE_PROTOCOL.md.
+  char bleName[25] = "Commander shot-timer";
+
   // --- network ---
   char wifiSsid[33] = "";
   char wifiPass[65] = "";

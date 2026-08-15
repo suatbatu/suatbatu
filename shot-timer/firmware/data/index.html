@@ -13,6 +13,7 @@
   <h1>shot&#8209;timer</h1>
   <span id="profile-badge" class="pill">&ndash;</span>
   <span id="battery-badge" class="pill" hidden></span>
+  <span id="ble-badge" class="pill" hidden></span>
   <span id="conn" class="pill pill--bad">offline</span>
 </header>
 
@@ -203,6 +204,19 @@
         Flip 180&deg; for a top-of-belt mount</label>
       <label>Contrast<input type="range" name="displayContrast" min="1" max="255" step="1"></label>
       <label class="checkbox"><input type="checkbox" name="autoDim"> Dim while idle</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Bluetooth (PractiScore)</legend>
+      <label class="checkbox"><input type="checkbox" name="bleEnabled">
+        Advertise over BLE in the AMG Commander dialect</label>
+      <label>Advertised name<input type="text" name="bleName" maxlength="24" autocomplete="off"></label>
+      <p class="note">
+        The name must start with <code>Commander</code> or <code>AMG Lab Comm</code>
+        or name-filtering apps will not find the timer. Off by default: Wi-Fi and
+        BLE share one radio, and the coexistence cost is not measured yet.
+        Takes effect on the next restart.
+      </p>
     </fieldset>
 
     <fieldset>

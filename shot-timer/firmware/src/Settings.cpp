@@ -23,7 +23,7 @@ constexpr char NS[] = "shottimer";
 constexpr char KEY_BLOB[] = "cfg";
 // Bump when the struct layout changes so old blobs are discarded instead of
 // being reinterpreted as garbage.
-constexpr uint32_t BLOB_VERSION = 2;
+constexpr uint32_t BLOB_VERSION = 3;
 
 struct Blob {
   uint32_t version;
@@ -195,6 +195,8 @@ void Settings::toJson(JsonObject out) const {
   out["autoDim"] = autoDim;
   out["autoStopSec"] = autoStopSec;
   out["autoSave"] = autoSave;
+  out["bleEnabled"] = bleEnabled;
+  out["bleName"] = bleName;
   out["wifiSsid"] = wifiSsid;
   out["webUser"] = webUser;
   // Passwords are write-only over the API; report whether one is set instead.
@@ -278,6 +280,19 @@ bool Settings::applyJson(JsonObjectConst in) {
   if (in["autoStopSec"].is<uint16_t>())
     autoStopSec = clampTo<uint16_t>(in["autoStopSec"], 0, 600);
   if (in["autoSave"].is<bool>()) autoSave = in["autoSave"];
+
+  if (in["bleEnabled"].is<bool>()) bleEnabled = in["bleEnabled"];
+  if (in["bleName"].is<const char*>()) {
+    const char* n = in["bleName"];
+    // Refuse a name no client will match rather than accept it and leave the
+    // owner wondering why PractiScore cannot see the timer.
+    String upper(n);
+    upper.toUpperCase();
+    if (upper.startsWith("COMMANDER") || upper.startsWith("AMG LAB COMM"))
+      copyStr(bleName, sizeof(bleName), n);
+    else
+      ok = false;
+  }
 
   if (in["wifiSsid"].is<const char*>()) copyStr(wifiSsid, sizeof(wifiSsid), in["wifiSsid"]);
   if (in["wifiPass"].is<const char*>()) copyStr(wifiPass, sizeof(wifiPass), in["wifiPass"]);
