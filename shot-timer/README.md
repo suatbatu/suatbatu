@@ -83,6 +83,7 @@ docs/
   WIRING.md        Pin map and build notes
   API.md           REST + WebSocket reference
   ROADMAP.md       The SG Timer 2 scorecard and what is left
+  GAMEPLAN.md      The execution plan: workstreams, invariants, checkpoints
 hardware/          Enclosure and mounting notes
 ```
 
