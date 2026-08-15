@@ -13,7 +13,8 @@ deliberate: the device's default network is an open access point, and an
 unauthenticated timer on an open AP lets anyone within range fire the buzzer
 into the middle of someone's string.
 
-To set the first password, build once with a `firmware/include/secrets.h`:
+Three buttons are not a keyboard, so the first password is seeded at build time.
+Copy `firmware/include/secrets.example.h` to `secrets.h`:
 
 ```c
 #pragma once
@@ -21,9 +22,9 @@ To set the first password, build once with a `firmware/include/secrets.h`:
 #define BOOTSTRAP_WEB_PASS "something-long"
 ```
 
-…and set them from `setup()`, or set them over the serial monitor. After that,
-change them from the Settings tab like anything else. `secrets.h` is
-gitignored.
+`Settings::load()` applies it **only when no password is stored**, so once you
+have changed it from the Settings tab, rebuilding with `secrets.h` still in
+place will not quietly reset it. `secrets.h` is gitignored.
 
 ### Why the access point is open
 
@@ -57,6 +58,11 @@ closed with code 1008. The token is regenerated on every boot.
   "armed": true,
   "levelPerMille": 412,
   "floorPerMille": 96,
+  "detector": {
+    "accepted": 6, "rejectedEcho": 2, "rejectedOffAxis": 4,
+    "lastLagSamples": 1, "lastAngleDeg": 3, "lastConfidence": 88,
+    "secondMic": true, "profile": "Pistol", "directionGate": true
+  },
   "string": {
     "id": 17, "count": 6,
     "firstMs": 1180, "totalMs": 4045,
@@ -78,16 +84,42 @@ has the start cue that the random delay exists to take away.
 `levelPerMille` and `floorPerMille` are 0–1000 over an 80 dB window, for the
 level meter — not calibrated SPL.
 
+The `detector` object is diagnostics, and it exists because without it a
+correctly working direction gate and a broken microphone look identical from the
+shooter's side. `rejectedEcho` and `rejectedOffAxis` count since boot.
+`lastLagSamples` is the inter-microphone arrival difference of the most recent
+candidate (positive = nearer microphone A), `lastAngleDeg` the same thing as an
+angle, and `lastConfidence` the normalised correlation peak, 0–100. Below 35 the
+direction gate fails open. `secondMic` is false when channel B carries no
+signal, which is how a single-microphone build is detected.
+
 ### `GET /api/settings` · `POST /api/settings`
 
-`GET` returns every setting. Passwords are never returned; `wifiPassSet` and
-`webPassSet` report whether one is configured.
+`GET` returns every setting, including the full `profiles` array and
+`activeProfile`. Passwords are never returned; `wifiPassSet` and `webPassSet`
+report whether one is configured. `maxLagSamples` is derived, not stored: the
+acceptance window in samples that the current profile and microphone spacing
+work out to.
 
 `POST` takes a JSON object and applies **only the keys present**, so a client can
-send a single field. Values are clamped to their valid range rather than
-rejected. The response is the full resulting settings plus `"accepted"` — `false`
-means at least one value was refused outright (currently only a web password
-shorter than 8 characters). Settings are saved to NVS on every accepted POST.
+send a single field.
+
+Profiles are written one at a time through a `profile` sub-object, addressed by
+index, so a client can change one without shipping the whole array back and
+racing whoever is turning the knob on the device:
+
+```json
+{ "activeProfile": 2,
+  "profile": { "index": 2, "name": "Suppressed .22", "sensitivity": 9,
+               "directionGate": true, "maxOffAxisDeg": 20 } }
+```
+
+Omit `index` and the active profile is edited.
+
+Values are clamped to their valid range rather than rejected. The response is the
+full resulting settings plus `"accepted"` — `false` means at least one value was
+refused outright (currently only a web password shorter than 8 characters, and
+an out-of-range profile index). Settings are saved to NVS on every POST.
 
 Omit `webPass` / `wifiPass` to leave them unchanged.
 
@@ -103,7 +135,10 @@ within a few milliseconds.
 
 ### `GET /api/strings`
 
-Summaries of every stored string, newest first, **without** the shot arrays:
+Summaries of every stored string, **oldest first** — the order they sit in the
+append-only log, which is the order the device can stream without buffering the
+whole history into RAM. Reversing for display is the client's job. The shot
+arrays are omitted:
 
 ```json
 {"strings": [{"id": 17, "count": 6, "firstMs": 1180, "totalMs": 4045,
@@ -112,8 +147,9 @@ Summaries of every stored string, newest first, **without** the shot arrays:
 
 ### `GET /api/string?id=N`
 
-One stored string, in full, including `shots`. `404` if it has aged out of the
-50-string history.
+One stored string, in full, including `shots`. `404` if it has aged out — the
+log holds roughly 2 000 strings and drops its oldest half when it reaches its
+1.2 MB budget.
 
 ### `DELETE /api/strings`
 

@@ -1,9 +1,12 @@
 // String history on LittleFS.
 //
-// Stored as NDJSON — one string per line, newest first. That keeps every
-// operation streaming: saving a run copies lines through a temp file and
-// renames, and serving the history never holds the whole history in RAM. A
-// flat JSON array would be tidier on disk and much worse on a 320 KB heap.
+// Append-only NDJSON — one string per line, oldest first. Appending a run is
+// O(1) regardless of how much history there is, which is what makes a large
+// history practical: the previous rewrite-the-whole-file approach cost a full
+// copy per string and burned flash in proportion to how much you had stored.
+//
+// When the log outgrows its byte budget the oldest half is dropped in one
+// compaction pass, so the amortised cost stays near zero.
 #pragma once
 
 #include <Arduino.h>
@@ -17,11 +20,14 @@ class Storage {
  public:
   bool begin();
 
-  // Prepends the run and trims to MAX_STORED_STRINGS. Returns false on I/O error.
+  // Appends the run, compacting first if the log is at its budget.
   bool save(const StringRun& run);
   bool clear();
 
-  // Calls `fn` with each stored line (a complete JSON object), newest first.
+  // Calls `fn` with each stored line (a complete JSON object), **oldest
+  // first** — the order they are on disk. Callers that want newest-first
+  // reverse it themselves; on a device this size, streaming in file order and
+  // reversing in the browser is the cheap way round.
   // Stops early if `fn` returns false.
   void forEachLine(const std::function<bool(const String&)>& fn) const;
 
@@ -29,13 +35,16 @@ class Storage {
   String findById(uint32_t id) const;
 
   uint32_t count() const { return count_; }
+  uint32_t bytesUsed() const { return bytes_; }
   uint32_t nextId() { return ++lastId_; }
 
  private:
+  bool compact();
+  void rescan();
+
   uint32_t lastId_ = 0;
   uint32_t count_ = 0;
-
-  void rescan();
+  uint32_t bytes_ = 0;
 };
 
 extern Storage storage;

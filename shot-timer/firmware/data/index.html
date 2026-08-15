@@ -11,6 +11,7 @@
 
 <header>
   <h1>shot&#8209;timer</h1>
+  <span id="profile-badge" class="pill">&ndash;</span>
   <span id="conn" class="pill pill--bad">offline</span>
 </header>
 
@@ -47,6 +48,10 @@
     <thead><tr><th>#</th><th>time</th><th>split</th></tr></thead>
     <tbody id="shots"></tbody>
   </table>
+
+  <!-- Rejections are shown, not hidden: a working direction gate and a broken
+       microphone otherwise look identical from the shooter's side. -->
+  <p class="note" id="reject-note" hidden></p>
 </section>
 
 <!-- ---------------------------------------------------------- history -- -->
@@ -55,6 +60,7 @@
     <a class="btn btn--sm" href="/api/export.csv">Export CSV</a>
     <button class="btn btn--sm btn--danger" id="btn-clear">Clear history</button>
   </div>
+  <p class="note" id="history-stats"></p>
   <ul class="strings" id="strings"></ul>
   <p class="note" id="history-empty">No strings stored yet.</p>
 </section>
@@ -62,6 +68,51 @@
 <!-- --------------------------------------------------------- settings -- -->
 <section id="settings" class="panel">
   <form id="settings-form">
+
+    <fieldset>
+      <legend>Profile</legend>
+      <p class="note">
+        Detection settings belong to a profile. Switch profiles when you switch
+        guns instead of re-tuning four numbers every time.
+      </p>
+      <label>Active profile
+        <select name="activeProfile" id="profile-select"></select>
+      </label>
+      <label>Name<input type="text" name="profileName" maxlength="16" autocomplete="off"></label>
+
+      <label>Sensitivity (1 = muzzle blast only, 10 = dry fire)
+        <input type="range" name="sensitivity" min="1" max="10" step="1">
+        <output name="sensitivity-out"></output>
+      </label>
+      <div class="meter" title="green = live level, amber = adaptive noise floor">
+        <div class="meter__bar" id="meter-bar"></div>
+        <div class="meter__floor" id="meter-floor"></div>
+      </div>
+
+      <label>Refractory &mdash; hard minimum between shots (ms)
+        <input type="number" name="refractoryMs" min="10" max="500" step="5"></label>
+      <label>Echo rejection &mdash; guard below a shot's own peak (dB)
+        <input type="number" name="echoRejectDb" min="0" max="40" step="1"></label>
+      <label>Echo guard decay (ms)
+        <input type="number" name="echoDecayMs" min="10" max="1000" step="10"></label>
+
+      <label class="checkbox"><input type="checkbox" name="directionGate">
+        Direction gate &mdash; reject shots off the shooter's axis</label>
+      <label>Acceptance half-angle (degrees)
+        <input type="number" name="maxOffAxisDeg" min="5" max="89" step="1"></label>
+      <p class="note" id="gate-note"></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Microphone array</legend>
+      <label>Microphone spacing (mm)<input type="number" name="micSpacingMm" min="20" max="400" step="1"></label>
+      <label>Microphone offset calibration (ms)<input type="number" name="micOffsetMs" min="-200" max="200" step="1"></label>
+      <p class="note">
+        Spacing sets how many samples of arrival difference a given angle is
+        worth. Measure it between the two microphone ports, not the breakouts.
+      </p>
+    </fieldset>
+
     <fieldset>
       <legend>Start signal</legend>
       <label>Delay mode
@@ -74,20 +125,6 @@
       <label>Random delay min (ms)<input type="number" name="delayMinMs" min="0" max="30000" step="100"></label>
       <label>Random delay max (ms)<input type="number" name="delayMaxMs" min="0" max="30000" step="100"></label>
       <label>Fixed delay (ms)<input type="number" name="delayFixedMs" min="0" max="30000" step="100"></label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Detection</legend>
-      <label>Sensitivity (1 = muzzle blast only, 10 = dry fire)
-        <input type="range" name="sensitivity" min="1" max="10" step="1">
-        <output name="sensitivity-out"></output>
-      </label>
-      <div class="meter" title="live input level against the noise floor">
-        <div class="meter__floor" id="meter-floor"></div>
-        <div class="meter__bar" id="meter-bar"></div>
-      </div>
-      <label>Blanking after a shot (ms)<input type="number" name="blankingMs" min="20" max="500" step="10"></label>
-      <label>Microphone offset (ms)<input type="number" name="micOffsetMs" min="-200" max="200" step="1"></label>
     </fieldset>
 
     <fieldset>
@@ -109,6 +146,14 @@
     </fieldset>
 
     <fieldset>
+      <legend>Display</legend>
+      <label class="checkbox"><input type="checkbox" name="displayFlipped">
+        Flip 180&deg; for a top-of-belt mount</label>
+      <label>Contrast<input type="range" name="displayContrast" min="1" max="255" step="1"></label>
+      <label class="checkbox"><input type="checkbox" name="autoDim"> Dim while idle</label>
+    </fieldset>
+
+    <fieldset>
       <legend>Network</legend>
       <label>Wi-Fi SSID (blank = always run as an access point)<input type="text" name="wifiSsid" maxlength="32" autocomplete="off"></label>
       <label>Wi-Fi password<input type="password" name="wifiPass" maxlength="64" autocomplete="new-password" placeholder="unchanged"></label>
@@ -120,6 +165,11 @@
     <button class="btn btn--go" type="submit">Save settings</button>
     <p class="note" id="settings-status"></p>
   </form>
+
+  <fieldset>
+    <legend>Detector</legend>
+    <dl class="diag" id="diag"></dl>
+  </fieldset>
 </section>
 
 </main>

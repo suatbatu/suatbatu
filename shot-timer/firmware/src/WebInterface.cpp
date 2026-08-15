@@ -58,6 +58,7 @@ void sendStatus(AsyncWebServerRequest* request) {
   JsonObject o = doc.to<JsonObject>();
   app.statusJson(o);
   o["stored"] = storage.count();
+  o["storedBytes"] = storage.bytesUsed();
   o["ip"] = net.ipString();
   o["ap"] = net.isAp();
   o["heap"] = ESP.getFreeHeap();

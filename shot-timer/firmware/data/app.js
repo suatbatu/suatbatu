@@ -10,14 +10,18 @@ const $ = (sel) => document.querySelector(sel);
 const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
 const fmt = (ms) => (ms / 1000).toFixed(2);
+const blankString = () =>
+  ({ count: 0, shots: [], firstMs: 0, totalMs: 0, bestSplitMs: 0, worstSplitMs: 0 });
 
 const state = {
   ws: null,
   appState: 'ready',
-  string: { count: 0, shots: [], firstMs: 0, totalMs: 0, bestSplitMs: 0, worstSplitMs: 0 },
+  string: blankString(),
   clockAnchor: null,   // { perf: DOMHighResTimeStamp, elapsedMs: number }
   frozenMs: 0,
   pollTimer: null,
+  settings: null,
+  editingProfile: 0,
 };
 
 /* ----------------------------------------------------------------- tabs -- */
@@ -71,7 +75,7 @@ function handleEvent(msg) {
 
     case 'beep':
       state.clockAnchor = { perf: performance.now(), elapsedMs: 0 };
-      state.string = { count: 0, shots: [], firstMs: 0, totalMs: 0, bestSplitMs: 0, worstSplitMs: 0 };
+      state.string = blankString();
       renderShots();
       break;
 
@@ -122,6 +126,7 @@ function applyStatus(st) {
     state.clockAnchor = null;
     state.frozenMs = st.elapsedMs || 0;
   }
+  if (st.detector) renderDetector(st.detector);
   renderState();
   renderShots();
 }
@@ -174,6 +179,49 @@ function renderShots() {
   if (!state.clockAnchor) $('#clock').textContent = fmt(totalMs || state.frozenMs || 0);
 }
 
+function renderDetector(d) {
+  $('#profile-badge').textContent = d.profile || '–';
+
+  const rejected = (d.rejectedEcho || 0) + (d.rejectedOffAxis || 0);
+  const note = $('#reject-note');
+  if (rejected > 0) {
+    note.hidden = false;
+    note.textContent =
+      `Rejected since boot: ${d.rejectedEcho || 0} as echo, ` +
+      `${d.rejectedOffAxis || 0} as off-axis.`;
+  } else {
+    note.hidden = true;
+  }
+
+  const gateLive = d.directionGate && d.secondMic;
+  const rows = [
+    ['Active profile', d.profile || '–'],
+    ['Direction gate', d.directionGate ? (gateLive ? 'on' : 'on, but only one mic detected') : 'off'],
+    ['Second microphone', d.secondMic ? 'detected' : 'not detected'],
+    ['Accepted shots', d.accepted || 0],
+    ['Rejected as echo', d.rejectedEcho || 0],
+    ['Rejected as off-axis', d.rejectedOffAxis || 0],
+    ['Last arrival lag', `${d.lastLagSamples || 0} samples`],
+    ['Last angle', `${d.lastAngleDeg || 0}°`],
+    ['Last correlation', `${d.lastConfidence || 0}%`],
+  ];
+  $('#diag').innerHTML = rows
+    .map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`)
+    .join('');
+
+  const gateNote = $('#gate-note');
+  if (!d.directionGate) {
+    gateNote.textContent =
+      'Off. Every sound loud enough to clear the threshold counts as a shot.';
+  } else if (!d.secondMic) {
+    gateNote.textContent =
+      'On, but no second microphone is detected — the gate fails open, so nothing is being rejected.';
+  } else {
+    const maxLag = state.settings ? state.settings.maxLagSamples : '?';
+    gateNote.textContent = `On. Accepting arrivals within ±${maxLag} samples of centre.`;
+  }
+}
+
 function flashPar() {
   const el = $('#state');
   el.style.color = 'var(--accent)';
@@ -207,7 +255,14 @@ async function loadHistory() {
   const res = await fetch('/api/strings', { credentials: 'same-origin' });
   if (!res.ok) return;
   const { strings } = await res.json();
+  // The device streams the log in file order (oldest first) because that is
+  // the order it can stream without buffering. Newest-first is a view choice,
+  // so it happens here.
+  strings.reverse();
+
   $('#history-empty').hidden = strings.length > 0;
+  $('#history-stats').textContent = strings.length
+    ? `${strings.length} strings stored.` : '';
 
   $('#strings').innerHTML = strings.map((s) => `
     <li data-id="${s.id}">
@@ -245,14 +300,24 @@ $('#btn-clear').addEventListener('click', async () => {
 /* ------------------------------------------------------------ settings -- */
 const form = $('#settings-form');
 
+const PROFILE_FIELDS = ['sensitivity', 'refractoryMs', 'echoRejectDb', 'echoDecayMs',
+                        'directionGate', 'maxOffAxisDeg'];
+
 async function loadSettings() {
   const res = await fetch('/api/settings', { credentials: 'same-origin' });
   if (!res.ok) return;
   const s = await res.json();
+  state.settings = s;
+  state.editingProfile = s.activeProfile;
+
+  const sel = $('#profile-select');
+  sel.innerHTML = (s.profiles || [])
+    .map((p, i) => `<option value="${i}">${i + 1}. ${p.name}</option>`).join('');
+  sel.value = String(s.activeProfile);
 
   for (const [k, v] of Object.entries(s)) {
     const el = form.elements[k];
-    if (!el) continue;
+    if (!el || Array.isArray(v) || typeof v === 'object') continue;
     if (el.type === 'checkbox') el.checked = !!v;
     else el.value = v;
   }
@@ -260,9 +325,26 @@ async function loadSettings() {
     const el = form.elements[`par${i}`];
     if (el) el.value = v;
   });
-  form.elements['sensitivity-out'].value = s.sensitivity;
+
+  showProfile(s.activeProfile);
   $('#fw').textContent = `firmware v${s.version}`;
 }
+
+function showProfile(index) {
+  const p = state.settings?.profiles?.[index];
+  if (!p) return;
+  state.editingProfile = index;
+  form.elements.profileName.value = p.name;
+  PROFILE_FIELDS.forEach((f) => {
+    const el = form.elements[f];
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!p[f];
+    else el.value = p[f];
+  });
+  form.elements['sensitivity-out'].value = p.sensitivity;
+}
+
+$('#profile-select').addEventListener('change', (e) => showProfile(Number(e.target.value)));
 
 form.elements.sensitivity.addEventListener('input', (e) => {
   form.elements['sensitivity-out'].value = e.target.value;
@@ -272,13 +354,25 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const num = (name) => Number(form.elements[name].value);
   const payload = {
+    activeProfile: Number($('#profile-select').value),
+    // Only the profile being edited is sent, so saving here cannot clobber a
+    // different profile someone changed on the device menu meanwhile.
+    profile: {
+      index: state.editingProfile,
+      name: form.elements.profileName.value,
+      sensitivity: num('sensitivity'),
+      refractoryMs: num('refractoryMs'),
+      echoRejectDb: num('echoRejectDb'),
+      echoDecayMs: num('echoDecayMs'),
+      directionGate: form.elements.directionGate.checked,
+      maxOffAxisDeg: num('maxOffAxisDeg'),
+    },
+    micSpacingMm: num('micSpacingMm'),
+    micOffsetMs: num('micOffsetMs'),
     delayMode: num('delayMode'),
     delayMinMs: num('delayMinMs'),
     delayMaxMs: num('delayMaxMs'),
     delayFixedMs: num('delayFixedMs'),
-    sensitivity: num('sensitivity'),
-    blankingMs: num('blankingMs'),
-    micOffsetMs: num('micOffsetMs'),
     parEnabled: form.elements.parEnabled.checked,
     parMs: [num('par0'), num('par1'), num('par2'), num('par3')],
     beepFreqHz: num('beepFreqHz'),
@@ -286,6 +380,9 @@ form.addEventListener('submit', async (e) => {
     beepVolume: num('beepVolume'),
     autoStopSec: num('autoStopSec'),
     autoSave: form.elements.autoSave.checked,
+    displayFlipped: form.elements.displayFlipped.checked,
+    displayContrast: num('displayContrast'),
+    autoDim: form.elements.autoDim.checked,
     webUser: form.elements.webUser.value,
     wifiSsid: form.elements.wifiSsid.value,
   };
@@ -294,8 +391,7 @@ form.addEventListener('submit', async (e) => {
   if (form.elements.wifiPass.value) payload.wifiPass = form.elements.wifiPass.value;
   if (form.elements.webPass.value) payload.webPass = form.elements.webPass.value;
 
-  const parUsed = payload.parMs.filter((v) => v > 0).length;
-  payload.parCount = Math.max(1, parUsed);
+  payload.parCount = Math.max(1, payload.parMs.filter((v) => v > 0).length);
 
   const out = await post('/api/settings', payload);
   const status = $('#settings-status');
@@ -307,10 +403,15 @@ form.addEventListener('submit', async (e) => {
     status.textContent = 'Saved.';
     form.elements.wifiPass.value = '';
     form.elements.webPass.value = '';
+    state.settings = out;
+    const sel = $('#profile-select');
+    sel.innerHTML = (out.profiles || [])
+      .map((p, i) => `<option value="${i}">${i + 1}. ${p.name}</option>`).join('');
+    sel.value = String(state.editingProfile);
   }
 });
 
-/* --------------------------------------------------------- level meter -- */
+/* --------------------------------------------------- meter + diagnostics -- */
 function setMeterPolling(on) {
   if (state.pollTimer) { clearInterval(state.pollTimer); state.pollTimer = null; }
   if (!on) return;
@@ -320,6 +421,7 @@ function setMeterPolling(on) {
     const st = await res.json();
     $('#meter-bar').style.width = `${(st.levelPerMille || 0) / 10}%`;
     $('#meter-floor').style.left = `${(st.floorPerMille || 0) / 10}%`;
+    if (st.detector) renderDetector(st.detector);
   }, 250);
 }
 

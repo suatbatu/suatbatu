@@ -1,16 +1,37 @@
-// Acoustic shot detection off an I2S MEMS microphone.
+// Acoustic shot detection off a two-microphone I2S array.
 //
 // A dedicated high-priority task owns the I2S channel, runs an envelope
-// follower over every sample, and pushes a microsecond timestamp into a queue
-// whenever a transient clears the threshold. Nothing in the audio path
-// allocates, blocks on the network, or touches the display.
+// follower over every sample of the primary channel, and for each candidate
+// onset decides three things before it reports a shot:
 //
-// See docs/DETECTION.md for the algorithm and how the timestamp is derived.
+//   1. is it above the adaptive threshold?          (is it loud enough)
+//   2. is it above the decaying echo guard?         (is it a shot, or shot 1's
+//                                                    reflection coming back)
+//   3. did it arrive along the shooter's axis?      (is it *your* shot, or the
+//                                                    next bay over)
+//
+// Nothing in the audio path allocates, blocks on the network, or touches the
+// display. See docs/DETECTION.md for the algorithm and the reasoning.
 #pragma once
 
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <stdint.h>
+
+// Why a candidate onset was thrown away — surfaced in the UI so that a timer
+// that seems to be "missing shots" can be told apart from one that is
+// correctly rejecting the bay next door.
+enum class RejectReason : uint8_t { None = 0, Echo, OffAxis, Muted, QueueFull };
+
+struct DetectorStats {
+  uint32_t accepted = 0;
+  uint32_t rejectedEcho = 0;
+  uint32_t rejectedOffAxis = 0;
+  int16_t lastLagSamples = 0;
+  int16_t lastAngleDeg = 0;
+  uint8_t lastConfidence = 0;  // 0..100, cross-correlation quality
+  bool secondMicPresent = false;
+};
 
 class ShotDetector {
  public:
@@ -27,7 +48,7 @@ class ShotDetector {
   // with a phantom shot at t=0.
   void muteUntil(int64_t untilUs);
 
-  // Pops the next detected shot timestamp (esp_timer microseconds).
+  // Pops the next accepted shot timestamp (esp_timer microseconds).
   // Returns false when the queue is empty. Call from the main loop.
   bool popShot(int64_t& atUs);
   void drain();
@@ -36,6 +57,9 @@ class ShotDetector {
   // instantaneous envelope and the running noise floor.
   uint16_t levelPerMille() const;
   uint16_t floorPerMille() const;
+
+  DetectorStats stats() const;
+  void resetStats();
 
  private:
   static void taskTrampoline(void* arg);
@@ -49,6 +73,13 @@ class ShotDetector {
   // torn reads are not possible on this target; they are only ever displayed.
   volatile float envelope_ = 0.0f;
   volatile float noiseFloor_ = 0.0f;
+  volatile uint32_t accepted_ = 0;
+  volatile uint32_t rejectedEcho_ = 0;
+  volatile uint32_t rejectedOffAxis_ = 0;
+  volatile int32_t lastLag_ = 0;
+  volatile int32_t lastAngle_ = 0;
+  volatile uint32_t lastConfidence_ = 0;
+  volatile bool secondMic_ = false;
 };
 
 extern ShotDetector detector;

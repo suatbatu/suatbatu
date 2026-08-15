@@ -11,6 +11,12 @@ class Display {
   bool begin();
   void tick();
 
+  // Re-applies rotation and contrast. Call after changing either — the flip is
+  // what makes a top-of-belt mount readable.
+  void applyDisplaySettings();
+  // Resets the auto-dim timer; any button press should call this.
+  void noteActivity();
+
   // Review screen scrolling.
   void scrollReview(int8_t delta);
   void resetReview();
@@ -30,7 +36,10 @@ class Display {
   void drawMenu();
   void drawFooter();
 
+  bool present_ = false;
+  bool dimmed_ = false;
   uint32_t lastDrawMs_ = 0;
+  uint32_t lastActivityMs_ = 0;
   int8_t reviewTop_ = 0;
   uint8_t menuIndex_ = 0;
   char netLine_[24] = "";

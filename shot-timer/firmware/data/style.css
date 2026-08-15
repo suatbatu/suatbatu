@@ -200,3 +200,8 @@ output { font: 600 15px var(--mono); color: var(--text); }
 .meter__floor { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); left: 0; }
 
 footer { padding: 18px 16px 28px; text-align: center; color: var(--muted); font-size: 12px; }
+
+/* ------------------------------------------------------- diagnostics --- */
+.diag { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; margin: 0; }
+.diag dt { color: var(--muted); font-size: 13px; }
+.diag dd { margin: 0; font: 500 13px/1.4 var(--mono); text-align: right; }

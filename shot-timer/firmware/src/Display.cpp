@@ -27,6 +27,11 @@ constexpr uint8_t SSD1306_I2C_ADDR = 0x3C;
 // in its own task and does not care either way.
 constexpr uint32_t FRAME_INTERVAL_MS = 66;
 
+// Auto-dim after this long idle. Purely a panel-life and battery measure — it
+// never dims while a string is open.
+constexpr uint32_t DIM_AFTER_MS = 45000;
+constexpr uint8_t DIM_CONTRAST = 24;
+
 constexpr uint8_t REVIEW_ROWS = 4;
 
 const uint8_t* FONT_SMALL = u8g2_font_5x8_tf;
@@ -79,9 +84,52 @@ struct MenuItem {
 };
 
 const MenuItem MENU[] = {
+    // Profile first: it is the setting that changes the other settings, and
+    // the one you touch when you swap guns between stages.
+    {"Profile",
+     [](char* b, size_t n) { snprintf(b, n, "%s", settings.profile().name); },
+     [](int8_t d) {
+       settings.activeProfile =
+           (settings.activeProfile + MAX_PROFILES + (d > 0 ? 1 : -1)) % MAX_PROFILES;
+     }},
+
     {"Sensitivity",
-     [](char* b, size_t n) { snprintf(b, n, "%u", settings.sensitivity); },
-     [](int8_t d) { settings.sensitivity = stepClamped<uint8_t>(settings.sensitivity, d, 1, 1, 10); }},
+     [](char* b, size_t n) { snprintf(b, n, "%u", settings.profile().sensitivity); },
+     [](int8_t d) {
+       settings.profile().sensitivity =
+           stepClamped<uint8_t>(settings.profile().sensitivity, d, 1, 1, 10);
+     }},
+
+    {"Direction",
+     [](char* b, size_t n) {
+       if (!settings.profile().directionGate) {
+         snprintf(b, n, "OFF");
+         return;
+       }
+       snprintf(b, n, "%u deg", settings.profile().maxOffAxisDeg);
+     },
+     [](int8_t d) {
+       Profile& p = settings.profile();
+       if (!p.directionGate) {
+         if (d > 0) p.directionGate = true;
+         return;
+       }
+       const uint8_t next = stepClamped<uint8_t>(p.maxOffAxisDeg, d, 5, 0, 89);
+       // Narrowing past the minimum turns the gate off, which is the same
+       // gesture as turning it on, one step further down.
+       if (next < 10 && d < 0) {
+         p.directionGate = false;
+       } else {
+         p.maxOffAxisDeg = std::max<uint8_t>(next, 10);
+       }
+     }},
+
+    {"Echo reject",
+     [](char* b, size_t n) { snprintf(b, n, "%u dB", settings.profile().echoRejectDb); },
+     [](int8_t d) {
+       settings.profile().echoRejectDb =
+           stepClamped<uint8_t>(settings.profile().echoRejectDb, d, 1, 0, 40);
+     }},
 
     {"Start delay",
      [](char* b, size_t n) { snprintf(b, n, "%s", delayModeName()); },
@@ -136,9 +184,19 @@ const MenuItem MENU[] = {
      },
      [](int8_t d) { settings.autoStopSec = stepClamped<uint16_t>(settings.autoStopSec, d, 5, 0, 600); }},
 
-    {"Blanking",
-     [](char* b, size_t n) { snprintf(b, n, "%ums", settings.blankingMs); },
-     [](int8_t d) { settings.blankingMs = stepClamped<uint16_t>(settings.blankingMs, d, 10, 20, 500); }},
+    {"Refractory",
+     [](char* b, size_t n) { snprintf(b, n, "%ums", settings.profile().refractoryMs); },
+     [](int8_t d) {
+       settings.profile().refractoryMs =
+           stepClamped<uint16_t>(settings.profile().refractoryMs, d, 5, 10, 500);
+     }},
+
+    {"Screen flip",
+     [](char* b, size_t n) { snprintf(b, n, "%s", settings.displayFlipped ? "TOP" : "FRONT"); },
+     [](int8_t) {
+       settings.displayFlipped = !settings.displayFlipped;
+       display.applyDisplaySettings();
+     }},
 };
 constexpr uint8_t MENU_COUNT = sizeof(MENU) / sizeof(MENU[0]);
 
@@ -156,13 +214,35 @@ bool Display::begin() {
 
   oled.begin();
   oled.setFontPosBaseline();
+  applyDisplaySettings();
+
   oled.clearBuffer();
   oled.setFont(FONT_MED);
   oled.drawStr(0, 20, FW_NAME);
   oled.setFont(FONT_SMALL);
   oled.drawStr(0, 36, "v" FW_VERSION);
   oled.sendBuffer();
+  present_ = true;
   return true;
+}
+
+void Display::applyDisplaySettings() {
+  if (!present_) {
+    // begin() calls this before marking the panel present; that is fine, the
+    // commands go to a panel we have already probed for.
+  }
+  oled.setDisplayRotation(settings.displayFlipped ? U8G2_R2 : U8G2_R0);
+  oled.setContrast(settings.displayContrast);
+  dimmed_ = false;
+  lastActivityMs_ = millis();
+}
+
+void Display::noteActivity() {
+  lastActivityMs_ = millis();
+  if (dimmed_) {
+    oled.setContrast(settings.displayContrast);
+    dimmed_ = false;
+  }
 }
 
 void Display::setNetLine(const char* s) {
@@ -186,12 +266,24 @@ void Display::menuAdjust(int8_t delta) { MENU[menuIndex_].adjust(delta); }
 const char* Display::menuItemName() const { return MENU[menuIndex_].name; }
 
 void Display::tick() {
+  if (!present_) return;
+
   const uint32_t now = millis();
+  const AppState st = app.state();
+
+  // Never dim mid-string: the whole point of the screen is the number on it.
+  if (st == AppState::Running || st == AppState::Countdown) {
+    noteActivity();
+  } else if (settings.autoDim && !dimmed_ && (now - lastActivityMs_) > DIM_AFTER_MS) {
+    oled.setContrast(DIM_CONTRAST);
+    dimmed_ = true;
+  }
+
   if (now - lastDrawMs_ < FRAME_INTERVAL_MS) return;
   lastDrawMs_ = now;
 
   oled.clearBuffer();
-  switch (app.state()) {
+  switch (st) {
     case AppState::Ready: drawReady(); break;
     case AppState::Countdown: drawCountdown(); break;
     case AppState::Running: drawRunning(); break;
@@ -207,11 +299,24 @@ void Display::drawFooter() {
 }
 
 void Display::drawReady() {
-  oled.setFont(FONT_MED);
-  oled.drawStr(0, 12, "READY");
-
   char buf[32];
+
+  oled.setFont(FONT_MED);
+  oled.drawStr(0, 12, settings.profile().name);
+
   oled.setFont(FONT_SMALL);
+  const DetectorStats st = detector.stats();
+  // "DIR 25" only when the gate can actually do something — with one
+  // microphone fitted it would be a lie.
+  if (settings.profile().directionGate && st.secondMicPresent) {
+    snprintf(buf, sizeof(buf), "DIR %u", settings.profile().maxOffAxisDeg);
+  } else if (settings.profile().directionGate) {
+    snprintf(buf, sizeof(buf), "DIR 1MIC");
+  } else {
+    snprintf(buf, sizeof(buf), "S%u", settings.profile().sensitivity);
+  }
+  oled.drawStr(128 - oled.getStrWidth(buf), 12, buf);
+
   if (settings.delayMode == DELAY_RANDOM) {
     char lo[8], hi[8];
     fmtSeconds(lo, sizeof(lo), settings.delayMinMs);
@@ -222,17 +327,19 @@ void Display::drawReady() {
     fmtSeconds(v, sizeof(v), settings.delayMode == DELAY_FIXED ? settings.delayFixedMs : 0);
     snprintf(buf, sizeof(buf), "Delay %s %ss", delayModeName(), v);
   }
-  oled.drawStr(0, 26, buf);
+  oled.drawStr(0, 25, buf);
 
-  snprintf(buf, sizeof(buf), "Sens %u   Par %s", settings.sensitivity,
-           settings.parEnabled ? "ON" : "off");
-  oled.drawStr(0, 36, buf);
+  snprintf(buf, sizeof(buf), "Sens %u  Par %s  n=%lu", settings.profile().sensitivity,
+           settings.parEnabled ? "ON" : "off", static_cast<unsigned long>(storage.count()));
+  oled.drawStr(0, 35, buf);
 
   // A live noise bar: point the mic downrange, watch it sit low, and you know
   // the sensitivity is not going to trip on wind before the beep.
   const int w = detector.levelPerMille() * 126 / 1000;
-  oled.drawFrame(0, 42, 128, 8);
-  if (w > 0) oled.drawBox(1, 43, std::min(w, 126), 6);
+  const int f = detector.floorPerMille() * 126 / 1000;
+  oled.drawFrame(0, 41, 128, 8);
+  if (w > 0) oled.drawBox(1, 42, std::min(w, 126), 6);
+  if (f > 0) oled.drawVLine(1 + std::min(f, 125), 40, 10);
 
   drawFooter();
 }

@@ -41,6 +41,10 @@ void handleButtons() {
   const Press up = buttons.take(Btn::Up);
   const Press down = buttons.take(Btn::Down);
 
+  if (start != Press::None || up != Press::None || down != Press::None) {
+    display.noteActivity();
+  }
+
   switch (app.state()) {
     case AppState::Ready:
       if (start == Press::Short) {
@@ -49,12 +53,12 @@ void handleButtons() {
       }
       if (up == Press::Long) {
         app.openMenu();
-      } else if (up == Press::Short && settings.sensitivity < 10) {
-        settings.sensitivity++;
+      } else if (up == Press::Short && settings.profile().sensitivity < 10) {
+        settings.profile().sensitivity++;
         markSettingsDirty();
       }
-      if (down == Press::Short && settings.sensitivity > 1) {
-        settings.sensitivity--;
+      if (down == Press::Short && settings.profile().sensitivity > 1) {
+        settings.profile().sensitivity--;
         markSettingsDirty();
       }
       break;

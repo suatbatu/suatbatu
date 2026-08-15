@@ -210,6 +210,20 @@ void TimerApp::statusJson(JsonObject out) const {
   out["armed"] = detector.armed();
   out["levelPerMille"] = detector.levelPerMille();
   out["floorPerMille"] = detector.floorPerMille();
+
+  // Rejection counters matter: without them, a correctly working direction gate
+  // and a broken microphone both look like "the timer is missing my shots".
+  const DetectorStats st = detector.stats();
+  JsonObject d = out["detector"].to<JsonObject>();
+  d["accepted"] = st.accepted;
+  d["rejectedEcho"] = st.rejectedEcho;
+  d["rejectedOffAxis"] = st.rejectedOffAxis;
+  d["lastLagSamples"] = st.lastLagSamples;
+  d["lastAngleDeg"] = st.lastAngleDeg;
+  d["lastConfidence"] = st.lastConfidence;
+  d["secondMic"] = st.secondMicPresent;
+  d["profile"] = settings.profile().name;
+  d["directionGate"] = settings.profile().directionGate;
   // Note: the time remaining in a countdown is deliberately never published.
   // Anyone who can see it has the start cue the random delay exists to remove.
   if (saveFailed_) out["saveFailed"] = true;

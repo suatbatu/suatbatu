@@ -7,7 +7,7 @@ Prices are rough 2026 hobbyist single-unit, for orientation only.
 | Part | Notes | ≈ Cost |
 |---|---|---|
 | **ESP32-S3-DevKitC-1** (N8R2 or N16R8) | The partition table assumes **8 MB flash**. Adjust `partitions.csv` for a 4 MB board. S3 over classic ESP32 for the cleaner I2S peripheral and the native USB serial. | $8–12 |
-| **I2S MEMS microphone** — see the note below | INMP441 breakout is the cheap default | $3–6 |
+| **2 × I2S MEMS microphone** — see the note below | INMP441 breakouts are the cheap default. Both sit on one bus; the second one costs three solder joints and no GPIO | $6–12 |
 | **SSD1306 128×64 OLED**, I2C, 0.96" | White or yellow/blue; any 0x3C module | $4 |
 | **Piezo sounder**, 3–5 V, ≥ 95 dB @ 10 cm | A *sounder*, not a bare disc — see below | $2–4 |
 | 3 × momentary tactile buttons, 12 mm | One large for START | $2 |
@@ -37,8 +37,16 @@ shot from the next bay over by its *shape* needs a signal that has a shape. If
 you intend to go that way, start with a high-AOP part (T5837) and put an
 acoustic resistance — a small port, a layer of felt — in front of it.
 
-Recommendation: **INMP441 to get running**, T5837 if you take
-[`ROADMAP.md`](ROADMAP.md) phase 3 seriously.
+Recommendation: **two INMP441 to get running.** Buy a matched pair from the
+same batch if you can — the direction gate correlates the two channels against
+each other, and while it is amplitude-independent by design, two parts with very
+different frequency responses will correlate less strongly and push more
+candidates below the confidence floor (where the gate fails open and stops
+rejecting anything).
+
+Move to the T5837 if you later want spectral discrimination on top of the
+directional gate: telling your shot from another by its *shape* needs a signal
+that has a shape, and a clipped one does not.
 
 ## The buzzer is the other one
 
@@ -63,6 +71,5 @@ An unmeasured loudness claim is worth nothing.
 
 | Part | For |
 |---|---|
-| Second I2S microphone | Two-mic shot isolation, [`ROADMAP.md`](ROADMAP.md) phase 3 |
-| Ambient light sensor (BH1750) | Auto-dim the OLED, as the SG Timer does |
+| Ambient light sensor (BH1750) | Automatic contrast, the last piece of the SG Timer's display story |
 | Piezo step-up driver / transformer | Getting past ~95 dB |
