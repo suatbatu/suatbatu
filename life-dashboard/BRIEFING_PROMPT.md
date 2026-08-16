@@ -55,6 +55,8 @@ Build the day's judgment, not just a dump:
   happens if it's ignored. Severity `critical` or `warn`.
 - **`deadlines`** — anything dated inside `horizon.deadline_days`, from tasks,
   calendar all-day markers, and mail. Sorted by date; the page computes countdowns.
+  Give each one **`actions`** — see below. This is not optional; a ledger row with
+  no way to act on it is just a reminder.
 - **`priorities`** — from `tasks.md`, ranked by `!` then due date. Max ~8.
 - **`counters`** — three numbers: events today, open items needing a reply,
   deadlines inside 7 days. Each gets a one-line `note`.
@@ -62,6 +64,34 @@ Build the day's judgment, not just a dump:
   name the one thing most likely to go wrong, and be specific. Light `<em>` is
   allowed for event names. No greeting (the page writes its own), no filler,
   no "Have a great day!".
+
+### Action links on the ledger
+
+Every deadline gets one or two one-click buttons that land Batuhan exactly where the
+thing gets resolved. Keep them to two — a third is clutter, not convenience.
+
+```js
+actions: [
+  { label: "Statement", icon: "mail",  href: "https://mail.google.com/mail/u/0/#inbox/<threadId>" },
+  { label: "Route",     icon: "map",   href: "https://www.google.com/maps/dir/?api=1&destination=..." }
+]
+```
+
+- `icon` is one of `mail`, `reply`, `event`, `map`, `web`. Anything else falls back to `web`.
+- **Gmail** — `https://mail.google.com/mail/u/0/#inbox/<threadId>`, using the thread
+  `id` from `search_threads`. Append `?compose=new` for a "reply to cancel" style action.
+- **Calendar** — use the event's own `htmlLink` field verbatim. Do not hand-build these.
+- **Maps** — `https://www.google.com/maps/dir/?api=1&destination=<url-encoded place>`,
+  only when the deadline genuinely involves travel.
+
+**Only ever link to something that came from the data you actually fetched.** A thread
+id you read, an `htmlLink` you were given, or a destination named in the event. Never
+guess a bank's login URL, a government portal, or a company's account page from memory
+— a wrong link on a payment deadline is worse than no link. If you have no real target,
+give the row no `actions` at all.
+
+Label buttons by what's on the other side ("Tahakkuk fişi", "Answer the invite"), not
+by the mechanism ("Open Gmail").
 
 **Honesty rules.** Never invent a date, an amount, or a deadline. If you're
 inferring a due date from convention rather than reading it (e.g. Turkish tax

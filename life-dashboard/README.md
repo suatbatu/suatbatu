@@ -76,6 +76,10 @@ so `07:55` local is `55 4 * * *`.
   what happens if you ignore it.
 - **Deadline ledger** — sorted by days remaining. A `CONFIRM DATE` chip means the
   agent inferred that date rather than reading it, so check it before trusting it.
+  Each row carries one or two buttons that open the exact email, calendar event or
+  route it refers to, so a countdown is one click from being dealt with. Links are
+  only ever built from real data — a thread the agent read or an event link Google
+  gave it — never guessed from a company name.
 - **Inbox** — a red dot needs action, amber is worth watching, grey is resolved.
 
 If you open the page on a later day, a banner at the top tells you how stale it is

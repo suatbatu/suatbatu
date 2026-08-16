@@ -87,44 +87,68 @@ const DATA = {
   ],
 
   // Ranked by what bites soonest. `date` drives the countdown.
+  // `actions` are one-click deep links straight to where the thing gets resolved.
+  // Every href must come from real data — a Gmail thread id or a calendar htmlLink.
   deadlines: [
     {
       title: "Q2 geçici vergi — tahakkuk fişi",
       date: "2026-08-17",
       kind: "money",
       detail: "E-Mükellef sent the accrual slip Thu 13 Aug. Standard deadline is 17 August — confirm with the accountant before assuming.",
-      unverified: true
+      unverified: true,
+      actions: [
+        { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
+        { label: "Ask the accountant", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b?compose=new" }
+      ]
     },
     {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Card 4743 ****4363. TL, EUR and USD statements all issued 10 Aug."
+      detail: "Card 4743 ****4363. TL, EUR and USD statements all issued 10 Aug.",
+      actions: [
+        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" },
+        { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=azRoN2kxamNxMGtubjFjMmE4aG44aTFpMTdfMjAyNjA4MjAgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
+      ]
     },
     {
       title: "Furkan Mert Koç Düğün — Nevşehir",
       date: "2026-08-22",
       kind: "travel",
-      detail: "09:00–21:00. Roughly 5 hours each way from İstanbul — travel needs booking this week."
+      detail: "09:00–21:00. Roughly 5 hours each way from İstanbul — travel needs booking this week.",
+      actions: [
+        { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" },
+        { label: "Route", icon: "map", href: "https://www.google.com/maps/dir/?api=1&destination=Nev%C5%9Fehir%2C%20T%C3%BCrkiye" }
+      ]
     },
     {
       title: "Orçun — doğum günü",
       date: "2026-08-23",
       kind: "social",
-      detail: "Recurring reminder on the personal calendar."
+      detail: "Recurring reminder on the personal calendar.",
+      actions: [
+        { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=MDdyMW9rZmlidHV1MzFoczdnZHNwbTM4ZjdfMjAyNjA4MjMgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
+      ]
     },
     {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-09-12",
       kind: "social",
-      detail: "Invitation from Rana, sat 12 Sep 16:30–23:00. Not yet answered."
+      detail: "Invitation from Rana, sat 12 Sep 16:30–23:00. Not yet answered.",
+      actions: [
+        { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
+      ]
     },
     {
       title: "Mobiliz araç takip — first billed month",
       date: "2026-09-15",
       kind: "money",
       detail: "Two-year free period ended today. Subscription billing starts 15 Sep unless you cancel.",
-      startedToday: true
+      startedToday: true,
+      actions: [
+        { label: "Their notice", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa" },
+        { label: "Reply to cancel", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa?compose=new" }
+      ]
     }
   ],
 
@@ -614,6 +638,34 @@ body {
 .ledger .title { font-weight: 600; line-height: 1.35; }
 .ledger .det { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
 
+/* One-click actions — squared to match the chips, not pills */
+.acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+.act {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.act:hover, .act:focus-visible {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.act svg {
+  width: 13px; height: 13px; flex: none;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round;
+}
+
 /* ---------- Priorities ---------- */
 .pri { list-style: none; margin: 0; padding: 0; }
 .pri li {
@@ -928,6 +980,15 @@ a:focus-visible, [tabindex]:focus-visible {
   }).join("");
 
   /* ---- ledger ---- */
+  const ICONS = {
+    mail:  '<path d="M2 4h12v8H2z"/><path d="M2.4 4.6L8 8.6l5.6-4"/>',
+    reply: '<path d="M6.8 3.2L2 7.6l4.8 4.4"/><path d="M2.6 7.6H10a4 4 0 0 1 4 4v1.2"/>',
+    event: '<rect x="2" y="3.2" width="12" height="10.8" rx="1"/><path d="M2 6.6h12M5.4 1.6v3M10.6 1.6v3"/>',
+    map:   '<path d="M8 14.2s4.4-4.3 4.4-7.5a4.4 4.4 0 1 0-8.8 0C3.6 9.9 8 14.2 8 14.2z"/><circle cx="8" cy="6.6" r="1.6"/>',
+    web:   '<path d="M9.5 3.5h3v3"/><path d="M12.5 3.5L7.4 8.6"/><path d="M12 9.6v2.9H3.2V3.6h2.9"/>'
+  };
+  const icon = k => '<svg viewBox="0 0 16 16" aria-hidden="true">' + (ICONS[k] || ICONS.web) + "</svg>";
+
   $("ledger").innerHTML = DATA.deadlines
     .slice()
     .sort((a, b) => toUTC(a.date) - toUTC(b.date))
@@ -941,6 +1002,12 @@ a:focus-visible, [tabindex]:focus-visible {
             (x.unverified ? ' <span class="chip warn">confirm date</span>' : "") +
           "</div>" +
           (x.detail ? '<div class="det">' + esc(x.detail) + "</div>" : "") +
+          (x.actions && x.actions.length
+            ? '<div class="acts">' + x.actions.map(a =>
+                '<a class="act" href="' + esc(a.href) + '" target="_blank" rel="noopener">' +
+                  icon(a.icon) + "<span>" + esc(a.label) + "</span>" +
+                "</a>").join("") + "</div>"
+            : "") +
           "</td>" +
           '<td class="num d ' + cls + '">' + esc(num) + "<small>" + esc(label) + "</small></td>" +
         "</tr>";
