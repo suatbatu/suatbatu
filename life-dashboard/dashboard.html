@@ -1,0 +1,991 @@
+<title>Batuhan's Day Board</title>
+
+<script>
+// ===================== DATA START =====================
+// Everything below is regenerated each morning by the briefing agent.
+// See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
+const DATA = {
+  generatedAt: "2026-08-16T18:10:00+03:00",
+  tz: "Europe/Istanbul",
+  owner: "Batuhan",
+
+  today: {
+    date: "2026-08-16",
+    label: "Sunday, 16 August 2026",
+    weekNumber: 34,
+    holiday: null
+  },
+
+  briefing:
+    "Nothing on the calendar today — the last clear day for a while, so treat it as one. " +
+    "Tomorrow is the pinch point: car service at 09:00, the Safetec call at 16:00, and a " +
+    "double-booked evening where the old <em>Lemi</em> block still overlaps Rana's " +
+    "<em>Doktor Lemi Randevu</em>. Clear that before you go to bed. " +
+    "Two things carry money and can't slip: the Q2 geçici vergi tahakkuk fişi landed on " +
+    "Wednesday, and the Maximiles Black son ödeme is Thursday. Nevşehir on Saturday is a " +
+    "full-day drive each way — book it today while you have the time.",
+
+  counters: [
+    { label: "on today",      value: 0, tone: "clear",    note: "next: tomorrow 09:00" },
+    { label: "need a reply",  value: 5, tone: "warn",     note: "3 invites · 2 admin" },
+    { label: "due in 7 days", value: 4, tone: "critical", note: "2 carry money" }
+  ],
+
+  // Days rendered as timelines. First entry is today.
+  days: [
+    {
+      date: "2026-08-16",
+      label: "Today · Sunday 16 Aug",
+      events: [],
+      emptyNote: "No events. Nothing owns this day but you."
+    },
+    {
+      date: "2026-08-17",
+      label: "Tomorrow · Monday 17 Aug",
+      events: [
+        {
+          start: "09:00", end: "10:00",
+          title: "Araba Servis",
+          calendar: "Personal",
+          where: null,
+          with: "Rana",
+          rsvp: "accepted",
+          conflict: false
+        },
+        {
+          start: "16:00", end: "17:00",
+          title: "Safetec × ForestGuard",
+          calendar: "KOZALAK",
+          where: "meet.google.com/jyf-xwfa-xzo",
+          link: "https://meet.google.com/jyf-xwfa-xzo",
+          with: "Iryna Kovalova, Tymoteusz Bojkowski, Dr. M. A. Örnek",
+          rsvp: "accepted",
+          conflict: false
+        },
+        {
+          start: "17:30", end: "19:30",
+          title: "Lemi",
+          calendar: "Personal",
+          where: null,
+          with: "Rana — declined",
+          rsvp: "organizer",
+          conflict: true,
+          conflictNote: "Superseded? Rana declined this and created the 18:30 appointment instead."
+        },
+        {
+          start: "18:30", end: "19:30",
+          title: "Doktor Lemi Randevu",
+          calendar: "Personal",
+          where: "Güzel Sesler",
+          with: "Rana",
+          rsvp: "needsAction",
+          conflict: true,
+          conflictNote: "Overlaps the 17:30 block above. You haven't responded yet."
+        }
+      ]
+    }
+  ],
+
+  // Ranked by what bites soonest. `date` drives the countdown.
+  deadlines: [
+    {
+      title: "Q2 geçici vergi — tahakkuk fişi",
+      date: "2026-08-17",
+      kind: "money",
+      detail: "E-Mükellef sent the accrual slip Thu 13 Aug. Standard deadline is 17 August — confirm with the accountant before assuming.",
+      unverified: true
+    },
+    {
+      title: "Maximiles Black — son ödeme",
+      date: "2026-08-20",
+      kind: "money",
+      detail: "Card 4743 ****4363. TL, EUR and USD statements all issued 10 Aug."
+    },
+    {
+      title: "Furkan Mert Koç Düğün — Nevşehir",
+      date: "2026-08-22",
+      kind: "travel",
+      detail: "09:00–21:00. Roughly 5 hours each way from İstanbul — travel needs booking this week."
+    },
+    {
+      title: "Orçun — doğum günü",
+      date: "2026-08-23",
+      kind: "social",
+      detail: "Recurring reminder on the personal calendar."
+    },
+    {
+      title: "Kısakürek Düğün — RSVP",
+      date: "2026-09-12",
+      kind: "social",
+      detail: "Invitation from Rana, sat 12 Sep 16:30–23:00. Not yet answered."
+    },
+    {
+      title: "Mobiliz araç takip — first billed month",
+      date: "2026-09-15",
+      kind: "money",
+      detail: "Two-year free period ended today. Subscription billing starts 15 Sep unless you cancel.",
+      startedToday: true
+    }
+  ],
+
+  // Things genuinely waiting on you, pulled from calendar RSVPs + inbox.
+  needsYou: [
+    {
+      what: "Respond to Doktor Lemi Randevu",
+      source: "Calendar · tomorrow 18:30",
+      why: "Still unanswered, and it collides with your own 17:30 block.",
+      severity: "critical"
+    },
+    {
+      what: "Download GitHub 2FA recovery codes",
+      source: "GitHub · Sun 16 Aug",
+      why: "2FA was enabled this morning. Without saved codes, a lost phone locks you out permanently.",
+      severity: "critical"
+    },
+    {
+      what: "Confirm the geçici vergi payment date",
+      source: "E-Mükellef · Thu 13 Aug",
+      why: "Tahakkuk fişi issued. Late filing penalties are automatic.",
+      severity: "critical"
+    },
+    {
+      what: "Accept or decline ForestGuard bi-weekly check-in",
+      source: "Calendar · Tue 13:30, Teams",
+      why: "Recurring invite from Lloyd's Register, never answered — it just sits on your calendar.",
+      severity: "warn"
+    },
+    {
+      what: "RSVP to Kısakürek Düğün, 12 Sep",
+      source: "Rana İmam · Sun 16 Aug",
+      why: "Invitation arrived today.",
+      severity: "warn"
+    }
+  ],
+
+  priorities: [
+    { text: "Save the GitHub recovery codes", tag: "security", due: "2026-08-17", pri: 1 },
+    { text: "Confirm and pay Q2 geçici vergi", tag: "money", due: "2026-08-17", pri: 1 },
+    { text: "Untangle Monday evening — cancel Lemi, accept the appointment", tag: "health", due: "2026-08-17", pri: 1 },
+    { text: "Book Nevşehir travel for Saturday", tag: "travel", due: "2026-08-19", pri: 1 },
+    { text: "Pay the Maximiles Black card", tag: "money", due: "2026-08-20", pri: 1 },
+    { text: "Fix the failing shot-timer firmware build", tag: "code", due: "2026-08-21", pri: 2 },
+    { text: "Decide: renew or cancel Mobiliz araç takip", tag: "money", due: "2026-09-10", pri: 2 }
+  ],
+
+  weekAhead: [
+    { date: "2026-08-18", label: "Tue 18", items: ["ForestGuard Bi-weekly Check-in · 13:30 · Teams"] },
+    { date: "2026-08-19", label: "Wed 19", items: [] },
+    { date: "2026-08-20", label: "Thu 20", items: ["Black kart son ödeme"] },
+    { date: "2026-08-21", label: "Fri 21", items: [] },
+    { date: "2026-08-22", label: "Sat 22", items: ["Furkan Mert Koç Düğün · 09:00–21:00 · Nevşehir"] },
+    { date: "2026-08-23", label: "Sun 23", items: ["Orçun doğum günü"] }
+  ],
+
+  inbox: {
+    unreadEstimate: 201,
+    windowLabel: "unread, last 14 days",
+    threads: [
+      { from: "Mobiliz",        subject: "Bedelsiz süre bitişine 30 gün kaldı",        when: "today 19:55", flag: "action" },
+      { from: "Rana İmam",      subject: "Davetiye: Kısakürek Düğün, 12 Eyl",          when: "today 18:37", flag: "action" },
+      { from: "GitHub",         subject: "Please download your two-factor recovery codes", when: "today 13:25", flag: "action" },
+      { from: "GitHub Actions", subject: "shot-timer — Run failed: CI on main",         when: "today 13:33", flag: "watch" },
+      { from: "E-Mükellef",     subject: "2026 2. Dönem Geçici Vergi Beyannamesi Tahakkuk Fişi", when: "Thu 21:11", flag: "action" },
+      { from: "İş Bankası",     subject: "Maximiles Black hesap özeti — TL / EUR / USD", when: "Wed 08:30", flag: "action" },
+      { from: "Global Blue",    subject: "Vergi iadeniz ödendi",                        when: "Fri 17:46", flag: "done" }
+    ]
+  },
+
+  sources: ["Google Calendar ×4", "Gmail", "tasks.md"]
+};
+// ====================== DATA END ======================
+</script>
+
+<style>
+/* ---------- Tokens: light is the base, both dark paths restate them ---------- */
+:root {
+  --ground:     #F1F4F3;
+  --surface:    #FFFFFF;
+  --surface-2:  #E9EEEC;
+  --ink:        #0E1D1B;
+  --ink-soft:   #5C6E6B;
+  --ink-faint:  #8A9A97;
+  --line:       #D5DFDC;
+  --line-soft:  #E4EBE9;
+  --accent:     #0E6A5B;
+  --accent-ink: #FFFFFF;
+  --accent-wash:#DCEBE6;
+  --critical:   #A8352B;
+  --critical-wash:#F6E3E0;
+  --warn:       #91630B;
+  --warn-wash:  #F6EBD5;
+  --clear:      #2C7A4E;
+  --clear-wash: #DFEEE4;
+  --shadow:     0 1px 2px rgba(14,29,27,.05), 0 8px 24px -16px rgba(14,29,27,.28);
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:     #0A1312;
+    --surface:    #101C1A;
+    --surface-2:  #172523;
+    --ink:        #E5EDEA;
+    --ink-soft:   #93A6A2;
+    --ink-faint:  #6B7D7A;
+    --line:       #1F2E2C;
+    --line-soft:  #182422;
+    --accent:     #45CBAE;
+    --accent-ink: #06201B;
+    --accent-wash:#12312B;
+    --critical:   #E9705F;
+    --critical-wash:#331916;
+    --warn:       #DFA53A;
+    --warn-wash:  #322614;
+    --clear:      #58C084;
+    --clear-wash: #15301F;
+    --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"] {
+  --ground:     #0A1312;
+  --surface:    #101C1A;
+  --surface-2:  #172523;
+  --ink:        #E5EDEA;
+  --ink-soft:   #93A6A2;
+  --ink-faint:  #6B7D7A;
+  --line:       #1F2E2C;
+  --line-soft:  #182422;
+  --accent:     #45CBAE;
+  --accent-ink: #06201B;
+  --accent-wash:#12312B;
+  --critical:   #E9705F;
+  --critical-wash:#331916;
+  --warn:       #DFA53A;
+  --warn-wash:  #322614;
+  --clear:      #58C084;
+  --clear-wash: #15301F;
+  --shadow:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 20px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ---------- Stale ribbon ---------- */
+.stale {
+  display: none;
+  gap: 10px;
+  align-items: baseline;
+  padding: 10px 14px;
+  border: 1px solid var(--warn);
+  background: var(--warn-wash);
+  color: var(--warn);
+  border-radius: 3px;
+  font-size: 13px;
+}
+.stale.on { display: flex; }
+.stale b { font-family: var(--mono); font-weight: 600; }
+
+/* ---------- Masthead ---------- */
+.masthead {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+  padding-bottom: 18px;
+  border-bottom: 2px solid var(--ink);
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.eyebrow .dot { color: var(--line); }
+.masthead h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.1;
+  margin: 8px 0 0;
+  text-wrap: balance;
+  letter-spacing: -.01em;
+}
+.masthead h1 em { font-style: italic; color: var(--accent); }
+
+.counters {
+  display: flex;
+  gap: 10px;
+}
+.counter {
+  min-width: 104px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--tone, var(--accent));
+  background: var(--surface);
+  border-radius: 2px;
+}
+.counter .n {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--tone, var(--accent));
+}
+.counter .l {
+  display: block;
+  margin-top: 5px;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+}
+.counter .s {
+  display: block;
+  margin-top: 2px;
+  font-size: 10.5px;
+  font-family: var(--mono);
+  color: var(--ink-faint);
+}
+.tone-clear    { --tone: var(--clear); }
+.tone-warn     { --tone: var(--warn); }
+.tone-critical { --tone: var(--critical); }
+
+/* ---------- Briefing ---------- */
+.briefing {
+  font-family: var(--serif);
+  font-size: clamp(16px, 2vw, 18.5px);
+  line-height: 1.62;
+  max-width: 68ch;
+  color: var(--ink);
+  border-left: 3px solid var(--accent);
+  padding-left: 18px;
+}
+.briefing em { color: var(--accent); font-style: italic; }
+
+/* ---------- Board ---------- */
+.board {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+.col { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.panel > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-2);
+}
+.panel > header h2 {
+  margin: 0;
+  font-size: 12px;
+  font-family: var(--mono);
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.panel > header .meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.panel .body { padding: 4px 16px 16px; }
+
+/* ---------- Timeline ---------- */
+.day + .day { border-top: 1px solid var(--line); }
+.day > .dayhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px 8px;
+}
+.day > .dayhead h3 {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+.day > .dayhead .cnt {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.tl { list-style: none; margin: 0; padding: 0 16px 16px; }
+.tl li {
+  display: grid;
+  grid-template-columns: 58px 14px minmax(0, 1fr);
+  gap: 0 10px;
+  position: relative;
+  padding-bottom: 14px;
+}
+.tl li:last-child { padding-bottom: 2px; }
+
+.tl .time {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  padding-top: 1px;
+}
+.tl .time span {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.tl .rail { position: relative; }
+.tl .rail::before {
+  content: "";
+  position: absolute;
+  left: 5px; top: 6px; bottom: -14px;
+  width: 1px;
+  background: var(--line);
+}
+.tl li:last-child .rail::before { display: none; }
+.tl .rail::after {
+  content: "";
+  position: absolute;
+  left: 1px; top: 4px;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--accent);
+}
+.tl li.is-conflict .rail::after { border-color: var(--critical); background: var(--critical); }
+
+.tl .what { min-width: 0; }
+.tl .what .t {
+  font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.tl .what .d {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.tl .what .d a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent-wash); }
+.tl .what .d a:hover { border-bottom-color: var(--accent); }
+.tl .note {
+  margin-top: 6px;
+  font-size: 12px;
+  padding: 7px 10px;
+  border-radius: 2px;
+  background: var(--critical-wash);
+  color: var(--critical);
+  border-left: 2px solid var(--critical);
+}
+
+.empty {
+  margin: 2px 16px 18px;
+  padding: 18px;
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+  color: var(--ink-soft);
+  font-size: 13.5px;
+  text-align: center;
+  background: var(--ground);
+}
+
+/* ---------- Chips ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+.chip {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  background: var(--ground);
+  white-space: nowrap;
+}
+.chip.acc  { color: var(--accent);   border-color: var(--accent);   background: var(--accent-wash); }
+.chip.crit { color: var(--critical); border-color: var(--critical); background: var(--critical-wash); }
+.chip.warn { color: var(--warn);     border-color: var(--warn);     background: var(--warn-wash); }
+.chip.ok   { color: var(--clear);    border-color: var(--clear);    background: var(--clear-wash); }
+
+/* ---------- Needs you ---------- */
+.needs { list-style: none; margin: 0; padding: 0; }
+.needs li {
+  display: grid;
+  grid-template-columns: 3px minmax(0, 1fr);
+  gap: 0 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.needs li:last-child { border-bottom: 0; padding-bottom: 2px; }
+.needs .stripe { background: var(--sev, var(--accent)); border-radius: 2px; }
+.needs .what { font-weight: 600; font-size: 14px; line-height: 1.35; }
+.needs .why  { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; }
+.needs .src  {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+.sev-critical { --sev: var(--critical); }
+.sev-warn     { --sev: var(--warn); }
+
+/* ---------- Ledger ---------- */
+.ledger { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.ledger th {
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 500;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.ledger th.num, .ledger td.num { text-align: right; }
+.ledger td {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+}
+.ledger tr:last-child td { border-bottom: 0; }
+.ledger .d {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  padding-left: 14px;
+}
+.ledger .d small {
+  display: block;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.d-now  { color: var(--critical); }
+.d-soon { color: var(--warn); }
+.d-far  { color: var(--ink-soft); }
+.ledger .title { font-weight: 600; line-height: 1.35; }
+.ledger .det { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+
+/* ---------- Priorities ---------- */
+.pri { list-style: none; margin: 0; padding: 0; }
+.pri li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.pri li:last-child { border-bottom: 0; }
+.pri .box {
+  width: 13px; height: 13px;
+  border: 1.5px solid var(--ink-faint);
+  border-radius: 2px;
+  align-self: center;
+}
+.pri li.p1 .box { border-color: var(--critical); }
+.pri .txt { font-size: 13.5px; line-height: 1.4; }
+.pri .when {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+.pri li.p1 .when { color: var(--critical); }
+
+/* ---------- Week: one column per day, so the week reads left to right ---------- */
+.week {
+  list-style: none;
+  margin: 0;
+  padding: 10px 0 2px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.week > li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px;
+  border-right: 1px solid var(--line-soft);
+  min-height: 78px;
+}
+.week > li:first-child { padding-left: 0; }
+.week > li:last-child { border-right: 0; padding-right: 0; }
+.week .dd {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--line);
+}
+.week > li.busy .dd { color: var(--accent); border-bottom-color: var(--accent); }
+.week .none { color: var(--ink-faint); font-style: italic; font-size: 12.5px; }
+.week ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.week ul li { font-size: 12.5px; line-height: 1.4; overflow-wrap: anywhere; }
+
+@media (max-width: 760px) {
+  .week { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 0; }
+  .week > li { padding: 0 14px; }
+  .week > li:first-child { padding-left: 14px; }
+  .week > li:nth-child(odd) { padding-left: 0; }
+  .week > li:nth-child(even) { border-right: 0; padding-right: 0; }
+}
+
+/* ---------- Inbox ---------- */
+.mail { list-style: none; margin: 0; padding: 0; }
+.mail li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.mail li:last-child { border-bottom: 0; }
+.mail .from { font-weight: 600; font-size: 13px; }
+.mail .subj { grid-column: 1; font-size: 12.5px; color: var(--ink-soft); overflow-wrap: anywhere; }
+.mail .when {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.mail li.f-action .from::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--critical);
+  margin-right: 7px;
+  vertical-align: middle;
+}
+.mail li.f-watch .from::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--warn);
+  margin-right: 7px;
+  vertical-align: middle;
+}
+.mail li.f-done .from::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--line);
+  margin-right: 7px;
+  vertical-align: middle;
+}
+
+/* ---------- Footer ---------- */
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  align-items: baseline;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-faint);
+  letter-spacing: .04em;
+}
+
+a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .board { grid-template-columns: minmax(0, 1fr); }
+  .masthead { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  .counters { flex-wrap: wrap; }
+  .counter { flex: 1 1 auto; min-width: 92px; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 20px 14px 56px; }
+  .tl li { grid-template-columns: 50px 14px minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+</style>
+
+<div class="wrap">
+  <div class="stale" id="stale"></div>
+
+  <header class="masthead">
+    <div>
+      <div class="eyebrow" id="eyebrow"></div>
+      <h1 id="greeting"></h1>
+    </div>
+    <div class="counters" id="counters"></div>
+  </header>
+
+  <p class="briefing" id="briefing"></p>
+
+  <div class="board">
+    <div class="col">
+      <section class="panel">
+        <header><h2>Schedule</h2><span class="meta" id="sched-meta"></span></header>
+        <div id="days"></div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Top priorities</h2><span class="meta">from tasks.md</span></header>
+        <div class="body"><ul class="pri" id="pri"></ul></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel">
+        <header><h2>Needs you</h2><span class="meta" id="needs-meta"></span></header>
+        <div class="body"><ul class="needs" id="needs"></ul></div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Deadline ledger</h2><span class="meta">days remaining</span></header>
+        <div class="body" style="overflow-x:auto">
+          <table class="ledger">
+            <thead><tr><th>What</th><th class="num">Left</th></tr></thead>
+            <tbody id="ledger"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Inbox</h2><span class="meta" id="inbox-meta"></span></header>
+        <div class="body"><ul class="mail" id="mail"></ul></div>
+      </section>
+    </div>
+  </div>
+
+  <section class="panel">
+    <header><h2>Week ahead</h2><span class="meta" id="week-meta"></span></header>
+    <div class="body"><ul class="week" id="week"></ul></div>
+  </section>
+
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // Day math on plain YYYY-MM-DD strings, so no timezone drift.
+  const toUTC = (iso) => { const [y, m, d] = iso.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+  const daysBetween = (from, to) => Math.round((toUTC(to) - toUTC(from)) / 86400000);
+
+  const base = DATA.today.date;
+
+  /* ---- stale check: is the reader looking at this on a later day? ---- */
+  const now = new Date();
+  const realToday = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0")
+  ].join("-");
+  const drift = daysBetween(base, realToday);
+  if (drift > 0) {
+    $("stale").className = "stale on";
+    $("stale").innerHTML =
+      "<b>" + drift + (drift === 1 ? " day" : " days") + " old</b>" +
+      "<span>This board was built for " + esc(DATA.today.label) +
+      ". Countdowns below are counted from that morning.</span>";
+  }
+
+  /* ---- masthead ---- */
+  const hour = now.getHours();
+  const salute = hour < 5 ? "Still up" : hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+  $("greeting").innerHTML = esc(salute) + ", <em>" + esc(DATA.owner) + "</em>.";
+  $("eyebrow").innerHTML = [
+    esc(DATA.today.label),
+    "Week " + DATA.today.weekNumber,
+    esc(DATA.tz)
+  ].map(s => "<span>" + s + "</span>").join('<span class="dot">/</span>');
+
+  $("counters").innerHTML = DATA.counters.map(c =>
+    '<div class="counter tone-' + esc(c.tone) + '">' +
+      '<span class="n">' + esc(c.value) + "</span>" +
+      '<span class="l">' + esc(c.label) + "</span>" +
+      (c.note ? '<span class="s">' + esc(c.note) + "</span>" : "") +
+    "</div>"
+  ).join("");
+
+  $("briefing").innerHTML = DATA.briefing;   // trusted: written by the briefing agent
+
+  /* ---- schedule ---- */
+  const totalEvents = DATA.days.reduce((n, d) => n + d.events.length, 0);
+  $("sched-meta").textContent = totalEvents + (totalEvents === 1 ? " event" : " events");
+
+  $("days").innerHTML = DATA.days.map(day => {
+    const head =
+      '<div class="dayhead"><h3>' + esc(day.label) + "</h3>" +
+      '<span class="cnt">' + (day.events.length || "—") + "</span></div>";
+
+    if (!day.events.length) {
+      return '<div class="day">' + head +
+        '<p class="empty">' + esc(day.emptyNote || "Nothing scheduled.") + "</p></div>";
+    }
+
+    const rows = day.events.map(ev => {
+      const bits = [];
+      if (ev.where) {
+        bits.push(ev.link
+          ? '<a href="' + esc(ev.link) + '" target="_blank" rel="noopener">' + esc(ev.where) + "</a>"
+          : esc(ev.where));
+      }
+      if (ev.with) bits.push(esc(ev.with));
+
+      const chips = [];
+      if (ev.calendar) chips.push('<span class="chip">' + esc(ev.calendar) + "</span>");
+      if (ev.rsvp === "needsAction") chips.push('<span class="chip crit">no reply yet</span>');
+      if (ev.rsvp === "accepted") chips.push('<span class="chip ok">accepted</span>');
+      if (ev.rsvp === "organizer") chips.push('<span class="chip acc">you organise</span>');
+
+      return '<li class="' + (ev.conflict ? "is-conflict" : "") + '">' +
+          '<div class="time">' + esc(ev.start) + "<span>" + esc(ev.end) + "</span></div>" +
+          '<div class="rail"></div>' +
+          '<div class="what">' +
+            '<div class="t">' + esc(ev.title) + "</div>" +
+            (bits.length ? '<div class="d">' + bits.join(" · ") + "</div>" : "") +
+            (chips.length ? '<div class="chips">' + chips.join("") + "</div>" : "") +
+            (ev.conflictNote ? '<div class="note">' + esc(ev.conflictNote) + "</div>" : "") +
+          "</div>" +
+        "</li>";
+    }).join("");
+
+    return '<div class="day">' + head + '<ul class="tl">' + rows + "</ul></div>";
+  }).join("");
+
+  /* ---- priorities ---- */
+  $("pri").innerHTML = DATA.priorities.map(p => {
+    const d = daysBetween(base, p.due);
+    const when = d < 0 ? "overdue" : d === 0 ? "today" : d === 1 ? "tomorrow" : "in " + d + "d";
+    return '<li class="p' + p.pri + '">' +
+        '<span class="box"></span>' +
+        '<span class="txt">' + esc(p.text) +
+          (p.tag ? ' <span class="chip">' + esc(p.tag) + "</span>" : "") +
+        "</span>" +
+        '<span class="when">' + when + "</span>" +
+      "</li>";
+  }).join("");
+
+  /* ---- ledger ---- */
+  $("ledger").innerHTML = DATA.deadlines
+    .slice()
+    .sort((a, b) => toUTC(a.date) - toUTC(b.date))
+    .map(x => {
+      const d = daysBetween(base, x.date);
+      const cls = d <= 1 ? "d-now" : d <= 7 ? "d-soon" : "d-far";
+      const label = d < 0 ? "passed" : d === 0 ? "today" : d === 1 ? "day" : "days";
+      const num = d <= 0 ? (x.startedToday ? "now" : (d === 0 ? "0" : String(d))) : String(d);
+      return "<tr>" +
+          '<td><div class="title">' + esc(x.title) +
+            (x.unverified ? ' <span class="chip warn">confirm date</span>' : "") +
+          "</div>" +
+          (x.detail ? '<div class="det">' + esc(x.detail) + "</div>" : "") +
+          "</td>" +
+          '<td class="num d ' + cls + '">' + esc(num) + "<small>" + esc(label) + "</small></td>" +
+        "</tr>";
+    }).join("");
+
+  /* ---- needs you ---- */
+  $("needs-meta").textContent = DATA.needsYou.length + " open";
+  $("needs").innerHTML = DATA.needsYou.map(n =>
+    '<li class="sev-' + esc(n.severity) + '">' +
+      '<span class="stripe"></span>' +
+      "<div>" +
+        '<div class="what">' + esc(n.what) + "</div>" +
+        '<div class="why">' + esc(n.why) + "</div>" +
+        '<div class="src">' + esc(n.source) + "</div>" +
+      "</div>" +
+    "</li>"
+  ).join("");
+
+  /* ---- week ---- */
+  $("week-meta").textContent = DATA.weekAhead.length + " days";
+  $("week").innerHTML = DATA.weekAhead.map(d =>
+    '<li class="' + (d.items.length ? "busy" : "") + '">' +
+      '<span class="dd">' + esc(d.label) + "</span>" +
+      (d.items.length
+        ? "<ul>" + d.items.map(i => "<li>" + esc(i) + "</li>").join("") + "</ul>"
+        : '<span class="none">clear</span>') +
+    "</li>"
+  ).join("");
+
+  /* ---- inbox ---- */
+  $("inbox-meta").textContent = DATA.inbox.unreadEstimate + " " + DATA.inbox.windowLabel;
+  $("mail").innerHTML = DATA.inbox.threads.map(t =>
+    '<li class="f-' + esc(t.flag) + '">' +
+      '<span class="from">' + esc(t.from) + "</span>" +
+      '<span class="when">' + esc(t.when) + "</span>" +
+      '<span class="subj">' + esc(t.subject) + "</span>" +
+    "</li>"
+  ).join("");
+
+  /* ---- footer ---- */
+  const gen = DATA.generatedAt.replace("T", " ").slice(0, 16);
+  $("foot").innerHTML = [
+    "Built " + esc(gen) + " " + esc(DATA.tz),
+    "Sources: " + DATA.sources.map(esc).join(" · "),
+    "Rebuilds every morning at 07:55"
+  ].map(s => "<span>" + s + "</span>").join("");
+})();
+</script>

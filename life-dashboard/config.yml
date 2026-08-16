@@ -1,0 +1,65 @@
+# Life Dashboard — configuration
+#
+# Edit this file to change what the morning briefing looks at.
+# The briefing agent reads this every morning before it does anything else.
+
+owner:
+  name: Batuhan
+  email: batuhanesirger@gmail.com
+  timezone: Europe/Istanbul   # UTC+3, no DST
+  language: en                # briefing prose in English; TR titles kept verbatim
+
+schedule:
+  # When the briefing runs, local Istanbul time.
+  # Changing this here does nothing on its own — see README "Changing the time".
+  local_time: "07:55"
+  days: daily
+
+# Calendars the briefing reads. Add or comment out lines to change coverage.
+calendars:
+  - id: batuhanesirger@gmail.com
+    label: Personal
+    role: primary
+  - id: family13076480902515181869@group.calendar.google.com
+    label: Aile
+    role: family
+  - id: c_58ad58f45e10a01970d9d20fae83c2050cc6b5ac0494889eaee699b9103aefbd@group.calendar.google.com
+    label: KOZALAK
+    role: work
+  - id: tr.turkish#holiday@group.v.calendar.google.com
+    label: Tatiller
+    role: holidays
+
+# Calendars deliberately excluded (uncomment to bring one back in):
+#  - id: batuhan@onaranlarkulubu.com                                  # Onaranlar
+#  - id: injtbcerdf9pird08vs959lj4c@group.calendar.google.com         # Batu_İBB
+#  - id: c7mgvc780id70m80kdb1i062b8@group.calendar.google.com         # MFIST17 (Europe/Moscow!)
+#  - id: 7fc855b0840a3db93b28c3d67681b0d8d3fd8b1f89ee68639eb540c98a6a6b2b@group.calendar.google.com
+
+horizon:
+  schedule_days: 8      # how far ahead the Week Ahead panel looks
+  deadline_days: 45     # how far ahead the countdown ledger looks
+
+inbox:
+  # Gmail query for "things that might actually need me"
+  query: "in:inbox is:unread newer_than:14d"
+  max_threads: 25
+  # Senders whose mail is noise, never surfaced as an action item
+  mute_senders:
+    - noreply-accounts@google.com
+    - customer-reviews-messages@amazon.de
+    - no-reply@amazon.de
+    - siparis-bilgisi@amazon.com.tr
+    - kargo-takibi@amazon.com.tr
+    - otomatik-onay@amazon.com.tr
+    - no-reply@notification.circle.so
+  # Senders that always get promoted to "Needs You", even if they look automated
+  priority_senders:
+    - noreply@mail.emukellef.com.tr     # accountant / tax filings
+    - bilgilendirme@ileti.isbank.com.tr # bank statements & payment due
+    - crmadmin@mobiliz.com.tr           # vehicle tracking contract
+
+output:
+  artifact_url: "https://claude.ai/code/artifact/aa6b6dec-103f-413c-8a5e-2b2a0bd817b8"
+  archive_dir: life-dashboard/briefings
+  branch: claude/life-dashboard-7btigi
