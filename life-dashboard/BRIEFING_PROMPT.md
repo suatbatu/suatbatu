@@ -27,6 +27,32 @@ and continue. If `life-dashboard/` is missing on both, stop and do nothing.
 - `life-dashboard/tasks.md` — the task list. Parse `- [ ]`, `!1..!3`, `@YYYY-MM-DD`, `#tag`.
   Ignore `- [x]` items and everything under `## Someday`.
 
+## 1b. Drain the task queue — do this before reading tasks.md for priorities
+
+The dashboard's task box can't edit the repo directly, so it queues each edit by
+mailing it to Batuhan with a `[dash]` subject prefix. Apply the queue first, so the
+board you build reflects what he asked for.
+
+`search_threads` with `in:inbox subject:"[dash]" newer_than:7d`. Each body is:
+
+```
+op: add | done | remove
+task: <text>
+priority: 1|2|3      (add only)
+due: YYYY-MM-DD      (add only, may be blank)
+tags: #tag           (add only, may be blank)
+```
+
+- **add** → append under `## Open` as `- [ ] <task>  !<pri>  @<due>  <tags>`,
+  omitting `!`/`@`/tags when blank.
+- **done** → flip that line's `- [ ]` to `- [x]`.
+- **remove** → delete the line.
+
+Match `done`/`remove` on the task text. **If nothing matches, do not guess and do not
+trash the mail** — leave it in place and say so in the briefing, so a queued edit is
+never silently swallowed. After successfully applying one, `trash_thread` its id so
+tomorrow doesn't reapply it. Commit the tasks.md change with the rest of the run.
+
 ## 2. Pull the data
 
 **Calendar** — `list_events` once per calendar in `config.yml`, from 00:00 today

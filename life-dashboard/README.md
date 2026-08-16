@@ -43,6 +43,28 @@ morning at **07:55 Istanbul time** by an agent that runs whether or not you're t
 | `BRIEFING_PROMPT.md` | The instructions the morning agent follows. Edit to change how it thinks. |
 | `briefings/` | One markdown file per day. The searchable archive. |
 
+## The two buttons at the top
+
+**Refresh** re-reads Google Calendar and Gmail *from the page itself*, using your
+credentials — no agent involved. The schedule, inbox and today's counter go live and
+get an `updated 14:32` stamp. What it can't touch is the written briefing, Needs you,
+the ledger and priorities: those are judgment plus `tasks.md`, not a connector call.
+Once you refresh, the page says so explicitly rather than letting you assume it's all
+current. If a connector is down, only that panel shows an error and the rest carries on.
+
+**Full rebuild** opens the Claude session that runs your morning briefing, where
+"rebuild my dashboard now" regenerates everything. There is deliberately no button
+that does this by itself — no artifact capability can run an agent.
+
+## Task box
+
+Add, complete or delete a task without leaving the page. It works by mailing the
+edit to yourself with a `[dash]` subject; the next rebuild applies it to `tasks.md`,
+commits it, and trashes the mail. Added tasks show as `queued` on the board straight
+away, but they're only *pending* until that rebuild runs — hit **Full rebuild** if you
+want it applied now. If a `done`/`remove` doesn't match a real task, the agent leaves
+the mail alone and tells you, rather than guessing.
+
 ## The three things you'll actually edit
 
 **Add a task** — open `tasks.md`, add a line. Syntax is at the top of that file:

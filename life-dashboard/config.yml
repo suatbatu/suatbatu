@@ -59,6 +59,12 @@ inbox:
     - bilgilendirme@ileti.isbank.com.tr # bank statements & payment due
     - crmadmin@mobiliz.com.tr           # vehicle tracking contract
 
+# The dashboard's task box mails edits to yourself; the briefing applies them.
+taskbox:
+  query: 'in:inbox subject:"[dash]" newer_than:7d'
+  subject_prefix: "[dash]"
+  trash_after_applying: true
+
 output:
   artifact_url: "https://claude.ai/code/artifact/aa6b6dec-103f-413c-8a5e-2b2a0bd817b8"
   archive_dir: life-dashboard/briefings

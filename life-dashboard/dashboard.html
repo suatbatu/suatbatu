@@ -8,6 +8,30 @@ const DATA = {
   generatedAt: "2026-08-16T18:10:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
+  ownerEmail: "batuhanesirger@gmail.com",
+
+  // Where "Full rebuild" sends you — the Claude session the morning Routine wakes.
+  sessionUrl: "https://claude.ai/code/session_01NAoreEhmNVV5FBHE2HzSPE",
+
+  // Used by the in-page Refresh button. Keep in step with config.yml.
+  live: {
+    calendars: [
+      { id: "batuhanesirger@gmail.com", label: "Personal" },
+      { id: "family13076480902515181869@group.calendar.google.com", label: "Aile" },
+      { id: "c_58ad58f45e10a01970d9d20fae83c2050cc6b5ac0494889eaee699b9103aefbd@group.calendar.google.com", label: "KOZALAK" },
+      { id: "tr.turkish#holiday@group.v.calendar.google.com", label: "Tatiller" }
+    ],
+    inboxQuery: "in:inbox is:unread newer_than:14d",
+    muteSenders: [
+      "noreply-accounts@google.com",
+      "customer-reviews-messages@amazon.de",
+      "no-reply@amazon.de",
+      "siparis-bilgisi@amazon.com.tr",
+      "kargo-takibi@amazon.com.tr",
+      "otomatik-onay@amazon.com.tr",
+      "no-reply@notification.circle.so"
+    ]
+  },
 
   today: {
     date: "2026-08-16",
@@ -25,8 +49,10 @@ const DATA = {
     "Wednesday, and the Maximiles Black son ödeme is Thursday. Nevşehir on Saturday is a " +
     "full-day drive each way — book it today while you have the time.",
 
+  // `live: true` means Refresh can recompute this counter from connector data.
+  // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 0, tone: "clear",    note: "next: tomorrow 09:00" },
+    { label: "on today",      value: 0, tone: "clear",    note: "next: tomorrow 09:00", live: true },
     { label: "need a reply",  value: 5, tone: "warn",     note: "3 invites · 2 admin" },
     { label: "due in 7 days", value: 4, tone: "critical", note: "2 carry money" }
   ],
@@ -208,14 +234,16 @@ const DATA = {
   inbox: {
     unreadEstimate: 201,
     windowLabel: "unread, last 14 days",
+    // `id` is the Gmail thread id — it lets Refresh keep this morning's
+    // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { from: "Mobiliz",        subject: "Bedelsiz süre bitişine 30 gün kaldı",        when: "today 19:55", flag: "action" },
-      { from: "Rana İmam",      subject: "Davetiye: Kısakürek Düğün, 12 Eyl",          when: "today 18:37", flag: "action" },
-      { from: "GitHub",         subject: "Please download your two-factor recovery codes", when: "today 13:25", flag: "action" },
-      { from: "GitHub Actions", subject: "shot-timer — Run failed: CI on main",         when: "today 13:33", flag: "watch" },
-      { from: "E-Mükellef",     subject: "2026 2. Dönem Geçici Vergi Beyannamesi Tahakkuk Fişi", when: "Thu 21:11", flag: "action" },
-      { from: "İş Bankası",     subject: "Maximiles Black hesap özeti — TL / EUR / USD", when: "Wed 08:30", flag: "action" },
-      { from: "Global Blue",    subject: "Vergi iadeniz ödendi",                        when: "Fri 17:46", flag: "done" }
+      { id: "1a00b7f874a5bcfa", from: "Mobiliz",        subject: "Bedelsiz süre bitişine 30 gün kaldı",        when: "today 19:55", flag: "action" },
+      { id: "1a00b386707d0f3b", from: "Rana İmam",      subject: "Davetiye: Kısakürek Düğün, 12 Eyl",          when: "today 18:37", flag: "action" },
+      { id: "1a00a1ae6318ef0b", from: "GitHub",         subject: "Please download your two-factor recovery codes", when: "today 13:25", flag: "action" },
+      { id: "1a00a21fb2ee945f", from: "GitHub Actions", subject: "shot-timer — Run failed: CI on main",         when: "today 13:33", flag: "watch" },
+      { id: "19ffc5205f770e0b", from: "E-Mükellef",     subject: "2026 2. Dönem Geçici Vergi Beyannamesi Tahakkuk Fişi", when: "Thu 21:11", flag: "action" },
+      { id: "19ff4736e9bbbad7", from: "İş Bankası",     subject: "Maximiles Black hesap özeti — TL / EUR / USD", when: "Wed 08:30", flag: "action" },
+      { id: "1a000bd8ec44923a", from: "Global Blue",    subject: "Vergi iadeniz ödendi",                        when: "Fri 17:46", flag: "done" }
     ]
   },
 
@@ -784,6 +812,111 @@ body {
   vertical-align: middle;
 }
 
+/* ---------- Controls: refresh + full rebuild ---------- */
+.tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 12px;
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background .12s ease, border-color .12s ease, color .12s ease;
+}
+.btn:hover:not([disabled]), .btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-wash);
+}
+.btn[disabled] { opacity: .55; cursor: default; }
+.btn svg {
+  width: 14px; height: 14px; flex: none;
+  stroke: currentColor; fill: none;
+  stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round;
+}
+.btn.busy svg { animation: spin 1s linear infinite; transform-origin: 50% 50%; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Freshness marker in a panel header */
+.stamp {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--clear);
+  text-transform: uppercase;
+}
+.stamp.morning { color: var(--ink-faint); }
+
+/* "This panel wasn't refreshed" note */
+.secnote {
+  margin: 0 16px 14px;
+  padding: 8px 11px;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  background: var(--ground);
+  border-left: 2px solid var(--line);
+  border-radius: 2px;
+}
+
+/* Per-section failure — one per affected panel, never a page-wide catch-all */
+.err {
+  margin: 10px 0 2px;
+  padding: 10px 12px;
+  border-radius: 2px;
+  font-size: 12.5px;
+  background: var(--warn-wash);
+  border-left: 2px solid var(--warn);
+  color: var(--warn);
+}
+.err b { display: block; margin-bottom: 2px; }
+.err a { color: inherit; }
+#sched-err:not(:empty) { padding: 12px 16px 0; }
+
+/* ---------- Task box ---------- */
+.tb { display: flex; flex-direction: column; gap: 10px; padding-top: 12px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 2px; overflow: hidden; width: fit-content; }
+.seg button {
+  padding: 6px 14px;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 0;
+  border-right: 1px solid var(--line);
+  cursor: pointer;
+}
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.tb-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tb-row > * { min-width: 0; }
+.tb input[type="text"], .tb select, .tb input[type="date"] {
+  flex: 1 1 160px;
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--ground);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+.tb input[type="date"], .tb select.pri-sel { flex: 0 1 130px; }
+.tb input:focus, .tb select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.tb-status { font-size: 12px; color: var(--ink-soft); min-height: 17px; }
+.tb-status.ok { color: var(--clear); }
+.tb-status.bad { color: var(--critical); }
+.tb-hint { font-size: 11.5px; color: var(--ink-faint); }
+.chip.pend { color: var(--warn); border-color: var(--warn); background: var(--warn-wash); }
+.pri li.pending .txt { color: var(--ink-soft); }
+
 /* ---------- Footer ---------- */
 .foot {
   display: flex;
@@ -825,6 +958,7 @@ a:focus-visible, [tabindex]:focus-visible {
     <div>
       <div class="eyebrow" id="eyebrow"></div>
       <h1 id="greeting"></h1>
+      <div class="tools" id="tools"></div>
     </div>
     <div class="counters" id="counters"></div>
   </header>
@@ -834,13 +968,19 @@ a:focus-visible, [tabindex]:focus-visible {
   <div class="board">
     <div class="col">
       <section class="panel">
-        <header><h2>Schedule</h2><span class="meta" id="sched-meta"></span></header>
+        <header><h2>Schedule</h2><span class="meta"><span id="sched-meta"></span> <span class="stamp" id="sched-stamp"></span></span></header>
+        <div id="sched-err"></div>
         <div id="days"></div>
       </section>
 
       <section class="panel">
         <header><h2>Top priorities</h2><span class="meta">from tasks.md</span></header>
         <div class="body"><ul class="pri" id="pri"></ul></div>
+      </section>
+
+      <section class="panel" id="taskbox-panel" hidden>
+        <header><h2>Task box</h2><span class="meta">queues to tasks.md</span></header>
+        <div class="body"><div class="tb" id="taskbox"></div></div>
       </section>
     </div>
 
@@ -861,8 +1001,8 @@ a:focus-visible, [tabindex]:focus-visible {
       </section>
 
       <section class="panel">
-        <header><h2>Inbox</h2><span class="meta" id="inbox-meta"></span></header>
-        <div class="body"><ul class="mail" id="mail"></ul></div>
+        <header><h2>Inbox</h2><span class="meta"><span id="inbox-meta"></span> <span class="stamp" id="inbox-stamp"></span></span></header>
+        <div class="body"><div id="inbox-err"></div><ul class="mail" id="mail"></ul></div>
       </section>
     </div>
   </div>
@@ -912,21 +1052,25 @@ a:focus-visible, [tabindex]:focus-visible {
     esc(DATA.tz)
   ].map(s => "<span>" + s + "</span>").join('<span class="dot">/</span>');
 
-  $("counters").innerHTML = DATA.counters.map(c =>
-    '<div class="counter tone-' + esc(c.tone) + '">' +
-      '<span class="n">' + esc(c.value) + "</span>" +
-      '<span class="l">' + esc(c.label) + "</span>" +
-      (c.note ? '<span class="s">' + esc(c.note) + "</span>" : "") +
-    "</div>"
-  ).join("");
+  function renderCounters(counters) {
+    $("counters").innerHTML = counters.map(c =>
+      '<div class="counter tone-' + esc(c.tone) + '">' +
+        '<span class="n">' + esc(c.value) + "</span>" +
+        '<span class="l">' + esc(c.label) + "</span>" +
+        (c.note ? '<span class="s">' + esc(c.note) + "</span>" : "") +
+      "</div>"
+    ).join("");
+  }
+  renderCounters(DATA.counters);
 
   $("briefing").innerHTML = DATA.briefing;   // trusted: written by the briefing agent
 
   /* ---- schedule ---- */
-  const totalEvents = DATA.days.reduce((n, d) => n + d.events.length, 0);
+  function renderSchedule(days) {
+  const totalEvents = days.reduce((n, d) => n + d.events.length, 0);
   $("sched-meta").textContent = totalEvents + (totalEvents === 1 ? " event" : " events");
 
-  $("days").innerHTML = DATA.days.map(day => {
+  $("days").innerHTML = days.map(day => {
     const head =
       '<div class="dayhead"><h3>' + esc(day.label) + "</h3>" +
       '<span class="cnt">' + (day.events.length || "—") + "</span></div>";
@@ -965,6 +1109,8 @@ a:focus-visible, [tabindex]:focus-visible {
 
     return '<div class="day">' + head + '<ul class="tl">' + rows + "</ul></div>";
   }).join("");
+  }
+  renderSchedule(DATA.days);
 
   /* ---- priorities ---- */
   $("pri").innerHTML = DATA.priorities.map(p => {
@@ -1038,14 +1184,18 @@ a:focus-visible, [tabindex]:focus-visible {
   ).join("");
 
   /* ---- inbox ---- */
-  $("inbox-meta").textContent = DATA.inbox.unreadEstimate + " " + DATA.inbox.windowLabel;
-  $("mail").innerHTML = DATA.inbox.threads.map(t =>
-    '<li class="f-' + esc(t.flag) + '">' +
-      '<span class="from">' + esc(t.from) + "</span>" +
-      '<span class="when">' + esc(t.when) + "</span>" +
-      '<span class="subj">' + esc(t.subject) + "</span>" +
-    "</li>"
-  ).join("");
+  function renderInbox(inbox) {
+    $("inbox-meta").textContent = inbox.unreadEstimate + " " + inbox.windowLabel;
+    $("mail").innerHTML = inbox.threads.map(t =>
+      '<li class="f-' + esc(t.flag) + '">' +
+        '<span class="from">' + esc(t.from) + "</span>" +
+        '<span class="when">' + esc(t.when) +
+          (t.isNew ? ' <span class="chip warn">new</span>' : "") + "</span>" +
+        '<span class="subj">' + esc(t.subject) + "</span>" +
+      "</li>"
+    ).join("");
+  }
+  renderInbox(DATA.inbox);
 
   /* ---- footer ---- */
   const gen = DATA.generatedAt.replace("T", " ").slice(0, 16);
@@ -1054,5 +1204,358 @@ a:focus-visible, [tabindex]:focus-visible {
     "Sources: " + DATA.sources.map(esc).join(" · "),
     "Rebuilds every morning at 07:55"
   ].map(s => "<span>" + s + "</span>").join("");
+
+  /* ================= Live refresh + task box ==================
+     Everything below is progressive: if the mcp capability isn't granted,
+     nothing here runs and the page stays exactly as it was published. */
+
+  const SVG = {
+    refresh: '<path d="M13.4 8a5.4 5.4 0 1 1-1.6-3.8"/><path d="M13.7 2.3v3.2h-3.2"/>',
+    open:    '<path d="M9.5 3.5h3v3"/><path d="M12.5 3.5L7.4 8.6"/><path d="M12 9.6v2.9H3.2V3.6h2.9"/>',
+    send:    '<path d="M14 2L7 9"/><path d="M14 2l-4.5 12-2.5-5-5-2.5L14 2z"/>'
+  };
+  const bicon = k => '<svg viewBox="0 0 16 16" aria-hidden="true">' + SVG[k] + "</svg>";
+  const pad2 = n => String(n).padStart(2, "0");
+  const hhmm = ms => { const d = new Date(ms); return pad2(d.getHours()) + ":" + pad2(d.getMinutes()); };
+  const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const DOW = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const addDays = (iso, n) => new Date(toUTC(iso) + n * 86400000).toISOString().slice(0, 10);
+  const prettyDay = iso => {
+    const d = new Date(toUTC(iso));
+    return DOW[d.getUTCDay()] + " " + d.getUTCDate() + " " + MON[d.getUTCMonth()];
+  };
+
+  // "Full rebuild" needs no capability — it's just a link to the session.
+  $("tools").innerHTML =
+    '<a class="btn" href="' + esc(DATA.sessionUrl) + '" target="_blank" rel="noopener">' +
+      bicon("open") + "<span>Full rebuild</span></a>";
+
+  /* Each error code has a different correct fix — never one generic banner. */
+  function errCopy(e, kind) {
+    const code = (e && e.code) || "upstream_error";
+    const who = (e && e.server) || "the connector";
+    // A failed WRITE is an ambiguous outcome — the mail may still have gone out.
+    // Never tell him to just send again; that risks queueing the task twice.
+    if (kind === "write" && (code === "server_unavailable" || code === "upstream_error" || code === "cancelled")) {
+      return { t: "Not sure it sent", m: "Gmail didn't confirm. Check your Sent mail before queueing this again." };
+    }
+    switch (code) {
+      case "needs_reauth":
+        return { t: "Reconnect " + who, m: "Its access expired. Reconnect it in claude.ai → Settings → Connectors, then refresh." };
+      case "server_not_connected":
+        return { t: who + " isn't connected", m: "Add it in claude.ai → Settings → Connectors." };
+      case "selection_required":
+        return { t: "Pick a " + who + " account", m: "You have more than one. Choose when claude.ai asks, then refresh." };
+      case "server_not_found":
+        return { t: who + " no longer exists", m: "The connector was removed upstream." };
+      case "server_unavailable":
+        return { t: "Google didn't answer", m: "Temporary — try Refresh again in a moment." };
+      case "not_in_manifest":
+        return { t: "Not permitted here", m: "This page didn't ask for that tool." };
+      case "blocked_by_policy":
+        return { t: "Blocked by policy", m: "Your organisation blocks this tool." };
+      case "approval_required":
+        return { t: "Needs approval", m: "Per-call approval isn't supported in pages yet." };
+      case "tool_error":
+        return { t: "Rejected by " + who, m: (e && e.message) || "It reported a failure." };
+      case "rate_limited":
+        return { t: "Too many requests", m: "Wait a few seconds, then refresh." };
+      case "not_granted":
+      case "capability_disabled":
+      case "capability_removed":
+        return { t: "Live data is off here", m: "Open the page from claude.ai to use Refresh." };
+      default:
+        return { t: "Couldn't load", m: (e && e.message) || "Unknown failure." };
+    }
+  }
+  const showErr = (id, e) => {
+    const c = errCopy(e);
+    $(id).innerHTML = '<div class="err"><b>' + esc(c.t) + "</b>" + esc(c.m) + "</div>";
+  };
+  const clearErr = id => { $(id).innerHTML = ""; };
+
+  const LIVE = { days: null, inbox: null };
+
+  (async function initLive() {
+    let mcp = null;
+    try { mcp = typeof claude !== "undefined" ? await claude.use("mcp") : null; } catch (_) { mcp = null; }
+    if (!mcp) return;   // no live features — the published board stands on its own
+
+    /* Reads may retry once, and only when the runtime stamped them retryable. */
+    async function read(server, tool, input) {
+      try {
+        return await mcp.callTool(server, tool, input, { cache: { refresh: true } });
+      } catch (e) {
+        if (e && e.retryable) {
+          const wait = Math.min(e.retryAfterMs || 1200, 60000) + Math.random() * 400;
+          await new Promise(r => setTimeout(r, wait));
+          return await mcp.callTool(server, tool, input, { cache: { refresh: true } });
+        }
+        throw e;
+      }
+    }
+
+    const toMin = t => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
+    const clock = x => { const m = x && x.dateTime && /T(\d{2}:\d{2})/.exec(x.dateTime); return m ? m[1] : null; };
+
+    function buildDays(cals) {
+      return [0, 1].map(offset => {
+        const date = addDays(DATA.today.date, offset);
+        const evs = [];
+        cals.forEach(c => (c.events || []).forEach(ev => {
+          if (ev.status === "cancelled") return;
+          const s = ev.start || {}, e = ev.end || {};
+          const key = (s.dateTime || s.date || "").slice(0, 10);
+          if (key !== date) return;
+          const start = clock(s);
+          if (!start) return;               // all-day items live in the ledger, not the timeline
+          // On a shared calendar (KOZALAK) `self` marks the calendar, not him —
+          // so match his address too, or he shows up in his own guest list.
+          const mine = a => a.self || (a.email || "").toLowerCase() === DATA.ownerEmail.toLowerCase();
+          const me = (ev.attendees || []).find(mine);
+          evs.push({
+            start,
+            end: clock(e) || "",
+            title: ev.summary || "(no title)",
+            calendar: c.label,
+            where: ev.conferenceUrl ? ev.conferenceUrl.replace(/^https?:\/\//, "")
+                 : (ev.location && !/^https?:/i.test(ev.location) ? ev.location : null),
+            link: ev.conferenceUrl || (/^https?:/i.test(ev.location || "") ? ev.location : null),
+            with: (ev.attendees || []).filter(a => !mine(a) && (a.displayName || a.email))
+                    .map(a => a.displayName || prettyFrom(a.email)).slice(0, 4).join(", ") || null,
+            rsvp: (ev.organizer && ev.organizer.self) ? "organizer" : (me ? me.responseStatus : null)
+          });
+        }));
+        evs.sort((a, b) => toMin(a.start) - toMin(b.start));
+        for (let i = 0; i < evs.length; i++) {
+          for (let j = i + 1; j < evs.length; j++) {
+            const A = evs[i], B = evs[j];
+            if (!A.end || !B.end) continue;
+            if (toMin(B.start) < toMin(A.end) && toMin(A.start) < toMin(B.end)) {
+              A.conflict = true; B.conflict = true;
+              B.conflictNote = "Overlaps “" + A.title + "” at " + A.start + ".";
+            }
+          }
+        }
+        return {
+          date,
+          label: (offset === 0 ? "Today · " : "Tomorrow · ") + prettyDay(date),
+          events: evs,
+          emptyNote: offset === 0 ? "Nothing left on the calendar today." : "Nothing scheduled."
+        };
+      });
+    }
+
+    // Personal-mail domains carry no brand — the local part is the useful name.
+    const FREEMAIL = ["gmail","googlemail","outlook","hotmail","yahoo","icloud","proton","protonmail","yandex"];
+    // Sending subdomains that say nothing about who sent it.
+    const NOISE = ["mail","email","e","smtp","mailer","noreply","no-reply","notifications","notification","ileti","bilgilendirme","info"];
+    const titled = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+    function prettyFrom(s) {
+      const named = /^\s*"?([^"<]+?)"?\s*<.+>\s*$/.exec(s || "");
+      if (named) return named[1].trim();
+      const at = (s || "").indexOf("@");
+      if (at < 0) return s || "(unknown)";
+      const local = s.slice(0, at);
+      const labels = s.slice(at + 1).toLowerCase().split(".");
+      if (FREEMAIL.indexOf(labels[0]) !== -1) return local;          // a person, not a brand
+      const brand = labels.find(l => NOISE.indexOf(l) === -1) || labels[0];
+      return titled(brand);
+    }
+    function whenLabel(iso) {
+      if (!iso) return "";
+      const d = new Date(iso);
+      const t = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
+      const ymd = d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate());
+      const diff = daysBetween(ymd, realToday);
+      if (diff === 0) return "today " + t;
+      if (diff === 1) return "yesterday " + t;
+      return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()] + " " + t;
+    }
+    function buildInbox(payload) {
+      const seen = new Map(DATA.inbox.threads.map(t => [t.id, t.flag]));
+      const muted = DATA.live.muteSenders.map(x => x.toLowerCase());
+      const threads = (payload.threads || []).map(t => {
+        const msgs = t.messages || [];
+        const m = msgs[msgs.length - 1] || {};
+        return { id: t.id, sender: m.sender || "", subject: m.subject || "(no subject)", date: m.date };
+      })
+      .filter(t => !muted.some(x => t.sender.toLowerCase().indexOf(x) !== -1))
+      .slice(0, 9)
+      .map(t => ({
+        id: t.id,
+        from: prettyFrom(t.sender),
+        subject: t.subject,
+        when: whenLabel(t.date),
+        flag: seen.get(t.id) || "watch",
+        isNew: !seen.has(t.id)
+      }));
+      return {
+        unreadEstimate: payload.resultCountEstimate || threads.length,
+        windowLabel: DATA.inbox.windowLabel,
+        threads
+      };
+    }
+
+    let noted = false;
+    function noteMorningPanels() {
+      if (noted) return;
+      noted = true;
+      const n = document.createElement("p");
+      n.className = "secnote";
+      n.style.margin = "0";
+      n.textContent = "Schedule and inbox are live. The written briefing, Needs you, the ledger and " +
+                      "priorities still date from this morning — use Full rebuild to regenerate those.";
+      $("briefing").insertAdjacentElement("afterend", n);
+    }
+
+    async function refresh() {
+      const btn = $("btn-refresh");
+      btn.disabled = true; btn.classList.add("busy");
+      let scheduleOk = false;
+
+      const from = DATA.today.date + "T00:00:00+03:00";
+      const to = addDays(DATA.today.date, 2) + "T00:00:00+03:00";
+      const cals = await Promise.all(DATA.live.calendars.map(c =>
+        read("Google Calendar", "list_events", {
+          calendarId: c.id, startTime: from, endTime: to,
+          orderBy: "startTime", timeZone: DATA.tz, pageSize: 50
+        })
+        .then(r => ({ label: c.label, events: (r.payload && r.payload.events) || [], cache: r.cache }))
+        .catch(e => ({ label: c.label, error: e }))
+      ));
+      const okCals = cals.filter(c => !c.error);
+      if (!okCals.length) {
+        showErr("sched-err", cals[0].error);
+      } else {
+        const days = buildDays(okCals);
+        LIVE.days = days;
+        renderSchedule(days);
+        scheduleOk = true;
+        const failed = cals.filter(c => c.error);
+        if (failed.length) showErr("sched-err", failed[0].error); else clearErr("sched-err");
+        const cached = okCals.find(c => c.cache && c.cache.storedAt);
+        $("sched-stamp").textContent = "live " + hhmm(cached ? cached.cache.storedAt : Date.now());
+      }
+
+      try {
+        const r = await read("Gmail", "search_threads", {
+          query: DATA.live.inboxQuery, pageSize: 25
+        });
+        const inbox = buildInbox(r.payload || {});
+        LIVE.inbox = inbox;
+        renderInbox(inbox);
+        clearErr("inbox-err");
+        $("inbox-stamp").textContent = "live " + hhmm(r.cache && r.cache.storedAt ? r.cache.storedAt : Date.now());
+      } catch (e) {
+        showErr("inbox-err", e);
+      }
+
+      if (scheduleOk) {
+        const counters = DATA.counters.map(c => Object.assign({}, c));
+        const n = LIVE.days[0].events.length;
+        counters[0].value = n;
+        counters[0].note = n ? "live from your calendars" : "nothing left today";
+        counters[0].tone = n ? "warn" : "clear";
+        renderCounters(counters);
+        noteMorningPanels();
+      }
+
+      btn.disabled = false; btn.classList.remove("busy");
+    }
+
+    /* ---- task box: queues an edit to tasks.md as structured mail ---- */
+    function taskFields(op) {
+      if (op === "add") {
+        return '<div class="tb-row">' +
+            '<input type="text" id="tb-text" placeholder="What needs doing?" autocomplete="off">' +
+          "</div>" +
+          '<div class="tb-row">' +
+            '<input type="date" id="tb-due" aria-label="Due date">' +
+            '<select id="tb-pri" class="pri-sel" aria-label="Priority">' +
+              '<option value="2">Normal</option><option value="1">Urgent</option><option value="3">Someday</option>' +
+            "</select>" +
+            '<input type="text" id="tb-tag" placeholder="#tag" autocomplete="off">' +
+          "</div>";
+      }
+      const opts = DATA.priorities.map(p => '<option value="' + esc(p.text) + '">' + esc(p.text) + "</option>").join("");
+      return '<div class="tb-row"><select id="tb-pick" aria-label="Which task">' + opts + "</select></div>";
+    }
+
+    let op = "add";
+    $("taskbox-panel").hidden = false;
+    $("taskbox").innerHTML =
+      '<div class="seg" id="tb-seg">' +
+        '<button type="button" data-op="add" aria-pressed="true">Add</button>' +
+        '<button type="button" data-op="done" aria-pressed="false">Mark done</button>' +
+        '<button type="button" data-op="remove" aria-pressed="false">Remove</button>' +
+      "</div>" +
+      '<div id="tb-fields">' + taskFields("add") + "</div>" +
+      '<div class="tb-row"><button class="btn" type="button" id="tb-send">' + bicon("send") + "<span>Queue it</span></button></div>" +
+      '<div class="tb-status" id="tb-status"></div>' +
+      '<div class="tb-hint">Sends a structured mail to yourself. The next rebuild applies it to tasks.md and trashes the mail.</div>';
+
+    $("tb-seg").addEventListener("click", ev => {
+      const b = ev.target.closest("button[data-op]");
+      if (!b) return;
+      op = b.dataset.op;
+      [...$("tb-seg").children].forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+      $("tb-fields").innerHTML = taskFields(op);
+      $("tb-status").textContent = "";
+    });
+
+    $("tb-send").addEventListener("click", async () => {
+      const status = $("tb-status"), btn = $("tb-send");
+      let subject, body, label;
+      if (op === "add") {
+        const text = ($("tb-text").value || "").trim();
+        if (!text) { status.className = "tb-status bad"; status.textContent = "Write the task first."; return; }
+        const due = $("tb-due").value, pri = $("tb-pri").value, tag = ($("tb-tag").value || "").trim();
+        label = text;
+        subject = "[dash] add: " + text;
+        body = ["op: add", "task: " + text, "priority: " + pri,
+                "due: " + (due || ""), "tags: " + tag, "",
+                "Queued from the dashboard task box."].join("\n");
+      } else {
+        const pick = $("tb-pick");
+        if (!pick || !pick.value) { status.className = "tb-status bad"; status.textContent = "Pick a task first."; return; }
+        label = pick.value;
+        subject = "[dash] " + op + ": " + pick.value;
+        body = ["op: " + op, "task: " + pick.value, "", "Queued from the dashboard task box."].join("\n");
+      }
+
+      btn.disabled = true;
+      status.className = "tb-status";
+      status.textContent = "Queueing…";
+      try {
+        // A write: never cached, never auto-retried.
+        await mcp.callTool("Gmail", "send_message", {
+          to: [DATA.ownerEmail], subject: subject, body: body
+        });
+        status.className = "tb-status ok";
+        status.textContent = "Queued. It lands in tasks.md at the next rebuild.";
+        if (op === "add") {
+          const li = document.createElement("li");
+          li.className = "pending";
+          li.innerHTML = '<span class="box"></span><span class="txt">' + esc(label) +
+            ' <span class="chip pend">queued</span></span><span class="when">pending</span>';
+          $("pri").appendChild(li);
+          $("tb-text").value = "";
+        }
+      } catch (e) {
+        const c = errCopy(e, "write");
+        status.className = "tb-status bad";
+        status.textContent = c.t + " — " + c.m;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    /* Refresh button only exists once we know the capability is live. */
+    $("tools").insertAdjacentHTML("afterbegin",
+      '<button class="btn" type="button" id="btn-refresh">' + bicon("refresh") + "<span>Refresh</span></button>");
+    $("btn-refresh").addEventListener("click", refresh);
+  })();
 })();
 </script>
