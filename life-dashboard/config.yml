@@ -53,6 +53,7 @@ inbox:
     - kargo-takibi@amazon.com.tr
     - otomatik-onay@amazon.com.tr
     - no-reply@notification.circle.so
+    - calendar-notification@google.com   # duplicates the Schedule panel
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings
