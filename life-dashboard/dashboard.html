@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-18T07:55:00+03:00",
+  generatedAt: "2026-08-19T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -35,51 +35,42 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-18",
-    label: "Tuesday, 18 August 2026",
+    date: "2026-08-19",
+    label: "Wednesday, 19 August 2026",
     weekNumber: 34,
     holiday: null
   },
 
   briefing:
-    "The calendar is nearly empty today, which is just as well, because two things have " +
-    "gone past their date. The Q2 geçici vergi deadline was <em>yesterday</em> and the " +
-    "tahakkuk fişi is still unopened — call the accountant before anything else this morning " +
-    "and find out what a day late costs. Your GitHub recovery codes are unread for a third " +
-    "day. The single meeting, the ForestGuard check-in at 13:30, is still sitting unanswered " +
-    "after three days; accept it or drop it. After that the day is genuinely yours: Nevşehir " +
-    "travel wants booking by tomorrow for Saturday, and A16z's Speedrun AMA is tonight — " +
-    "though the invitation quotes two different start times, so check it before you plan around it.",
+    "Nothing on the calendar at all today — which is precisely what the day was reserved " +
+    "for. Nevşehir travel was due today and Saturday's wedding is roughly five hours each " +
+    "way; book it before the weekend prices do it for you. Two things are now two days past " +
+    "their date and both are still unopened: the geçici vergi tahakkuk fişi and your GitHub " +
+    "recovery codes. Neither improves by sitting there. The one genuinely new thing is from a " +
+    "person rather than a system — Tymoteusz wrote to the whole ForestGuard consortium " +
+    "yesterday about <em>SMM Hamburg</em>, Hall B5 Booth 553. And a fresh invitation landed " +
+    "for next Wednesday, ForestGuard × Lukasz Skarka at 16:00, still unanswered.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 1, tone: "clear",    note: "ForestGuard 13:30", live: true },
-    { label: "need a reply",  value: 4, tone: "warn",     note: "1 invite · 3 admin" },
-    { label: "due in 7 days", value: 7, tone: "critical", note: "2 already late" }
+    { label: "on today",      value: 0, tone: "clear",    note: "the day is yours", live: true },
+    { label: "need a reply",  value: 4, tone: "warn",     note: "1 invite · 1 thread · 2 admin" },
+    { label: "due in 7 days", value: 7, tone: "critical", note: "2 late · 1 today" }
   ],
 
   days: [
     {
-      date: "2026-08-18",
-      label: "Today · Tuesday 18 Aug",
-      events: [
-        {
-          start: "13:30", end: "14:00",
-          title: "ForestGuard Bi-weekly Check-in",
-          calendar: "Personal",
-          where: "Microsoft Teams",
-          with: "Kassandra Biggemann (LR), Enrico Pangoni (Maersk), Ortwin Muehr",
-          rsvp: "needsAction", conflict: false,
-          conflictNote: null
-        }
-      ]
+      date: "2026-08-19",
+      label: "Today · Wednesday 19 Aug",
+      events: [],
+      emptyNote: "Completely clear. This is the Nevşehir booking day."
     },
     {
-      date: "2026-08-19",
-      label: "Tomorrow · Wednesday 19 Aug",
+      date: "2026-08-20",
+      label: "Tomorrow · Thursday 20 Aug",
       events: [],
-      emptyNote: "Nothing scheduled — the day to book Nevşehir."
+      emptyNote: "No meetings — but the Black kart payment falls due."
     }
   ],
 
@@ -90,7 +81,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "Deadline was yesterday and the tahakkuk fişi, sent Thu 13 Aug, has still not been opened. Ask the accountant what the position is now rather than guessing.",
+      detail: "Two days past the deadline and the tahakkuk fişi from Thu 13 Aug is still unopened. Ask the accountant where this now stands.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -101,7 +92,7 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Third day unread. Until the codes are saved, losing your phone locks you out of the account permanently.",
+      detail: "Fourth day since GitHub sent them, second day past your own date. Until they're saved, a lost phone is a lost account.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
       ]
@@ -110,7 +101,7 @@ const DATA = {
       title: "Book Nevşehir travel",
       date: "2026-08-19",
       kind: "travel",
-      detail: "For Saturday's wedding — roughly 5 hours each way. Leaving it past tomorrow means booking into the weekend rush.",
+      detail: "Due today. Saturday's wedding runs 09:00–21:00 and it's ~5 hours each way, so this decides whether you drive Friday night or at dawn.",
       actions: [
         { label: "The wedding", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" },
         { label: "Route", icon: "map", href: "https://www.google.com/maps/dir/?api=1&destination=Nev%C5%9Fehir%2C%20T%C3%BCrkiye" }
@@ -120,7 +111,7 @@ const DATA = {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Card 4743 ****4363. You read all three statements yesterday; the payment itself is still open.",
+      detail: "Tomorrow. Card 4743 ****4363; you read all three statements on Monday.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" },
         { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=azRoN2kxamNxMGtubjFjMmE4aG44aTFpMTdfMjAyNjA4MjAgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
@@ -130,7 +121,7 @@ const DATA = {
       title: "Furkan Mert Koç Düğün — Nevşehir",
       date: "2026-08-22",
       kind: "travel",
-      detail: "09:00–21:00 in Nevşehir. You dropped the week-ahead email reminder yesterday, so this board is the reminder now.",
+      detail: "Saturday, 09:00–21:00 in Nevşehir.",
       actions: [
         { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
       ]
@@ -139,7 +130,7 @@ const DATA = {
       title: "Orçun — doğum günü",
       date: "2026-08-23",
       kind: "social",
-      detail: "Recurring reminder on the personal calendar.",
+      detail: "Sunday. Recurring reminder on the personal calendar.",
       actions: [
         { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=MDdyMW9rZmlidHV1MzFoczdnZHNwbTM4ZjdfMjAyNjA4MjMgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
       ]
@@ -148,7 +139,7 @@ const DATA = {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-09-12",
       kind: "social",
-      detail: "Sat 12 Sep 16:30–23:00. Read but still unanswered on the calendar.",
+      detail: "Sat 12 Sep. Read on Sunday, still unanswered on the calendar.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
       ]
@@ -167,33 +158,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Call the accountant about the geçici vergi",
+      what: "Book the Nevşehir trip — it was due today",
+      source: "tasks.md · due 19 Aug",
+      why: "Saturday is a full day in Nevşehir, ~5 hours each way. Today is your last clear day to arrange it calmly.",
+      severity: "critical"
+    },
+    {
+      what: "Call the accountant — geçici vergi is two days late",
       source: "E-Mükellef · Thu 13 Aug, still unread",
-      why: "The deadline was yesterday. Whatever the penalty position is, it only gets worse while the mail stays unopened.",
+      why: "Six days since the tahakkuk fişi arrived and it has never been opened. Penalties accrue automatically.",
       severity: "critical"
     },
     {
       what: "Download the GitHub 2FA recovery codes",
       source: "GitHub · Sun 16 Aug, still unread",
-      why: "Third day with 2FA on and no codes saved. One lost phone and the account is unrecoverable.",
+      why: "Fourth day with 2FA enabled and no codes saved anywhere.",
       severity: "critical"
     },
     {
-      what: "Answer the ForestGuard check-in — it's today",
-      source: "Calendar · today 13:30, Teams",
-      why: "Unanswered since Sunday and it starts in a few hours. Lloyd's Register organised it; silence reads as absent.",
-      severity: "critical"
-    },
-    {
-      what: "Book Nevşehir travel today or tomorrow",
-      source: "tasks.md · due 19 Aug",
-      why: "Saturday's wedding is a ~5 hour drive each way. Wednesday is your only clear day this week.",
+      what: "Read Tymoteusz on SMM Hamburg",
+      source: "Safetec · yesterday 14:20, to the whole consortium",
+      why: "Hall B5, Booth 553. Sent to LR, Maersk, Offen Ship and both Örnek addresses — the one thread this week where people are waiting on each other.",
       severity: "warn"
     },
     {
-      what: "Decide on the A16z Speedrun AMA tonight",
-      source: "Luma · arrived 01:39 today",
-      why: "The referral window for SR008 is open. The invitation gives two different start times — confirm which before committing the evening.",
+      what: "Answer ForestGuard × Lukasz Skarka",
+      source: "Calendar · Wed 26 Aug 16:00, Meet",
+      why: "New on the KOZALAK calendar and unanswered. Lukasz and Batuhan Baybalı have both already accepted.",
       severity: "warn"
     }
   ],
@@ -201,7 +192,6 @@ const DATA = {
   priorities: [
     { text: "Sort out the overdue Q2 geçici vergi", tag: "money", due: "2026-08-17", pri: 1 },
     { text: "Save the GitHub recovery codes", tag: "security", due: "2026-08-17", pri: 1 },
-    { text: "Accept or decline ForestGuard bi-weekly check-in", tag: "forestguard", due: "2026-08-18", pri: 1 },
     { text: "Book Nevşehir travel for Saturday", tag: "travel", due: "2026-08-19", pri: 1 },
     { text: "Pay the Maximiles Black card", tag: "money", due: "2026-08-20", pri: 1 },
     { text: "Fix the failing shot-timer firmware build", tag: "code", due: "2026-08-21", pri: 2 },
@@ -210,12 +200,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-19", label: "Wed 19", items: [] },
     { date: "2026-08-20", label: "Thu 20", items: ["Black kart son ödeme"] },
     { date: "2026-08-21", label: "Fri 21", items: [] },
     { date: "2026-08-22", label: "Sat 22", items: ["Furkan Mert Koç Düğün · 09:00–21:00 · Nevşehir"] },
     { date: "2026-08-23", label: "Sun 23", items: ["Orçun doğum günü"] },
-    { date: "2026-08-24", label: "Mon 24", items: [] }
+    { date: "2026-08-24", label: "Mon 24", items: [] },
+    { date: "2026-08-25", label: "Tue 25", items: [] },
+    { date: "2026-08-26", label: "Wed 26", items: ["ForestGuard × Lukasz Skarka · 16:00 · Meet"] }
   ],
 
   inbox: {
@@ -224,13 +215,13 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "19ffc5205f770e0b", from: "E-Mükellef",     subject: "2026 2. Dönem Geçici Vergi Beyannamesi Tahakkuk Fişi", when: "Thu 21:11", flag: "action" },
-      { id: "1a00a1ae6318ef0b", from: "GitHub",         subject: "Please download your two-factor recovery codes", when: "Sun 13:25", flag: "action" },
-      { id: "1a011e19cd8bbedf", from: "A16z Speedrun",  subject: "You are invited to the AMA with Artin — today", when: "today 01:39", flag: "action" },
-      { id: "1a011f9c6eacf0eb", from: "A16z Speedrun",  subject: "Referrals to Speedrun SR008 are open", when: "today 02:06", flag: "watch" },
-      { id: "1a00e9a3c50006f4", from: "Google",         subject: "gamersfirsteditor@gmail.com is no longer recoverable — you're its recovery address", when: "yesterday 10:23", flag: "watch" },
-      { id: "19ffa0e1a126644f", from: "Rana İmam",      subject: "Davetiye: Geminidler, 13–14 Aralık", when: "Thu 10:37", flag: "watch" },
-      { id: "1a000bd8ec44923a", from: "Global Blue",    subject: "Vergi iadeniz ödendi", when: "Fri 17:46", flag: "done" }
+      { id: "1a0149a8d8364c66", from: "Tymoteusz Bojkowski", subject: "SMM Hamburg, Hall B5, Booth 553", when: "yesterday 14:20", flag: "action" },
+      { id: "19ffc5205f770e0b", from: "E-Mükellef",          subject: "2026 2. Dönem Geçici Vergi Beyannamesi Tahakkuk Fişi", when: "Thu 21:11", flag: "action" },
+      { id: "1a00a1ae6318ef0b", from: "GitHub",              subject: "Please download your two-factor recovery codes", when: "Sun 13:25", flag: "action" },
+      { id: "1a016b833b98ad62", from: "Robotistan",          subject: "Siparişiniz onaylandı — TS18081319311", when: "today 00:12", flag: "watch" },
+      { id: "1a00e9a3c50006f4", from: "Google",              subject: "gamersfirsteditor@gmail.com is no longer recoverable — you're its recovery address", when: "Mon 10:23", flag: "watch" },
+      { id: "1a015d19c6f20b8b", from: "Apple Developer",     subject: "Updated Program License Agreement — EU terms", when: "yesterday 20:00", flag: "watch" },
+      { id: "1a016a6d03bdf36d", from: "Google Labs",         subject: "Mixboard shuts down 28 September", when: "yesterday 23:53", flag: "done" }
     ]
   },
 
@@ -715,7 +706,7 @@ body {
   margin: 0;
   padding: 10px 0 2px;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 .week > li {
   display: flex;
