@@ -54,11 +54,18 @@ inbox:
     - otomatik-onay@amazon.com.tr
     - no-reply@notification.circle.so
     - calendar-notification@google.com   # duplicates the Schedule panel
+    - no-reply@yemeksepeti.com
+    - no-reply@news.yemeksepeti.com
+    - merhaba@newsletter.hepsiburada.com
+    - googlealerts-noreply@google.com     # "Forestguard" alert matches a Telugu film, not the project
+    - hello@email.bambulab.com
+    - noreply@steampowered.com
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings
     - bilgilendirme@ileti.isbank.com.tr # bank statements & payment due
     - crmadmin@mobiliz.com.tr           # vehicle tracking contract
+    - axess@bireysel.akbank.com         # Axess Platinum ****3660 statements
 
 # The dashboard's task box mails edits to yourself; the briefing applies them.
 taskbox:
