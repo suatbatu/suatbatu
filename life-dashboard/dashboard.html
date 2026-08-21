@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-20T07:55:00+03:00",
+  generatedAt: "2026-08-21T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -41,42 +41,61 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-20",
-    label: "Thursday, 20 August 2026",
+    date: "2026-08-21",
+    label: "Friday, 21 August 2026",
     weekNumber: 34,
     holiday: null
   },
 
   briefing:
-    "Both long-running sores finally got opened yesterday — the geçici vergi tahakkuk fişi " +
-    "and the GitHub recovery codes. Reading isn't doing, so tick them off in tasks.md if " +
-    "they're genuinely handled; the board can only see that you opened the mail. Today's hard " +
-    "edge is money: the <em>Maximiles Black son ödeme</em> falls due, and a second statement " +
-    "arrived yesterday morning — Akbank, Axess Platinum ****3660 — which has its own due date " +
-    "you'll need to look up rather than assume. Nevşehir travel is a day late with the wedding " +
-    "on Saturday. And two consortium mails are sitting unopened: Kassandra on the ForestGuard " +
-    "check-in, and Tymoteusz on SMM Hamburg from Tuesday.",
+    "There is a meeting on your calendar in four hours that you have not answered — " +
+    "<em>Armatec × ForestGuard</em> at 12:00, put there yesterday morning with three people " +
+    "from Armatec already on it. Nevşehir is the bigger problem: the booking task is two days " +
+    "late and the wedding starts tomorrow at 09:00, five hours away, so this is really a " +
+    "decision about tonight. One thing resolved itself — the Akbank card payment date is " +
+    "28 August, sitting on your own recurring reminder; I sent you hunting for it yesterday " +
+    "when it was already on the calendar. Three threads are still unopened, two of them from " +
+    "people waiting on the consortium.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 0, tone: "clear",    note: "no meetings · card due", live: true },
-    { label: "need a reply",  value: 3, tone: "warn",     note: "2 threads · 1 invite" },
-    { label: "due in 7 days", value: 7, tone: "critical", note: "3 late · 1 today" }
+    { label: "on today",      value: 1, tone: "warn",     note: "12:00 · unanswered", live: true },
+    { label: "need a reply",  value: 5, tone: "warn",     note: "2 invites · 3 threads" },
+    { label: "due in 7 days", value: 8, tone: "critical", note: "4 late · 1 today" }
   ],
 
   days: [
     {
-      date: "2026-08-20",
-      label: "Today · Thursday 20 Aug",
-      events: [],
-      emptyNote: "No meetings. The Black kart payment is the only fixed thing."
+      date: "2026-08-21",
+      label: "Today · Friday 21 Aug",
+      events: [
+        {
+          start: "12:00", end: "13:00",
+          title: "Armatec × ForestGuard",
+          calendar: "KOZALAK",
+          where: "meet.google.com/hmh-bkqz-jnf",
+          link: "https://meet.google.com/hmh-bkqz-jnf",
+          with: "Maciej (Armatec), A. Błach, M. Borowski · organised by M. A. Örnek",
+          rsvp: "needsAction", conflict: false,
+          conflictNote: null
+        }
+      ]
     },
     {
-      date: "2026-08-21",
-      label: "Tomorrow · Friday 21 Aug",
-      events: [],
-      emptyNote: "Clear — the last working day before Nevşehir."
+      date: "2026-08-22",
+      label: "Tomorrow · Saturday 22 Aug",
+      events: [
+        {
+          start: "09:00", end: "21:00",
+          title: "Furkan Mert Koç Düğün",
+          calendar: "Personal",
+          where: "Nevşehir",
+          with: "Rana",
+          rsvp: "organizer", conflict: false,
+          conflictNote: null
+        }
+      ]
     }
   ],
 
@@ -87,7 +106,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "You opened the tahakkuk fişi yesterday after six days. The task is still open in tasks.md — mark it done if the filing is actually settled.",
+      detail: "Mail opened Wednesday; the task has stayed open since. Mark it done if the filing is settled, or it will keep climbing this list.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -98,7 +117,7 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Opened yesterday. Still open as a task — the mail being read is not the same as the codes being saved somewhere safe.",
+      detail: "Same story: mail read Wednesday, task still open. Five days of 2FA with no saved codes.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
       ]
@@ -107,7 +126,7 @@ const DATA = {
       title: "Book Nevşehir travel",
       date: "2026-08-19",
       kind: "travel",
-      detail: "A day late. The wedding is Saturday 09:00–21:00 and it's ~5 hours each way, so today decides whether you leave Friday evening or before dawn.",
+      detail: "Two days late and out of road — the wedding is tomorrow 09:00, roughly five hours away. Either you drive tonight or you leave around 04:00.",
       actions: [
         { label: "The wedding", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" },
         { label: "Route", icon: "map", href: "https://www.google.com/maps/dir/?api=1&destination=Nev%C5%9Fehir%2C%20T%C3%BCrkiye" }
@@ -117,26 +136,26 @@ const DATA = {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Due today. Card 4743 ****4363, İş Bankası. Statements read on Monday.",
+      detail: "Yesterday's date. If you paid it, tick the task off; the board only sees that it's still open.",
       actions: [
-        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" },
-        { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=azRoN2kxamNxMGtubjFjMmE4aG44aTFpMTdfMjAyNjA4MjAgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
+        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }
       ]
     },
     {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21",
       kind: "code",
-      detail: "Tomorrow, by your own date. CI has been red on main since Sunday.",
+      detail: "Your own date, today. CI has been red on main since Sunday.",
       actions: []
     },
     {
       title: "Furkan Mert Koç Düğün — Nevşehir",
       date: "2026-08-22",
       kind: "travel",
-      detail: "Saturday, 09:00–21:00 in Nevşehir.",
+      detail: "Tomorrow, 09:00–21:00.",
       actions: [
-        { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
+        { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" },
+        { label: "Route", icon: "map", href: "https://www.google.com/maps/dir/?api=1&destination=Nev%C5%9Fehir%2C%20T%C3%BCrkiye" }
       ]
     },
     {
@@ -149,10 +168,20 @@ const DATA = {
       ]
     },
     {
+      title: "Akbank kartı ödeme — Axess Platinum",
+      date: "2026-08-28",
+      kind: "money",
+      detail: "Card ****3660. The date comes from your own recurring calendar reminder, not from the statement mail — which is still unread.",
+      actions: [
+        { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=NnNxajhkcjE2aGlqNGJiNTZnb2pnYjlrNjloamdiOW9jOHJqNmJiMTcwcTMwZGIzNzBybThkOWg2MF8yMDI2MDgyOCBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" },
+        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
+      ]
+    },
+    {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-09-12",
       kind: "social",
-      detail: "Sat 12 Sep. Read on Sunday, still unanswered on the calendar.",
+      detail: "Sat 12 Sep. Read last Sunday, still unanswered on the calendar.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
       ]
@@ -171,40 +200,40 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Pay the Maximiles Black card — due today",
-      source: "Calendar + İş Bankası · son ödeme 20 Aug",
-      why: "The date on the calendar is today. You've had the statements since Monday.",
+      what: "Answer Armatec × ForestGuard — it starts at 12:00",
+      source: "Calendar + M. A. Örnek · added yesterday 11:19",
+      why: "Four hours away and you're the only invitee who hasn't responded. Maciej has already accepted; two more from Armatec are pending on you.",
       severity: "critical"
     },
     {
-      what: "Book Nevşehir — already a day late",
+      what: "Settle Nevşehir tonight",
       source: "tasks.md · was due 19 Aug",
-      why: "Saturday is a full day in Nevşehir, ~5 hours each way. Every day you leave it, Friday-night options get thinner.",
+      why: "The wedding is tomorrow at 09:00 and it's ~5 hours each way. There is no version of this that waits another day.",
       severity: "critical"
-    },
-    {
-      what: "Find the Axess Platinum son ödeme date",
-      source: "Akbank · yesterday 09:31, unread",
-      why: "A second card statement arrived for ****3660 — a different bank and cycle from the Maximiles Black. The mail doesn't state a due date on its face, so open it rather than assume it matches today's.",
-      severity: "warn"
     },
     {
       what: "Open the two consortium threads",
-      source: "Kassandra (LR) yesterday · Tymoteusz (Safetec) Tuesday",
-      why: "One is the ForestGuard check-in itself, the other is SMM Hamburg logistics — Hall B5, Booth 553. Both went to all six of you and neither has been read.",
+      source: "Kassandra (LR) Wed · Tymoteusz (Safetec) Tue",
+      why: "Still unread after three and four days. One is the ForestGuard check-in itself, the other SMM Hamburg logistics — Hall B5, Booth 553.",
       severity: "warn"
     },
     {
       what: "Answer ForestGuard × Lukasz Skarka",
       source: "Calendar · Wed 26 Aug 16:00, Meet",
-      why: "Still unanswered. Lukasz and Batuhan Baybalı have both accepted; you're the one holding it open.",
+      why: "A week open now. Lukasz and Batuhan Baybalı have both accepted.",
+      severity: "warn"
+    },
+    {
+      what: "The shot-timer build is due today",
+      source: "tasks.md · @2026-08-21",
+      why: "CI red on main since Sunday. If it slips past today it lands behind the wedding weekend.",
       severity: "warn"
     }
   ],
 
   priorities: [
+    { text: "Book Nevşehir travel for tomorrow", tag: "travel", due: "2026-08-19", pri: 1 },
     { text: "Pay the Maximiles Black card", tag: "money", due: "2026-08-20", pri: 1 },
-    { text: "Book Nevşehir travel for Saturday", tag: "travel", due: "2026-08-19", pri: 1 },
     { text: "Sort out the Q2 geçici vergi", tag: "money", due: "2026-08-17", pri: 1 },
     { text: "Save the GitHub recovery codes", tag: "security", due: "2026-08-17", pri: 1 },
     { text: "Fix the failing shot-timer firmware build", tag: "code", due: "2026-08-21", pri: 2 },
@@ -213,13 +242,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-21", label: "Fri 21", items: [] },
     { date: "2026-08-22", label: "Sat 22", items: ["Furkan Mert Koç Düğün · 09:00–21:00 · Nevşehir"] },
     { date: "2026-08-23", label: "Sun 23", items: ["Orçun doğum günü"] },
-    { date: "2026-08-24", label: "Mon 24", items: [] },
+    { date: "2026-08-24", label: "Mon 24", items: ["İşCep TEFAS · 10:00"] },
     { date: "2026-08-25", label: "Tue 25", items: [] },
     { date: "2026-08-26", label: "Wed 26", items: ["ForestGuard × Lukasz Skarka · 16:00 · Meet"] },
-    { date: "2026-08-27", label: "Thu 27", items: [] }
+    { date: "2026-08-27", label: "Thu 27", items: [] },
+    { date: "2026-08-28", label: "Fri 28", items: ["Akbank kkartı ödeme"] }
   ],
 
   inbox: {
@@ -228,13 +257,13 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "1a01924705231861", from: "Kassandra Biggemann", subject: "ForestGuard Bi-weekly Check-in", when: "yesterday 11:30", flag: "action" },
+      { id: "1a01e412991547d7", from: "Muhammed Ali Örnek",  subject: "Davetiye: Armatec × ForestGuard — today 12:00", when: "yesterday 11:19", flag: "action" },
+      { id: "1a01924705231861", from: "Kassandra Biggemann", subject: "ForestGuard Bi-weekly Check-in", when: "Wed 11:30", flag: "action" },
       { id: "1a0149a8d8364c66", from: "Tymoteusz Bojkowski", subject: "SMM Hamburg, Hall B5, Booth 553", when: "Tue 14:20", flag: "action" },
-      { id: "1a018b9f64577e3f", from: "Akbank Axess",        subject: "Axess Platinum ****3660 hesap özetiniz", when: "yesterday 09:31", flag: "action" },
+      { id: "1a018b9f64577e3f", from: "Akbank Axess",        subject: "Axess Platinum ****3660 hesap özetiniz", when: "Wed 09:31", flag: "action" },
+      { id: "1a01a1e68b523efc", from: "Orkun (Dispatent)",   subject: "Marka / patent işlemleri — M. A. Örnek already declined for now", when: "yesterday 11:03", flag: "watch" },
       { id: "1a016b833b98ad62", from: "Robotistan",          subject: "Siparişiniz onaylandı — TS18081319311", when: "Wed 00:12", flag: "watch" },
-      { id: "1a00e9a3c50006f4", from: "Google",              subject: "gamersfirsteditor@gmail.com is no longer recoverable — you're its recovery address", when: "Mon 10:23", flag: "watch" },
-      { id: "1a015d19c6f20b8b", from: "Apple Developer",     subject: "Updated Program License Agreement — EU terms", when: "Tue 20:00", flag: "watch" },
-      { id: "1a016a6d03bdf36d", from: "Google Labs",         subject: "Mixboard shuts down 28 September", when: "Tue 23:53", flag: "done" }
+      { id: "1a015d19c6f20b8b", from: "Apple Developer",     subject: "Updated Program License Agreement — EU terms", when: "Tue 20:00", flag: "watch" }
     ]
   },
 
