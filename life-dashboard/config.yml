@@ -60,6 +60,10 @@ inbox:
     - googlealerts-noreply@google.com     # "Forestguard" alert matches a Telugu film, not the project
     - hello@email.bambulab.com
     - noreply@steampowered.com
+    - noreply@marketing.couchsurfing.com
+    - customer.service@digitaldubai.ae
+    - the-work-newsletter@mail.beehiiv.com
+    - storyroasters@email.myikas.com
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings
