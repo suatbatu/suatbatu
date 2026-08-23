@@ -64,6 +64,7 @@ inbox:
     - customer.service@digitaldubai.ae
     - the-work-newsletter@mail.beehiiv.com
     - storyroasters@email.myikas.com
+    - order-update@amazon.com.tr
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings

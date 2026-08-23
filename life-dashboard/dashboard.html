@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-22T07:55:00+03:00",
+  generatedAt: "2026-08-23T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -29,6 +29,7 @@ const DATA = {
       "siparis-bilgisi@amazon.com.tr",
       "kargo-takibi@amazon.com.tr",
       "otomatik-onay@amazon.com.tr",
+      "order-update@amazon.com.tr",
       "no-reply@notification.circle.so",
       "calendar-notification@google.com",
       "no-reply@yemeksepeti.com",
@@ -45,51 +46,54 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-22",
-    label: "Saturday, 22 August 2026",
+    date: "2026-08-23",
+    label: "Sunday, 23 August 2026",
     weekNumber: 34,
     holiday: null
   },
 
   briefing:
-    "Nevşehir today, 09:00 to 21:00. With five hours of road either side, nothing else " +
-    "realistically fits — treat the rest of this board as Monday's problem. Yesterday did " +
-    "clear a genuine backlog: Kassandra, Tymoteusz, Orkun and the Apple agreement all got " +
-    "read, so no one in the consortium is waiting on you any more. What hasn't moved is money. " +
-    "The geçici vergi and the GitHub codes are five days past their dates, the Maximiles " +
-    "payment two, and the Axess statement is still unopened with its payment due Friday. " +
-    "İş Bankası also couriered a new card ending 8502 to your home yesterday. Monday is " +
-    "filling up behind you: İşCep TEFAS at 10:00, Selin at the atölye from 13:00.",
+    "Sunday, and the only thing on the calendar is Orçun's birthday — presumably alongside " +
+    "the drive back from Nevşehir. Your own date for answering the Kısakürek invitation is " +
+    "today, which is well timed: you put a family dinner in last night, <em>Zeynep " +
+    "kısakürekler</em> on Thursday at 19:00, and Rana hasn't responded to it yet. The Axess " +
+    "statement has now gone five days unopened with its payment due Friday — the one thing " +
+    "this week that costs money to ignore. Four tasks are still past their dates, though at " +
+    "least three may simply be done and unticked. Monday restarts properly: İşCep TEFAS at " +
+    "10:00, Selin at the atölye from 13:00.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 1, tone: "warn",     note: "Nevşehir, all day", live: true },
-    { label: "need a reply",  value: 3, tone: "warn",     note: "2 invites · 1 statement" },
-    { label: "due in 7 days", value: 8, tone: "critical", note: "4 late · 1 today" }
+    { label: "on today",      value: 0, tone: "clear",    note: "Orçun's birthday", live: true },
+    { label: "need a reply",  value: 3, tone: "warn",     note: "1 invite · 2 threads" },
+    { label: "due in 7 days", value: 7, tone: "critical", note: "4 late · 2 today" }
   ],
 
   days: [
     {
-      date: "2026-08-22",
-      label: "Today · Saturday 22 Aug",
-      events: [
-        {
-          start: "09:00", end: "21:00",
-          title: "Furkan Mert Koç Düğün",
-          calendar: "Personal",
-          where: "Nevşehir",
-          with: "Rana",
-          rsvp: "organizer", conflict: false,
-          conflictNote: null
-        }
-      ]
+      date: "2026-08-23",
+      label: "Today · Sunday 23 Aug",
+      events: [],
+      emptyNote: "Nothing timed — Orçun's birthday, and the road back from Nevşehir."
     },
     {
-      date: "2026-08-23",
-      label: "Tomorrow · Sunday 23 Aug",
-      events: [],
-      emptyNote: "Nothing timed — Orçun's birthday, and the drive home."
+      date: "2026-08-24",
+      label: "Tomorrow · Monday 24 Aug",
+      events: [
+        {
+          start: "10:00", end: "11:00",
+          title: "İşCep TEFAS",
+          calendar: "Personal", where: null, with: null,
+          rsvp: "organizer", conflict: false, conflictNote: null
+        },
+        {
+          start: "13:00", end: "15:30",
+          title: "Selin karaağaç atölyeye geliyor",
+          calendar: "Personal", where: "Atölye", with: null,
+          rsvp: "organizer", conflict: false, conflictNote: null
+        }
+      ]
     }
   ],
 
@@ -100,7 +104,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "Mail read on Wednesday; the task has sat open since. If the filing is settled, mark it done — otherwise this keeps climbing.",
+      detail: "Six days past. Mail read Wednesday; task never closed. If it's settled, closing it is one line in the task box.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -111,7 +115,7 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Six days of two-factor with no codes saved anywhere. The mail was read; the codes still need downloading.",
+      detail: "A week of two-factor with no codes saved. This is the one on the list that turns into a locked account rather than a fee.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
       ]
@@ -120,7 +124,7 @@ const DATA = {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Two days past. İş Bankası, card 4743 ****4363. Tick the task off if it's paid.",
+      detail: "Three days past. İş Bankası, card 4743 ****4363.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }
       ]
@@ -129,24 +133,14 @@ const DATA = {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21",
       kind: "code",
-      detail: "A day past your own date. CI red on main since last Sunday — now behind a wedding weekend, as predicted.",
+      detail: "Two days past. CI red on main for a week now.",
       actions: []
-    },
-    {
-      title: "Furkan Mert Koç Düğün — Nevşehir",
-      date: "2026-08-22",
-      kind: "travel",
-      detail: "Today, 09:00–21:00.",
-      actions: [
-        { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=N29hNGg2ZHRwMWZvbWVmb24wMjliYWY2OWQgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" },
-        { label: "Route", icon: "map", href: "https://www.google.com/maps/dir/?api=1&destination=Nev%C5%9Fehir%2C%20T%C3%BCrkiye" }
-      ]
     },
     {
       title: "Orçun — doğum günü",
       date: "2026-08-23",
       kind: "social",
-      detail: "Tomorrow, likely while you're driving back.",
+      detail: "Today.",
       actions: [
         { label: "Event", icon: "event", href: "https://www.google.com/calendar/event?eid=MDdyMW9rZmlidHV1MzFoczdnZHNwbTM4ZjdfMjAyNjA4MjMgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
       ]
@@ -155,7 +149,7 @@ const DATA = {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-08-23",
       kind: "social",
-      detail: "Your own date for answering. The wedding itself is Sat 12 Sep, 16:30–23:00.",
+      detail: "Your own date for answering, today. The wedding is Sat 12 Sep, 16:30–23:00 — and you're seeing the family on Thursday.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
       ]
@@ -164,7 +158,7 @@ const DATA = {
       title: "Akbank kartı ödeme — Axess Platinum",
       date: "2026-08-28",
       kind: "money",
-      detail: "Card ****3660, Friday. The statement mail from Wednesday is still unopened, so the amount is still unknown to you.",
+      detail: "Friday. Card ****3660. The statement has been unread since Wednesday, so the amount is still unknown to you.",
       actions: [
         { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=NnNxajhkcjE2aGlqNGJiNTZnb2pnYjlrNjloamdiOW9jOHJqNmJiMTcwcTMwZGIzNzBybThkOWg2MF8yMDI2MDgyOCBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" },
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
@@ -184,33 +178,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Open the Axess statement before Friday",
-      source: "Akbank · Wed 09:31, still unread",
-      why: "Payment falls on 28 August and you haven't seen the amount. Four days unread, and the card is a different bank and cycle from the Maximiles.",
+      what: "Open the Axess statement — payment is Friday",
+      source: "Akbank · Wed 09:31, five days unread",
+      why: "You still don't know the amount, and it's a different bank and cycle from the Maximiles. Friday is the date on your own recurring reminder.",
       severity: "critical"
     },
     {
       what: "Four overdue tasks — settle them or tick them off",
       source: "tasks.md · geçici vergi, GitHub codes, Maximiles, shot-timer",
-      why: "All four are past their dates and three had their mail read days ago. The board can only see the file, so if they're done it's showing you a false backlog.",
+      why: "Three had their mail read days ago. If they're done, this board is inventing a backlog; if they aren't, the GitHub codes are the one that bites hardest.",
       severity: "critical"
+    },
+    {
+      what: "Answer the Kısakürek invitation — your date is today",
+      source: "Rana İmam · invitation for Sat 12 Sep",
+      why: "You're having dinner with the Kısakürekler on Thursday, so it would be good to know your own answer before then.",
+      severity: "warn"
     },
     {
       what: "Answer ForestGuard × Lukasz Skarka",
       source: "Calendar · Wed 26 Aug 16:00, Meet",
-      why: "Nineteen days unanswered. Lukasz and Batuhan Baybalı accepted long ago; you're the only one outstanding.",
+      why: "Twenty days unanswered and now three days out. Lukasz and Batuhan Baybalı accepted at the start.",
       severity: "warn"
     },
     {
       what: "Look at the Workup Get Together invitation",
-      source: "İlayda Bahadıroğlu, YZF · yesterday 13:42",
-      why: "Their ninth-anniversary gathering. The mail doesn't state a date in its preview — open it before it ages out.",
-      severity: "warn"
-    },
-    {
-      what: "A new İş Bankası card is in transit",
-      source: "İş Bankası · yesterday 18:28",
-      why: "Card ending 8502 went to courier for your home address, roughly five working days. Someone needs to be there to take it.",
+      source: "İlayda Bahadıroğlu, YZF · Fri 13:42",
+      why: "Their ninth-anniversary gathering, still unopened. No date visible in the preview, so it can't be placed on the board until you read it.",
       severity: "warn"
     }
   ],
@@ -225,13 +219,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-23", label: "Sun 23", items: ["Orçun doğum günü"] },
     { date: "2026-08-24", label: "Mon 24", items: ["İşCep TEFAS · 10:00", "Selin karaağaç, atölye · 13:00–15:30"] },
     { date: "2026-08-25", label: "Tue 25", items: [] },
     { date: "2026-08-26", label: "Wed 26", items: ["ForestGuard × Lukasz Skarka · 16:00 · Meet"] },
-    { date: "2026-08-27", label: "Thu 27", items: [] },
+    { date: "2026-08-27", label: "Thu 27", items: ["Zeynep kısakürekler akiam yemeği · 19:00 · Rana not yet replied"] },
     { date: "2026-08-28", label: "Fri 28", items: ["Akbank kkartı ödeme"] },
-    { date: "2026-08-29", label: "Sat 29", items: [] }
+    { date: "2026-08-29", label: "Sat 29", items: [] },
+    { date: "2026-08-30", label: "Sun 30", items: [] }
   ],
 
   inbox: {
@@ -240,13 +234,12 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "1a024f0368267c1b", from: "İş Bankası",   subject: "Kartınızı kuryeye teslim ettik — ****8502", when: "yesterday 18:28", flag: "action" },
-      { id: "1a018b9f64577e3f", from: "Akbank Axess", subject: "Axess Platinum ****3660 hesap özetiniz", when: "Wed 09:31", flag: "action" },
-      { id: "1a023e9f4bda3a14", from: "İlayda Bahadıroğlu", subject: "Workup Get Together — 9. yılımızı birlikte kutluyoruz", when: "yesterday 13:42", flag: "action" },
-      { id: "1a026d474f26ae11", from: "Claude",       subject: "This week in Claude Code: /design, Concise output style", when: "today 03:17", flag: "watch" },
-      { id: "1a016b833b98ad62", from: "Robotistan",   subject: "Siparişiniz onaylandı — TS18081319311", when: "Wed 00:12", flag: "watch" },
-      { id: "1a01e412991547d7", from: "Muhammed Ali Örnek", subject: "Davetiye: Armatec × ForestGuard — the meeting ran yesterday", when: "Thu 11:19", flag: "done" },
-      { id: "1a016a6d03bdf36d", from: "Google Labs",  subject: "Mixboard shuts down 28 September", when: "Tue 23:53", flag: "done" }
+      { id: "1a018b9f64577e3f", from: "Akbank Axess", subject: "Axess Platinum ****3660 hesap özetiniz — payment Friday", when: "Wed 09:31", flag: "action" },
+      { id: "1a024f0368267c1b", from: "İş Bankası",   subject: "Kartınızı kuryeye teslim ettik — ****8502", when: "Fri 18:28", flag: "action" },
+      { id: "1a023e9f4bda3a14", from: "İlayda Bahadıroğlu", subject: "Workup Get Together — 9. yılımızı birlikte kutluyoruz", when: "Fri 13:42", flag: "action" },
+      { id: "1a029cdeaa11ff05", from: "DeepSeek",     subject: "New peak/off-peak API billing rules, effective today", when: "yesterday 17:06", flag: "watch" },
+      { id: "1a026d474f26ae11", from: "Claude",       subject: "This week in Claude Code: /design, Concise output style", when: "yesterday 03:17", flag: "watch" },
+      { id: "1a01e412991547d7", from: "Muhammed Ali Örnek", subject: "Davetiye: Armatec × ForestGuard — the meeting ran on Friday", when: "Thu 11:19", flag: "done" }
     ]
   },
 
