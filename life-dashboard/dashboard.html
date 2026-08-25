@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-24T07:55:00+03:00",
+  generatedAt: "2026-08-25T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -46,54 +46,51 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-24",
-    label: "Monday, 24 August 2026",
+    date: "2026-08-25",
+    label: "Tuesday, 25 August 2026",
     weekNumber: 35,
     holiday: null
   },
 
   briefing:
-    "A student is waiting on you. Bilge Gökgöz wrote yesterday afternoon: her <em>ID 212</em> " +
-    "grade read D+ when results were published and now shows F, and she is asking why. It went " +
-    "to you and Rana both, and it is exactly the kind of message that gets worse with silence. " +
-    "Amazon also declined payment on last night's order twice and won't ship until the details " +
-    "are updated — worth noticing that the Maximiles Black payment is four days past due and a " +
-    "replacement İş Bankası card is still in the post. Your own day is İşCep TEFAS at 10:00 and " +
-    "Selin at the atölye from 13:00. One correction to yesterday: the Zeynep Kısakürekler dinner " +
-    "was deleted from the Aile calendar last night, so Thursday is clear again.",
+    "Bilge Gökgöz has now waited two days for an answer about her <em>ID 212</em> grade. " +
+    "Yesterday you opened the İş Bankası card notice and the Workup invitation but not hers — " +
+    "clear that one first. Two things arrived overnight that both want a decision: the British " +
+    "Consulate has invited you to a UK–Türkiye green growth reception on Thursday 3 September " +
+    "at 18:00, and Motorist want 2,690 TL to renew a subscription that already lapsed on " +
+    "16 August. Amazon's declined payment is still unopened and that order still won't ship. " +
+    "Nothing at all on today's calendar — which makes it the day to answer the Lukasz call, " +
+    "since that is tomorrow at 16:00 and still unanswered after three weeks.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 2, tone: "warn",     note: "10:00 and 13:00", live: true },
-    { label: "need a reply",  value: 4, tone: "critical", note: "1 student · 1 invite · 2 admin" },
+    { label: "on today",      value: 0, tone: "clear",    note: "nothing scheduled", live: true },
+    { label: "need a reply",  value: 5, tone: "critical", note: "1 student · 2 invites · 2 admin" },
     { label: "due in 7 days", value: 6, tone: "critical", note: "5 already late" }
   ],
 
   days: [
     {
-      date: "2026-08-24",
-      label: "Today · Monday 24 Aug",
-      events: [
-        {
-          start: "10:00", end: "11:00",
-          title: "İşCep TEFAS",
-          calendar: "Personal", where: null, with: null,
-          rsvp: "organizer", conflict: false, conflictNote: null
-        },
-        {
-          start: "13:00", end: "15:30",
-          title: "Selin karaağaç atölyeye geliyor",
-          calendar: "Personal", where: "Atölye", with: null,
-          rsvp: "organizer", conflict: false, conflictNote: null
-        }
-      ]
+      date: "2026-08-25",
+      label: "Today · Tuesday 25 Aug",
+      events: [],
+      emptyNote: "Completely clear — the last quiet day before the Lukasz call and Friday's payment."
     },
     {
-      date: "2026-08-25",
-      label: "Tomorrow · Tuesday 25 Aug",
-      events: [],
-      emptyNote: "Clear. The Lukasz call is Wednesday, the Akbank payment Friday."
+      date: "2026-08-26",
+      label: "Tomorrow · Wednesday 26 Aug",
+      events: [
+        {
+          start: "16:00", end: "17:00",
+          title: "ForestGuard × Lukasz Skarka",
+          calendar: "KOZALAK",
+          where: "meet.google.com/nry-jzjp-wmy",
+          link: "https://meet.google.com/nry-jzjp-wmy",
+          with: "Lukasz Skarka (InnoEnergy), Batuhan Baybalı · organised by M. A. Örnek",
+          rsvp: "needsAction", conflict: false, conflictNote: null
+        }
+      ]
     }
   ],
 
@@ -104,7 +101,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "A week past. Mail read last Wednesday, task never closed. If it's settled, closing it is one line in the task box.",
+      detail: "Eight days past. Mail read on the 19th, task never closed. One line in the task box closes it if it's settled.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -115,7 +112,7 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Eight days of two-factor with no codes saved. Still the one item here that ends in a locked account rather than a fee.",
+      detail: "Nine days of two-factor with no codes saved. Still the only item here that ends in a locked account rather than a fee.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
       ]
@@ -124,7 +121,7 @@ const DATA = {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Four days past. İş Bankası, card 4743 ****4363 — and Amazon declined a card twice last night, which may or may not be the same story.",
+      detail: "Five days past. İş Bankası, card 4743 ****4363.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }
       ]
@@ -133,14 +130,14 @@ const DATA = {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21",
       kind: "code",
-      detail: "Three days past. CI red on main for eight days.",
+      detail: "Four days past. CI red on main for nine days.",
       actions: []
     },
     {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-08-23",
       kind: "social",
-      detail: "A day past your own date. The wedding is Sat 12 Sep, 16:30–23:00.",
+      detail: "Two days past your own date. The wedding is Sat 12 Sep, 16:30–23:00.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
       ]
@@ -149,17 +146,27 @@ const DATA = {
       title: "Akbank kartı ödeme — Axess Platinum",
       date: "2026-08-28",
       kind: "money",
-      detail: "Friday, card ****3660. You read the statement yesterday, so the amount is known now.",
+      detail: "Friday, card ****3660. You read the statement on Sunday, so the amount is known.",
       actions: [
         { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=NnNxajhkcjE2aGlqNGJiNTZnb2pnYjlrNjloamdiOW9jOHJqNmJiMTcwcTMwZGIzNzBybThkOWg2MF8yMDI2MDgyOCBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" },
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
       ]
     },
     {
+      title: "UK–Türkiye reception — RSVP",
+      date: "2026-09-03",
+      kind: "social",
+      detail: "Green Growth in Action, hosted by BCG Istanbul, Thu 3 Sep 18:00. Invitation from HM Consul General David Reed. Nothing is on your calendar for it yet.",
+      actions: [
+        { label: "The invitation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411" },
+        { label: "Reply", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411?compose=new" }
+      ]
+    },
+    {
       title: "Mobiliz araç takip — first billed month",
       date: "2026-09-15",
       kind: "money",
-      detail: "Billing starts 15 Sep unless you cancel. Decision is on your list for 10 Sep.",
+      detail: "Billing starts 15 Sep unless you cancel. Decision is on your list for 10 Sep — and Motorist now wants a decision too.",
       actions: [
         { label: "Their notice", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa" },
         { label: "Reply to cancel", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa?compose=new" }
@@ -169,33 +176,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Reply to Bilge Gökgöz about her ID 212 grade",
-      source: "bilgiedu.net · yesterday 16:15, to you and Rana",
-      why: "She saw D+ when grades were published and now sees F. Whether it's a correction or an error, she needs an answer from one of you — and grade appeals run on deadlines.",
+      what: "Reply to Bilge Gökgöz — two days now",
+      source: "bilgiedu.net · Sun 16:15, to you and Rana",
+      why: "Her ID 212 grade went from D+ to F and she has had no answer. You read three other mails yesterday and not this one; appeals run on deadlines.",
       severity: "critical"
     },
     {
-      what: "Amazon declined your payment twice",
-      source: "Amazon · yesterday 19:40 and 19:46",
-      why: "Last night's order won't ship until the payment details are updated. Given the Maximiles is four days overdue and a replacement card is in the post, check which card it tried.",
-      severity: "critical"
-    },
-    {
-      what: "Five overdue tasks — settle them or tick them off",
-      source: "tasks.md · geçici vergi, GitHub codes, Maximiles, shot-timer, Kısakürek",
-      why: "Every one is past its date and most have had their mail read. If they're done, this list is fiction; if not, the GitHub codes are the dangerous one.",
-      severity: "critical"
-    },
-    {
-      what: "Answer ForestGuard × Lukasz Skarka — Wednesday",
+      what: "Answer ForestGuard × Lukasz Skarka — it's tomorrow",
       source: "Calendar · Wed 26 Aug 16:00, Meet",
-      why: "Three weeks unanswered and now two days out. Lukasz and Batuhan Baybalı accepted at the start.",
+      why: "Three weeks unanswered and now one day out. Lukasz and Batuhan Baybalı accepted at the start; today is the last chance to answer before it happens.",
+      severity: "critical"
+    },
+    {
+      what: "Amazon's declined payment is still unopened",
+      source: "Amazon · Sun 19:40 and 19:46",
+      why: "The order doesn't ship until the payment details are updated, and two days have passed. Check which card it tried — the Maximiles is five days overdue.",
+      severity: "critical"
+    },
+    {
+      what: "RSVP the British Consulate reception",
+      source: "FCDO Istanbul · yesterday 16:12",
+      why: "Green Growth in Action, Thu 3 Sep 18:00, hosted by BCG Istanbul — an invitation from the Consul General, and squarely in ForestGuard's world.",
       severity: "warn"
     },
     {
-      what: "Open the Workup Get Together invitation",
-      source: "İlayda Bahadıroğlu, YZF · Fri 13:42",
-      why: "Their ninth-anniversary gathering, unopened since Friday. Until you read it there's no date to put on the board.",
+      what: "Decide on the Motorist renewal",
+      source: "Motorist · yesterday 22:47",
+      why: "2,690 TL for twelve months, and the subscription already lapsed on 16 August. Second vehicle-service renewal on your plate alongside Mobiliz.",
       severity: "warn"
     }
   ],
@@ -210,13 +217,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-25", label: "Tue 25", items: [] },
     { date: "2026-08-26", label: "Wed 26", items: ["ForestGuard × Lukasz Skarka · 16:00 · Meet"] },
     { date: "2026-08-27", label: "Thu 27", items: [] },
     { date: "2026-08-28", label: "Fri 28", items: ["Akbank kkartı ödeme"] },
     { date: "2026-08-29", label: "Sat 29", items: [] },
     { date: "2026-08-30", label: "Sun 30", items: [] },
-    { date: "2026-08-31", label: "Mon 31", items: [] }
+    { date: "2026-08-31", label: "Mon 31", items: [] },
+    { date: "2026-09-01", label: "Tue 1 Sep", items: [] }
   ],
 
   inbox: {
@@ -225,13 +232,13 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "1a02ec2cf9654423", from: "Bilge Gökgöz", subject: "ID 212 hakkında — grade went from D+ to F", when: "yesterday 16:15", flag: "action" },
-      { id: "1a02f7f0ed077727", from: "Amazon",       subject: "Ödeme reddedildi — order won't ship (×2)", when: "yesterday 19:40", flag: "action" },
-      { id: "1a024f0368267c1b", from: "İş Bankası",   subject: "Kartınızı kuryeye teslim ettik — ****8502", when: "Fri 18:28", flag: "action" },
-      { id: "1a023e9f4bda3a14", from: "İlayda Bahadıroğlu", subject: "Workup Get Together — 9. yılımızı birlikte kutluyoruz", when: "Fri 13:42", flag: "action" },
-      { id: "1a02f6dafd76eb96", from: "Amazon",       subject: "İade kabul edildi — refund once items arrive", when: "yesterday 19:21", flag: "watch" },
-      { id: "1a029cdeaa11ff05", from: "DeepSeek",     subject: "New peak/off-peak API billing rules, live since yesterday", when: "Sat 17:06", flag: "watch" },
-      { id: "1a026d474f26ae11", from: "Claude",       subject: "This week in Claude Code: /design, Concise output style", when: "Sat 03:17", flag: "watch" }
+      { id: "1a02ec2cf9654423", from: "Bilge Gökgöz",  subject: "ID 212 hakkında — grade went from D+ to F, two days unanswered", when: "Sun 16:15", flag: "action" },
+      { id: "1a033e7a1e3a7411", from: "British Consulate Istanbul", subject: "Green Growth in Action — reception, Thu 3 Sep 18:00", when: "yesterday 16:12", flag: "action" },
+      { id: "1a02f7f0ed077727", from: "Amazon",        subject: "Ödeme reddedildi — order still won't ship (×2)", when: "Sun 19:40", flag: "action" },
+      { id: "1a03550623ebd441", from: "Motorist",      subject: "Abonelik yenileme — 2.690 TL, lapsed 16 Aug", when: "yesterday 22:47", flag: "action" },
+      { id: "1a0342953f1c8de2", from: "Amazon",        subject: "Para iadeniz tamamlandı — 882,90 ₺", when: "yesterday 17:25", flag: "done" },
+      { id: "1a035ca230467cec", from: "Side Hustle Summit", subject: "Registration confirmed — 6–13 Sep, 13:00 ET daily", when: "today 01:00", flag: "watch" },
+      { id: "1a029cdeaa11ff05", from: "DeepSeek",      subject: "New peak/off-peak API billing rules, live since Sunday", when: "Sat 17:06", flag: "watch" }
     ]
   },
 
