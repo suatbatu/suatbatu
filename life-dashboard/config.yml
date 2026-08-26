@@ -65,6 +65,8 @@ inbox:
     - the-work-newsletter@mail.beehiiv.com
     - storyroasters@email.myikas.com
     - order-update@amazon.com.tr
+    - no-reply@amazon.com.tr
+    - imangadzhi@consulting.com          # manufactured-urgency funnel; imang@ stays for transactional
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings
