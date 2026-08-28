@@ -57,7 +57,6 @@ inbox:
     - no-reply@yemeksepeti.com
     - no-reply@news.yemeksepeti.com
     - merhaba@newsletter.hepsiburada.com
-    - googlealerts-noreply@google.com     # "Forestguard" alert matches a Telugu film, not the project
     - hello@email.bambulab.com
     - noreply@steampowered.com
     - noreply@marketing.couchsurfing.com
@@ -65,14 +64,20 @@ inbox:
     - the-work-newsletter@mail.beehiiv.com
     - storyroasters@email.myikas.com
     - order-update@amazon.com.tr
-    - no-reply@amazon.com.tr
     - imangadzhi@consulting.com          # manufactured-urgency funnel; imang@ stays for transactional
+  # NOTE: sender-level muting is blunt. Two senders were un-muted on 28 Aug after
+  # they carried real alerts: no-reply@amazon.com.tr also sends account-security
+  # notices, and googlealerts-noreply@google.com also runs the "Batuhan Esirger"
+  # name alert. Check what else a sender carries before adding it here.
+
   # Senders that always get promoted to "Needs You", even if they look automated
   priority_senders:
     - noreply@mail.emukellef.com.tr     # accountant / tax filings
     - bilgilendirme@ileti.isbank.com.tr # bank statements & payment due
     - crmadmin@mobiliz.com.tr           # vehicle tracking contract
     - axess@bireysel.akbank.com         # Axess Platinum ****3660 statements
+    - ekstre@ekstre.yapikredi.com.tr    # World Platinum ****3346 statements
+    - no-reply@amazon.com.tr            # also sends account-security alerts
 
 # The dashboard's task box mails edits to yourself; the briefing applies them.
 taskbox:
