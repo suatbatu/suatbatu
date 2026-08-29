@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-28T07:55:00+03:00",
+  generatedAt: "2026-08-29T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -14,8 +14,8 @@ const DATA = {
   sessionUrl: "https://claude.ai/code/session_01NAoreEhmNVV5FBHE2HzSPE",
 
   // Used by the in-page Refresh button. Keep in step with config.yml.
-  // no-reply@amazon.com.tr and googlealerts-noreply@google.com were un-muted on
-  // 28 Aug: both also carry real alerts. Sender-level muting is blunt.
+  // no-reply@amazon.com.tr and googlealerts-noreply@google.com stay UN-muted:
+  // both carry real alerts alongside their noise.
   live: {
     calendars: [
       { id: "batuhanesirger@gmail.com", label: "Personal" },
@@ -48,58 +48,53 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-28",
-    label: "Friday, 28 August 2026",
+    date: "2026-08-29",
+    label: "Saturday, 29 August 2026",
     weekNumber: 35,
     holiday: null
   },
 
   briefing:
-    "Amazon believe someone else got into your account. They cancelled an order yesterday " +
-    "morning citing suspicious activity, after two more declined-payment notices — and I had " +
-    "muted that sender on Wednesday as delivery spam, so this board would have hidden it. " +
-    "The mute is reversed and the alert sits at the top of Needs you. Today: the Akbank payment " +
-    "falls due, Baybalı at 11:00, Batuhan Atabay at 14:00. Your weekend filled in overnight — " +
-    "<em>Taşınma V0.1</em> all day Saturday and a race at İstanbul Park on Sunday, and neither " +
-    "guest has replied. A third card statement arrived: Yapı Kredi World Platinum, 58.406,56 TL, " +
-    "due 7 September. And Bonnie at Secrid has now waited 23 days for you and Rana — she has " +
-    "cc'd a colleague because she leaves on holiday.",
+    "Moving day. <em>Taşınma V0.1</em> runs 09:00 to 20:00 and Rana still has not responded to " +
+    "it — the only guest on an eleven-hour job. Tomorrow's race at İstanbul Park is confirmed; " +
+    "Batuhan Ünlü accepted yesterday morning. You cleared the entire inbox panel yesterday, the " +
+    "Amazon security alert included, which is the best day this board has had. What slipped is " +
+    "the Akbank payment: it fell due yesterday and is now the sixth overdue item. Tymoteusz wrote " +
+    "apologising for the delayed ForestGuard roadmap, so that one is on him rather than you. And " +
+    "your name is in the press for a second day running — Malatya Haber on the wearable " +
+    "disaster-communication system, via exactly the alert I had wrongly muted.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 2, tone: "warn",     note: "11:00 · 14:00 · card due", live: true },
-    { label: "need a reply",  value: 4, tone: "critical", note: "1 chase · 3 decisions" },
-    { label: "due in 7 days", value: 8, tone: "critical", note: "5 late · 1 today" }
+    { label: "on today",      value: 1, tone: "warn",     note: "moving, 09:00–20:00", live: true },
+    { label: "need a reply",  value: 3, tone: "warn",     note: "1 thread · 2 invites" },
+    { label: "due in 7 days", value: 8, tone: "critical", note: "6 already late" }
   ],
 
   days: [
     {
-      date: "2026-08-28",
-      label: "Today · Friday 28 Aug",
+      date: "2026-08-29",
+      label: "Today · Saturday 29 Aug",
       events: [
         {
-          start: "11:00", end: "12:00",
-          title: "Baybalı gelebilir",
-          calendar: "Personal", where: null, with: null,
-          rsvp: "organizer", conflict: false, conflictNote: null
-        },
-        {
-          start: "14:00", end: "17:00",
-          title: "Batuhan Atabay gelecek",
-          calendar: "Personal", where: null, with: null,
+          start: "09:00", end: "20:00",
+          title: "Taşınma V0.1",
+          calendar: "Personal", where: null, with: "Rana — still no reply",
           rsvp: "organizer", conflict: false, conflictNote: null
         }
       ]
     },
     {
-      date: "2026-08-29",
-      label: "Tomorrow · Saturday 29 Aug",
+      date: "2026-08-30",
+      label: "Tomorrow · Sunday 30 Aug",
       events: [
         {
-          start: "09:00", end: "20:00",
-          title: "Taşınma V0.1",
-          calendar: "Personal", where: null, with: "Rana — not yet replied",
+          start: "14:00", end: "15:45",
+          title: "İstanbulPark Yarış?",
+          calendar: "Personal",
+          where: "TOSFED İstanbul Park, Göçbeyli Bv 1, Tuzla",
+          with: "Batuhan Ünlü — accepted",
           rsvp: "organizer", conflict: false, conflictNote: null
         }
       ]
@@ -113,7 +108,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "Eleven days past. You read the July KDV1 slip yesterday, so the accountant thread is live again — ask about both at once.",
+      detail: "Twelve days past. The accountant thread has been open since you read the July KDV1 slip on Thursday.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -124,16 +119,25 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Twelve days with no codes saved — and Amazon now think your account there was accessed by someone else. Account hygiene has stopped being hypothetical.",
+      detail: "Thirteen days. A new passkey joined your Claude account last night, on top of the three trusted devices and Amazon's compromise alert — four security events in a week with the codes still unsaved.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
+      ]
+    },
+    {
+      title: "Akbank kartı ödeme — Axess Platinum",
+      date: "2026-08-28",
+      kind: "money",
+      detail: "Due yesterday and now late. Card ****3660; you have had the amount since Sunday.",
+      actions: [
+        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
       ]
     },
     {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Eight days past. İş Bankası, card 4743 ****4363.",
+      detail: "Nine days past. İş Bankası, card 4743 ****4363. Two of three cards are now overdue.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }
       ]
@@ -142,33 +146,23 @@ const DATA = {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21",
       kind: "code",
-      detail: "Seven days past. CI red on main for twelve days.",
+      detail: "Eight days past. CI red on main for thirteen days.",
       actions: []
     },
     {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-08-23",
       kind: "social",
-      detail: "Five days past. You had dinner with the family last night, so this may already be settled verbally — if so, tick it off.",
+      detail: "Six days past. You saw the family on Thursday, so this may be settled in person — if so, tick it off.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
-      ]
-    },
-    {
-      title: "Akbank kartı ödeme — Axess Platinum",
-      date: "2026-08-28",
-      kind: "money",
-      detail: "Today, card ****3660. Amount known since Sunday.",
-      actions: [
-        { label: "Reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=NnNxajhkcjE2aGlqNGJiNTZnb2pnYjlrNjloamdiOW9jOHJqNmJiMTcwcTMwZGIzNzBybThkOWg2MF8yMDI2MDgyOCBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" },
-        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
       ]
     },
     {
       title: "Workup Get Together — 9. Yıl Buluşması",
       date: "2026-09-02",
       kind: "social",
-      detail: "Confirmed, Wed 2 Sep 18:00–21:00, RHM Teras, Beyoğlu. Still not on your calendar.",
+      detail: "Wednesday, 18:00–21:00, RHM Teras, Beyoğlu. Confirmed since Wednesday and still not on your calendar.",
       actions: [
         { label: "Your ticket", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03df5f88a72ed4" }
       ]
@@ -177,7 +171,7 @@ const DATA = {
       title: "UK–Türkiye reception",
       date: "2026-09-03",
       kind: "social",
-      detail: "Thu 3 Sep 18:00, BCG Istanbul. Read on Wednesday; no calendar entry, no reply.",
+      detail: "Thursday 18:00, BCG Istanbul. Read on Wednesday; still no reply and no calendar entry.",
       actions: [
         { label: "The invitation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411" },
         { label: "Reply", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411?compose=new" }
@@ -187,16 +181,18 @@ const DATA = {
       title: "Yapı Kredi World Platinum — son ödeme",
       date: "2026-09-07",
       kind: "money",
-      detail: "58.406,56 TL on card 525864******3346. Date and amount both stated in the statement — by far the largest figure on this board.",
+      detail: "58.406,56 TL on card 525864******3346. The statement says 7 September; your own recurring calendar reminder fires 5 September at 08:30. The statement is the authority — treat the 5th as your nudge, not the deadline.",
+      unverified: true,
       actions: [
-        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" }
+        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" },
+        { label: "Your reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=dGM0ZzQ2NHZnNXNnbjV2bTlrOTcwNjc2OTJfMjAyNjA5MDVUMDUzMDAwWiBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" }
       ]
     },
     {
       title: "Onstage W26 Demo Day — applications open",
       date: "2026-09-07",
       kind: "work",
-      detail: "09:00 on Monday 7 September — the same day as the Yapı Kredi payment.",
+      detail: "09:00 Monday 7 September, the same day the Yapı Kredi payment falls.",
       actions: [
         { label: "Their mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03d4cb409a8107" }
       ]
@@ -215,33 +211,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Amazon flagged unauthorised access to your account",
-      source: "Amazon · yesterday 11:38",
-      why: "They cancelled an order themselves, saying they believe someone without permission reached your account. Two declined-payment notices came in the same ten minutes. Change the password and check the order history before anything else today.",
+      what: "The Akbank payment slipped past yesterday",
+      source: "Calendar · was due 28 Aug, card ****3660",
+      why: "Two of your three cards are now overdue — Maximiles nine days, Axess one. The third, Yapı Kredi, wants 58.406,56 TL on the 7th.",
       severity: "critical"
     },
     {
-      what: "Akbank payment is due today",
-      source: "Calendar · card ****3660",
-      why: "The amount has been known since Sunday, and the Maximiles from eight days ago is still showing open.",
+      what: "Rana still hasn't answered the move — it's today",
+      source: "Calendar · today 09:00–20:00",
+      why: "Eleven hours and she is the only person invited. Worth a phone call rather than waiting on a calendar response.",
       severity: "critical"
     },
     {
-      what: "Bonnie at Secrid has waited 23 days",
-      source: "Secrid Impact Fund · first 4 Aug, chased yesterday 17:41",
-      why: "Fifth anniversary of the fund; she wants your and Rana's story. She has cc'd Maartje because she leaves on holiday, which is a polite way of saying the window is closing.",
-      severity: "critical"
-    },
-    {
-      what: "Yapı Kredi wants 58.406,56 TL on 7 September",
-      source: "Yapı Kredi · yesterday 14:41",
-      why: "A third card, World Platinum ****3346. Date and amount are both stated. That is the largest single number on this board and it lands the same day Demo Day applications open.",
+      what: "Neither September evening is on your calendar",
+      source: "Workup Wed 2 Sep · Consulate Thu 3 Sep",
+      why: "Workup has been confirmed since Wednesday and the Consulate reception is still unanswered. Both start at 18:00 on consecutive days.",
       severity: "warn"
     },
     {
-      what: "Nobody has replied to the move or the race",
-      source: "Calendar · Sat 09:00, Sun 14:00",
-      why: "Taşınma V0.1 runs 09:00–20:00 tomorrow with Rana unanswered, and İstanbulPark Yarış on Sunday with Batuhan Ünlü unanswered. Both were created late last night.",
+      what: "Tymoteusz owes you the ForestGuard roadmap",
+      source: "Safetec · yesterday 17:27, to you and Dr. Örnek",
+      why: "He apologised for not sending the completed roadmap and follow-up points from the last discussion. Nothing to do but note who is waiting on whom — this one is not on your side.",
+      severity: "warn"
+    },
+    {
+      what: "A new passkey joined your Claude account",
+      source: "Anthropic · yesterday 18:08, Chrome on macOS",
+      why: "Fourth account-security event this week, after three trusted devices and Amazon's suspected compromise. Probably all you — but the GitHub recovery codes have now been unsaved through all of it.",
       severity: "warn"
     }
   ],
@@ -256,13 +252,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-29", label: "Sat 29", items: ["Taşınma V0.1 · 09:00–20:00 · Rana unanswered"] },
-    { date: "2026-08-30", label: "Sun 30", items: ["İstanbulPark Yarış? · 14:00 · TOSFED — guest unanswered"] },
+    { date: "2026-08-30", label: "Sun 30", items: ["İstanbulPark Yarış? · 14:00 · TOSFED — accepted"] },
     { date: "2026-08-31", label: "Mon 31", items: [] },
     { date: "2026-09-01", label: "Tue 1 Sep", items: [] },
     { date: "2026-09-02", label: "Wed 2 Sep", items: ["Workup Get Together · 18:00 · RHM Teras — not diarised"] },
     { date: "2026-09-03", label: "Thu 3 Sep", items: ["UK–Türkiye reception · 18:00 · BCG Istanbul — unanswered"] },
-    { date: "2026-09-04", label: "Fri 4 Sep", items: [] }
+    { date: "2026-09-04", label: "Fri 4 Sep", items: [] },
+    { date: "2026-09-05", label: "Sat 5 Sep", items: ["Yapıkredi kart reminder · 08:30 — payment itself is the 7th"] }
   ],
 
   inbox: {
@@ -271,13 +267,13 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "1a0425ecbff1e4f0", from: "Amazon",         subject: "Şüpheli aktivite — order cancelled, account may be compromised", when: "yesterday 11:38", flag: "action" },
-      { id: "1a0430678de9bdd9", from: "Yapı Kredi",     subject: "World Platinum ****3346 — 58.406,56 TL, son ödeme 7 Eylül", when: "yesterday 14:41", flag: "action" },
-      { id: "19fcbf4cc8c03f14", from: "Bonnie Giesen",  subject: "Re: Five years of the Secrid Impact Fund — chasing since 4 Aug", when: "yesterday 17:41", flag: "action" },
-      { id: "1a0425ab30649179", from: "Amazon",         subject: "Ödeme reddedildi ×2 — same incident, minutes apart", when: "yesterday 11:33", flag: "watch" },
-      { id: "1a04301856c7f653", from: "Google Alerts",  subject: "\"Batuhan Esirger\" — Anadolu Ajansı on a Bilgi disaster-comms system", when: "yesterday 14:36", flag: "watch" },
-      { id: "1a0439b987d85f2f", from: "İlayda Bahadıroğlu", subject: "Workup Get Together — 9. yılımızı birlikte kutluyoruz", when: "yesterday 17:24", flag: "watch" },
-      { id: "1a0428e45a88ca15", from: "LinkedIn",       subject: "Batuhan Baybalı mentioned you in a comment", when: "yesterday 12:30", flag: "watch" }
+      { id: "1a048c4fd31ef19a", from: "Tymoteusz Bojkowski", subject: "AW: Discussing Our Cooperation and Next Steps — roadmap delayed", when: "yesterday 17:27", flag: "action" },
+      { id: "1a048ea6d585c389", from: "Anthropic",     subject: "New passkey added to your Claude account", when: "yesterday 18:08", flag: "watch" },
+      { id: "1a0484db421ac90f", from: "Google Alerts", subject: "\"Batuhan Esirger\" — Malatya Haber on the wearable disaster system", when: "yesterday 15:17", flag: "watch" },
+      { id: "1a048306dfd84347", from: "Circular Mind", subject: "Tam Tahıl Tam Destek Fikir Maratonu — applications open", when: "yesterday 14:45", flag: "watch" },
+      { id: "1a048041c6f77484", from: "Insta360",      subject: "Enterprise SDK has been updated", when: "yesterday 13:57", flag: "watch" },
+      { id: "1a0473c48d6ee75a", from: "Batuhan Ünlü",  subject: "Kabul edildi: İstanbulPark Yarış, tomorrow 14:00", when: "yesterday 10:18", flag: "done" },
+      { id: "1a0493aee9b07c6d", from: "Anthropic",     subject: "Receipt #2258-3361-8863", when: "yesterday 19:36", flag: "done" }
     ]
   },
 
