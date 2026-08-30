@@ -65,6 +65,7 @@ inbox:
     - storyroasters@email.myikas.com
     - order-update@amazon.com.tr
     - imangadzhi@consulting.com          # manufactured-urgency funnel; imang@ stays for transactional
+    - thangs-user-updates@thangs.com
   # NOTE: sender-level muting is blunt. Two senders were un-muted on 28 Aug after
   # they carried real alerts: no-reply@amazon.com.tr also sends account-security
   # notices, and googlealerts-noreply@google.com also runs the "Batuhan Esirger"
