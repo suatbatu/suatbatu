@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-08-30T07:55:00+03:00",
+  generatedAt: "2026-08-31T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -49,49 +49,62 @@ const DATA = {
   },
 
   today: {
-    date: "2026-08-30",
-    label: "Sunday, 30 August 2026",
-    weekNumber: 35,
-    holiday: "Zafer Bayramı"
+    date: "2026-08-31",
+    label: "Monday, 31 August 2026",
+    weekNumber: 36,
+    holiday: null
   },
 
   briefing:
-    "Race at İstanbul Park at 14:00, and both of you have accepted. The bigger news is Tuesday: " +
-    "you put <em>Gümülcine</em> in for 1 September and Rana accepted it — an all-day entry that " +
-    "reads like a trip across the border, landing the day before Workup's 18:00 in Beyoğlu. Worth " +
-    "checking those two can coexist. Neither Workup nor Thursday's Consulate reception is on the " +
-    "calendar yet and both are now inside a week. Your Yapı Kredi payment has picked up three " +
-    "different dates: reminders on the 5th and the 6th, and the statement's actual son ödeme on " +
-    "the 7th. Six items remain overdue, the Akbank card among them at two days past.",
+    "You wrote yourself a seven-point <em>Pazartesi listesi</em> and it opens with intern " +
+    "payments, marked SABAH İLK İŞ. Two items are Greece — a suitcase checklist for the drive " +
+    "and depositing EUR at İş Bankası — which settles what I could only infer yesterday: " +
+    "tomorrow's Gümülcine really is across the border. That makes Wednesday's Workup at 18:00 in " +
+    "Beyoğlu the thing to sanity-check, and it is still not on your calendar, nor is Thursday's " +
+    "Consulate reception. This afternoon has a genuine clash: Esra at 14:00 for an hour, Şebnem " +
+    "Hoca at 14:30. And OpenAI recorded a sign-in to your account from Frankfurt yesterday " +
+    "lunchtime, a week after Amazon flagged unauthorised access.",
 
   // `live: true` means Refresh can recompute this counter from connector data.
   // The other two mix in judgment and tasks.md, so they stay at their morning value.
   counters: [
-    { label: "on today",      value: 1, tone: "clear",    note: "race 14:00, Tuzla", live: true },
-    { label: "need a reply",  value: 2, tone: "warn",     note: "1 thread · 1 invite" },
-    { label: "due in 7 days", value: 8, tone: "critical", note: "6 already late" }
+    { label: "on today",      value: 3, tone: "critical", note: "14:00 clash · 7-point list", live: true },
+    { label: "need a reply",  value: 3, tone: "critical", note: "1 security · 2 invites" },
+    { label: "due in 7 days", value: 8, tone: "critical", note: "6 late · Greece tomorrow" }
   ],
 
   days: [
     {
-      date: "2026-08-30",
-      label: "Today · Sunday 30 Aug",
+      date: "2026-08-31",
+      label: "Today · Monday 31 Aug",
       events: [
         {
-          start: "14:00", end: "15:45",
-          title: "İstanbulPark Yarış?",
-          calendar: "Personal",
-          where: "TOSFED İstanbul Park, Tuzla",
-          with: "Batuhan Ünlü — accepted",
-          rsvp: "accepted", conflict: false, conflictNote: null
+          start: "14:00", end: "15:00",
+          title: "Stajyer Esra ofise geliyor",
+          calendar: "Personal", where: "Ofis", with: "“14:00 gibi” — time approximate",
+          rsvp: "organizer", conflict: true,
+          conflictNote: "Şebnem Hoca starts at 14:30, half an hour before this ends."
+        },
+        {
+          start: "14:30", end: "15:30",
+          title: "Şebnem Hoca Toplantı",
+          calendar: "Personal", where: "Link ondan gelicek", with: null,
+          rsvp: "organizer", conflict: true,
+          conflictNote: "Overlaps Esra's visit by thirty minutes, and you don't have the link yet."
+        },
+        {
+          start: "19:00", end: "21:00",
+          title: "Batuhan Atabay + Duru gelecek",
+          calendar: "Personal", where: null, with: "Atabay son bir kez Duru ile — time and attendance not yet certain",
+          rsvp: "organizer", conflict: false, conflictNote: null
         }
       ]
     },
     {
-      date: "2026-08-31",
-      label: "Tomorrow · Monday 31 Aug",
+      date: "2026-09-01",
+      label: "Tomorrow · Tuesday 1 Sep",
       events: [],
-      emptyNote: "Clear — the last quiet day before Gümülcine, Workup and the reception."
+      emptyNote: "Gümülcine — all day, by car, Rana accepted. No timed entries."
     }
   ],
 
@@ -102,7 +115,7 @@ const DATA = {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17",
       kind: "money",
-      detail: "Thirteen days past. Two tahakkuk fişi from this accountant are now open at once.",
+      detail: "Fourteen days past. Two tahakkuk fişi from this accountant open at once.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -113,7 +126,7 @@ const DATA = {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17",
       kind: "security",
-      detail: "Fourteen days. Four Claude account events and an Amazon compromise alert have passed while these sat unsaved.",
+      detail: "Fifteen days. Amazon flagged unauthorised access last Thursday and OpenAI logged a Frankfurt sign-in yesterday — this is the week the codes stopped being theoretical.",
       actions: [
         { label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }
       ]
@@ -122,7 +135,7 @@ const DATA = {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20",
       kind: "money",
-      detail: "Ten days past. İş Bankası, card 4743 ****4363.",
+      detail: "Eleven days past. İş Bankası, card 4743 ****4363 — and item 7 on today's list is depositing EUR at the same bank.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }
       ]
@@ -131,14 +144,14 @@ const DATA = {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21",
       kind: "code",
-      detail: "Nine days past. CI red on main for a fortnight.",
+      detail: "Ten days past. CI red on main for fifteen days.",
       actions: []
     },
     {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-08-23",
       kind: "social",
-      detail: "Seven days past. You saw the family on Thursday — if it was settled there, tick it off.",
+      detail: "Eight days past. The wedding is Sat 12 Sep.",
       actions: [
         { label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }
       ]
@@ -147,7 +160,7 @@ const DATA = {
       title: "Akbank kartı ödeme — Axess Platinum",
       date: "2026-08-28",
       kind: "money",
-      detail: "Two days past, card ****3660. Two of three cards now overdue.",
+      detail: "Three days past, card ****3660.",
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }
       ]
@@ -156,7 +169,7 @@ const DATA = {
       title: "Workup Get Together — 9. Yıl Buluşması",
       date: "2026-09-02",
       kind: "social",
-      detail: "Wednesday 18:00–21:00, RHM Teras, Beyoğlu. Confirmed for a week and still not on your calendar — and it follows Tuesday's Gümülcine trip.",
+      detail: "Wednesday 18:00–21:00, RHM Teras, Beyoğlu — the day after you drive to Greece. Confirmed for nine days and still not on any calendar.",
       actions: [
         { label: "Your ticket", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03df5f88a72ed4" }
       ]
@@ -165,7 +178,7 @@ const DATA = {
       title: "UK–Türkiye reception",
       date: "2026-09-03",
       kind: "social",
-      detail: "Thursday 18:00, BCG Istanbul. Read on Wednesday; no reply, no calendar entry.",
+      detail: "Thursday 18:00, BCG Istanbul. Never answered, never diarised.",
       actions: [
         { label: "The invitation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411" },
         { label: "Reply", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411?compose=new" }
@@ -175,7 +188,7 @@ const DATA = {
       title: "Yapı Kredi World Platinum — son ödeme",
       date: "2026-09-07",
       kind: "money",
-      detail: "58.406,56 TL, card ****3346. Three dates are attached to this: your reminders on 5 and 6 September, and the statement's stated son ödeme on the 7th. The statement wins; the other two are nudges.",
+      detail: "58.406,56 TL, card ****3346. Statement says the 7th; your reminders fire on the 5th and 6th.",
       unverified: true,
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" },
@@ -186,7 +199,7 @@ const DATA = {
       title: "Onstage W26 Demo Day — applications open",
       date: "2026-09-07",
       kind: "work",
-      detail: "09:00 Monday 7 September, the same day the Yapı Kredi payment falls.",
+      detail: "09:00 Monday 7 September, the same morning the Yapı Kredi payment falls.",
       actions: [
         { label: "Their mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03d4cb409a8107" }
       ]
@@ -205,33 +218,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Two of three cards are overdue",
-      source: "tasks.md + calendar · Maximiles 10 days, Axess 2",
-      why: "And the third, Yapı Kredi, wants 58.406,56 TL on the 7th. Three cards, one of them large, all drifting in the same direction.",
+      what: "OpenAI logged a sign-in from Frankfurt",
+      source: "OpenAI · yesterday 13:09, ChatGPT Web",
+      why: "Germany, while you were at İstanbul Park. Six days after Amazon cancelled an order for suspected unauthorised access. Two providers, two countries, one week — check it was you, and the GitHub codes are still unsaved.",
       severity: "critical"
     },
     {
-      what: "Check Gümülcine and Workup can coexist",
-      source: "Calendar · Tue 1 Sep all day, Wed 2 Sep 18:00",
-      why: "Gümülcine is Komotini, across the Greek border — you added it as an all-day entry and Rana accepted. Workup is the next evening in Beyoğlu. If the trip runs long, Wednesday goes with it.",
+      what: "Your afternoon double-books itself at 14:30",
+      source: "Calendar · Esra 14:00–15:00, Şebnem Hoca 14:30–15:30",
+      why: "Thirty minutes of overlap, and Esra's time is marked approximate while Şebnem Hoca's link hasn't arrived yet. One of them needs moving before lunch.",
+      severity: "critical"
+    },
+    {
+      what: "Six things are still overdue, two of them cards",
+      source: "tasks.md + calendar",
+      why: "Maximiles eleven days, Axess three, geçici vergi and the GitHub codes a fortnight. Today's own list has intern payments as first thing — worth clearing the money items in the same sitting.",
+      severity: "critical"
+    },
+    {
+      what: "Greece tomorrow, Workup Wednesday, neither reconciled",
+      source: "Calendar · Gümülcine all day Tue, Workup 18:00 Wed",
+      why: "Your list confirms the trip is by car with a suitcase checklist. Workup is confirmed for Wednesday evening in Beyoğlu and has never been diarised; the Consulate reception on Thursday has never been answered.",
       severity: "warn"
     },
     {
-      what: "Neither September evening is diarised",
-      source: "Workup Wed 2 Sep · Consulate Thu 3 Sep",
-      why: "Workup has been confirmed for a week; the Consulate reception has never been answered. Both 18:00, consecutive days, neither on any of your four calendars.",
-      severity: "warn"
-    },
-    {
-      what: "Yapı Kredi now has three dates",
-      source: "Statement 7 Sep · your reminders 5 and 6 Sep",
-      why: "Two recurring calendar reminders and the statement itself disagree. Worth deleting one of the reminders so the right date is unambiguous next month.",
-      severity: "warn"
-    },
-    {
-      what: "Tymoteusz's roadmap mail is still unopened",
-      source: "Safetec · Fri 17:27, two days",
-      why: "He is apologising for a delay, so nothing is owed by you — but the thread carries the follow-up points from your last discussion.",
+      what: "Item 2 needs a manual step",
+      source: "Pazartesi listesi · FutureLab form for Sidal",
+      why: "Your own note says to attach the relevant chat link by hand because the chat connector isn't wired up — easy to forget once the form itself is done.",
       severity: "warn"
     }
   ],
@@ -246,13 +259,13 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-08-31", label: "Mon 31", items: [] },
-    { date: "2026-09-01", label: "Tue 1 Sep", items: ["Gümülcine (Fener Sahil?) · all day · Rana accepted"] },
+    { date: "2026-09-01", label: "Tue 1 Sep", items: ["Gümülcine · all day · by car, Rana accepted"] },
     { date: "2026-09-02", label: "Wed 2 Sep", items: ["Workup Get Together · 18:00 · RHM Teras — not diarised"] },
     { date: "2026-09-03", label: "Thu 3 Sep", items: ["UK–Türkiye reception · 18:00 · BCG Istanbul — unanswered"] },
     { date: "2026-09-04", label: "Fri 4 Sep", items: [] },
     { date: "2026-09-05", label: "Sat 5 Sep", items: ["Yapıkredi kart reminder · 08:30"] },
-    { date: "2026-09-06", label: "Sun 6 Sep", items: ["YKredi KRT ödeme reminder — payment is the 7th"] }
+    { date: "2026-09-06", label: "Sun 6 Sep", items: ["YKredi KRT ödeme reminder"] },
+    { date: "2026-09-07", label: "Mon 7 Sep", items: ["Yapı Kredi son ödeme · 58.406,56 TL", "Onstage Demo Day opens · 09:00"] }
   ],
 
   inbox: {
@@ -261,13 +274,13 @@ const DATA = {
     // `id` is the Gmail thread id — it lets Refresh keep this morning's
     // classification for threads already judged, and mark genuinely new ones.
     threads: [
-      { id: "1a048c4fd31ef19a", from: "Tymoteusz Bojkowski", subject: "AW: Discussing Our Cooperation and Next Steps — two days unread", when: "Fri 17:27", flag: "action" },
-      { id: "1a04d2ffd66faa26", from: "Google Alerts", subject: "\"Batuhan ESİRGER\" — third day of Anadolu Ajansı coverage", when: "yesterday 14:03", flag: "watch" },
-      { id: "1a048ea6d585c389", from: "Anthropic",    subject: "New passkey added to your Claude account", when: "Fri 18:08", flag: "watch" },
-      { id: "1a04c886d9db411a", from: "Claude",       subject: "This week in Claude Code: /resume on desktop, sessions from your phone", when: "yesterday 11:00", flag: "watch" },
-      { id: "1a04d21d405b6974", from: "Rana İmam",    subject: "Kabul edildi: Gümülcine (Fener Sahil?), Tue 1 Sep", when: "yesterday 13:47", flag: "done" },
-      { id: "1a0493aee9b07c6d", from: "Anthropic",    subject: "Receipt #2258-3361-8863", when: "Fri 19:36", flag: "done" },
-      { id: "1a04f741d52619e1", from: "Amazon",       subject: "Sipariş edildi: LEGO Botanicals", when: "yesterday 00:36", flag: "done" }
+      { id: "1a0522536e92c78e", from: "OpenAI",     subject: "New sign-in — ChatGPT Web, Frankfurt am Main, Germany", when: "yesterday 13:09", flag: "action" },
+      { id: "1a053183d15b48cc", from: "Cloudflare", subject: "Welcome to Cloudflare — account created Friday", when: "yesterday 17:34", flag: "watch" },
+      { id: "1a0526478749589d", from: "Anthropic",  subject: "Receipt #2666-3886-1764 — second in three days", when: "yesterday 14:18", flag: "watch" },
+      { id: "1a04c886d9db411a", from: "Claude",     subject: "This week in Claude Code: /resume on desktop", when: "Sat 11:00", flag: "watch" },
+      { id: "1a05203fef7aa32d", from: "Bilgi Üniversitesi", subject: "30 Ağustos Zafer Bayramı — bölüm duyurusu", when: "yesterday 12:32", flag: "done" },
+      { id: "1a04d21d405b6974", from: "Rana İmam",  subject: "Kabul edildi: Gümülcine, tomorrow", when: "Sat 13:47", flag: "done" },
+      { id: "1a0493aee9b07c6d", from: "Anthropic",  subject: "Receipt #2258-3361-8863", when: "Fri 19:36", flag: "done" }
     ]
   },
 
