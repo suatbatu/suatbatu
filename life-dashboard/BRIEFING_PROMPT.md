@@ -58,6 +58,14 @@ tomorrow doesn't reapply it. Commit the tasks.md change with the rest of the run
 **Calendar** — `list_events` once per calendar in `config.yml`, from 00:00 today
 to `horizon.schedule_days` ahead, `orderBy: startTime`, `timeZone: Europe/Istanbul`.
 
+> **Query all four every single run. No exceptions, no "it was empty yesterday".**
+> On 2 Sep 2026 a five-day trip to Taşos — booked since 9 August, sitting on the
+> `Aile` calendar — was missed for a week because only the Personal and KOZALAK
+> calendars were fetched on several mornings. The board spent that week telling
+> Batuhan to diarise an event he could not attend. Secondary calendars are exactly
+> where multi-day and all-day commitments live, and they are the ones that reframe
+> a whole week. A calendar that returned nothing yesterday is not evidence about today.
+
 - Normalize every time to Istanbul. Some events carry a foreign `timeZone` label
   (Europe/Paris, Europe/Lisbon, Europe/Moscow) — **trust the numeric UTC offset in
   the timestamp, not the label.**
