@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-09-02T07:55:00+03:00",
+  generatedAt: "2026-09-03T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -30,74 +30,67 @@ const DATA = {
     ]
   },
 
-  today: { date: "2026-09-02", label: "Wednesday, 2 September 2026", weekNumber: 36, holiday: null },
+  today: { date: "2026-09-03", label: "Thursday, 3 September 2026", weekNumber: 36, holiday: null },
 
   briefing:
-    "You leave for <em>Taşos</em> at 08:00 and you are back Sunday night — five days on the " +
-    "island with Rana, booked since 9 August. That reframes the whole week, and I owe you a " +
-    "correction: the trip lives on the Aile calendar, which I did not query every morning, so " +
-    "for the past week this board kept telling you to diarise Workup and answer the Consulate " +
-    "reception. Both fall while you are away. Workup is tonight at 18:00 in Beyoğlu and you hold " +
-    "a ticket — that needs releasing rather than diarising, as does Thursday's reception. The " +
-    "Things Stack renews itself tomorrow regardless, and the İş Bankası courier failed a third " +
-    "time yesterday.",
+    "Day two on <em>Taşos</em>, home Sunday night. The Consulate reception happens this evening " +
+    "without you and The Things Stack renews itself today — both are facts now rather than " +
+    "decisions. What actually moved is the intern payments: Büşra at Bilgi wrote to the faculty " +
+    "yesterday morning about paying the Endüstriyel Tasarım students interning at your company, " +
+    "with you copied. That was item one on your Monday list and it is now someone else's thread " +
+    "too. Two more company costs surfaced — the AWS statement and a new electric-vehicle kasko " +
+    "policy — and the KOZALAK calendar carries a company card payment on the 10th. Your own card " +
+    "is still undelivered after three attempts.",
 
   counters: [
-    { label: "on today",      value: 1, tone: "warn",     note: "Taşos — leaves 08:00, back Sun", live: true },
-    { label: "need a reply",  value: 3, tone: "critical", note: "2 to decline · 1 admin" },
-    { label: "due in 7 days", value: 11, tone: "critical", note: "6 late · away five days" }
+    { label: "on today",      value: 1, tone: "clear",    note: "Taşos — day 2 of 5", live: true },
+    { label: "need a reply",  value: 3, tone: "warn",     note: "1 thread · 1 admin · 1 ticket" },
+    { label: "due in 7 days", value: 12, tone: "critical", note: "6 late · 2 today" }
   ],
 
   days: [
     {
-      date: "2026-09-02",
-      label: "Today · Wednesday 2 Sep",
+      date: "2026-09-03",
+      label: "Today · Thursday 3 Sep",
       events: [
         {
-          start: "08:00", end: "→ Sun",
+          start: "all day", end: "→ Sun",
           title: "Taşos",
           calendar: "Aile",
-          where: "Thassos — back Sunday 6 Sep, 23:00",
+          where: "Thassos — home Sunday 6 Sep, 23:00",
           with: "Rana — accepted",
-          rsvp: "organizer", conflict: true,
-          conflictNote: "Workup is tonight at 18:00 in Beyoğlu and Thursday's Consulate reception is at 18:00 — both fall inside this trip."
+          rsvp: "organizer", conflict: false, conflictNote: null
         }
       ]
     },
     {
-      date: "2026-09-03",
-      label: "Tomorrow · Thursday 3 Sep",
+      date: "2026-09-04",
+      label: "Tomorrow · Friday 4 Sep",
       events: [],
-      emptyNote: "On Taşos. The Things Stack renews itself, and the Consulate reception goes ahead without you."
+      emptyNote: "Still on Taşos. Nothing else on any of the four calendars."
     }
   ],
 
   deadlines: [
     {
-      title: "Workup Get Together — release your ticket",
-      date: "2026-09-02", kind: "social",
-      detail: "Tonight 18:00, RHM Teras, Beyoğlu — and you will be on a Greek island. Luma sent the 'starting tomorrow' reminder yesterday. Someone else can use the place if you say so now.",
-      actions: [{ label: "Your ticket", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a05d7c8542accec" }]
+      title: "The Things Stack Cloud — renews today",
+      date: "2026-09-03", kind: "money",
+      detail: "Automatic, happening now. Nothing to do unless you wanted it stopped, in which case today was the last day.",
+      actions: [{ label: "Their reminder", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0592e46b4af3d9" }]
     },
     {
-      title: "UK–Türkiye reception — decline",
+      title: "UK–Türkiye reception — going ahead without you",
       date: "2026-09-03", kind: "social",
-      detail: "Thursday 18:00, BCG Istanbul, from the Consul General. Ten days unanswered, and now clearly unattendable — a decline is better than silence.",
+      detail: "18:00 tonight at BCG Istanbul. Never answered. A late apology to the Consul General's office still reads better than silence.",
       actions: [
         { label: "The invitation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411" },
         { label: "Reply", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411?compose=new" }
       ]
     },
     {
-      title: "The Things Stack Cloud — auto-renewal",
-      date: "2026-09-03", kind: "money",
-      detail: "Renews itself tomorrow whether or not you have signal on the island. Amount not stated in Stripe's reminder.",
-      actions: [{ label: "Their reminder", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0592e46b4af3d9" }]
-    },
-    {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17", kind: "money",
-      detail: "Sixteen days past, and about to sit through a five-day trip.",
+      detail: "Seventeen days past.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -107,37 +100,37 @@ const DATA = {
     {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17", kind: "security",
-      detail: "Seventeen days. Travelling with the codes still unsaved is the version of this that actually bites.",
+      detail: "Eighteen days, and you are abroad for four more.",
       actions: [{ label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }]
     },
     {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20", kind: "money",
-      detail: "Thirteen days past, İş Bankası ****4363.",
+      detail: "Fourteen days past, İş Bankası ****4363.",
       actions: [{ label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }]
     },
     {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21", kind: "code",
-      detail: "Twelve days past. CI red on main for seventeen days — and nothing will happen to it this week.",
+      detail: "Thirteen days past. CI red on main for eighteen.",
       actions: []
     },
     {
       title: "Kısakürek Düğün — RSVP",
       date: "2026-08-23", kind: "social",
-      detail: "Ten days past. The wedding is Sat 12 Sep, six days after you get home.",
+      detail: "Eleven days past. The wedding is Sat 12 Sep — six days after you land.",
       actions: [{ label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }]
     },
     {
       title: "Akbank kartı ödeme — Axess Platinum",
       date: "2026-08-28", kind: "money",
-      detail: "Five days past, card ****3660. Worth clearing from the island rather than on Monday.",
+      detail: "Six days past, card ****3660. Payable from the island if you have signal.",
       actions: [{ label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }]
     },
     {
       title: "Yapı Kredi World Platinum — son ödeme",
       date: "2026-09-07", kind: "money",
-      detail: "58.406,56 TL, ****3346, the day after you land. Both your reminders — the 5th and the 6th — fire while you are still on Taşos.",
+      detail: "58.406,56 TL, ****3346, the day after you land. Both reminders fire while you're still away.",
       unverified: true,
       actions: [
         { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" },
@@ -147,14 +140,20 @@ const DATA = {
     {
       title: "Onstage W26 Demo Day — applications open",
       date: "2026-09-07", kind: "work",
-      detail: "09:00 Monday, your first morning back, sharing the day with the Yapı Kredi payment.",
+      detail: "09:00 Monday, your first morning back.",
       actions: [{ label: "Their mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03d4cb409a8107" }]
     },
     {
       title: "GITEX AI Türkiye — free partner ticket",
       date: "2026-09-09", kind: "work",
-      detail: "9–10 Sep in Istanbul, free through YZF. Claim it before you leave; it is easier than doing it from a beach.",
+      detail: "9–10 Sep, Istanbul, free through YZF. Still unclaimed; easier to sort from the island than on the morning.",
       actions: [{ label: "YZF's offer", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a057ce1d85ebba1" }]
+    },
+    {
+      title: "Şirket Kredi Kartı Ödemesi — KOZALAK",
+      date: "2026-09-10", kind: "money",
+      detail: "Marked ⚠️ on the KOZALAK calendar, Thu 10 Sep 09:00. A fourth card obligation, this one on the company side, three days after the personal Yapı Kredi payment.",
+      actions: []
     },
     {
       title: "Mobiliz araç takip — first billed month",
@@ -169,33 +168,33 @@ const DATA = {
 
   needsYou: [
     {
-      what: "Release the Workup ticket — it's tonight and you'll be away",
-      source: "Workup · reminder yesterday 18:00",
-      why: "You hold an approved place at an event starting in ten hours, on the wrong side of a border. Telling them now frees the spot; saying nothing wastes it.",
+      what: "The intern payments thread is live without you",
+      source: "Büşra Yılmaz, Bilgi · yesterday 11:40, you cc'd",
+      why: "She has written to Emine Aksoy about payments for the Endüstriyel Tasarım students doing compulsory internships at your company. This was item one on your Monday list, marked SABAH İLK İŞ — now it is moving in the faculty's inbox rather than yours.",
       severity: "critical"
     },
     {
-      what: "Decline the Consulate reception",
-      source: "FCDO Istanbul · Thu 3 Sep 18:00",
-      why: "An invitation from the Consul General, unanswered for ten days and now unattendable. A short decline before you drive is worth more than a reply next week.",
+      what: "Your card is still undelivered after three attempts",
+      source: "İş Bankası · Tue 13:29",
+      why: "****8502 has bounced three times on the address they hold, and you're abroad until Sunday. The address fix is doable from a phone; the delivery isn't.",
       severity: "critical"
     },
     {
-      what: "The card failed delivery a third time",
-      source: "İş Bankası · yesterday 13:29",
-      why: "The courier came on 1 September and could not deliver ****8502 again. Three attempts on an address İş Bankası hold for you — and you're about to be unreachable for five days.",
-      severity: "critical"
-    },
-    {
-      what: "Money lands while you're on the island",
-      source: "TTSC tomorrow · Yapı Kredi 58.406,56 TL Monday",
-      why: "The Things Stack renews itself on Thursday. The Yapı Kredi payment falls the day after you land, and both of its reminders fire while you're still away — so they will be noise, not warnings.",
+      what: "Monday is loaded and you land the night before",
+      source: "Yapı Kredi 58.406,56 TL · Onstage opens 09:00",
+      why: "The largest payment on the board and a Demo Day application window both fall on your first morning home, after a five-day drive back.",
       severity: "warn"
     },
     {
-      what: "Claim the GITEX ticket before you go",
+      what: "The GITEX ticket is still unclaimed",
       source: "YZF · Mon 15:31",
-      why: "Free ecosystem-partner access to GITEX AI Türkiye on 9–10 September, two days after you're back. Two minutes now, awkward from a beach.",
+      why: "Free partner access on 9–10 September. Two minutes on the island beats scrambling on the 9th.",
+      severity: "warn"
+    },
+    {
+      what: "A company card payment lands on the 10th",
+      source: "KOZALAK calendar · Thu 10 Sep 09:00",
+      why: "Marked with a warning sign on the company calendar. Worth knowing it exists before Monday's personal payment eats the attention.",
       severity: "warn"
     }
   ],
@@ -210,26 +209,26 @@ const DATA = {
   ],
 
   weekAhead: [
-    { date: "2026-09-03", label: "Thu 3 Sep", items: ["Taşos", "UK–Türkiye reception · 18:00 — can't attend", "TTSC auto-renews"] },
     { date: "2026-09-04", label: "Fri 4 Sep", items: ["Taşos"] },
-    { date: "2026-09-05", label: "Sat 5 Sep", items: ["Taşos", "Yapıkredi reminder · 08:30 — you're away"] },
+    { date: "2026-09-05", label: "Sat 5 Sep", items: ["Taşos", "Yapıkredi reminder · 08:30 — away"] },
     { date: "2026-09-06", label: "Sun 6 Sep", items: ["Taşos — home 23:00", "YKredi KRT reminder"] },
-    { date: "2026-09-07", label: "Mon 7 Sep", items: ["Yapı Kredi son ödeme · 58.406,56 TL", "Onstage Demo Day opens · 09:00"] },
+    { date: "2026-09-07", label: "Mon 7 Sep", items: ["Yapı Kredi son ödeme · 58.406,56 TL", "Onstage Demo Day opens · 09:00", "KOZALAK: MA × Gizem Gülbent · 15:00 — you're not an attendee"] },
     { date: "2026-09-08", label: "Tue 8 Sep", items: ["ForestGuard Bi-weekly · 13:30 · Teams"] },
-    { date: "2026-09-09", label: "Wed 9 Sep", items: ["GITEX AI Türkiye · Istanbul"] }
+    { date: "2026-09-09", label: "Wed 9 Sep", items: ["GITEX AI Türkiye · Istanbul"] },
+    { date: "2026-09-10", label: "Thu 10 Sep", items: ["⚠️ Şirket Kredi Kartı Ödemesi · 09:00 · KOZALAK"] }
   ],
 
   inbox: {
     unreadEstimate: 201,
     windowLabel: "unread, last 14 days",
     threads: [
-      { id: "1a05c84c52eac68d", from: "İş Bankası", subject: "Kart teslim bilgilendirme — third failed attempt, ****8502", when: "yesterday 13:29", flag: "action" },
-      { id: "1a05d7c8542accec", from: "Workup", subject: "⏰ Get Together is starting tomorrow — 18:00 today", when: "yesterday 18:00", flag: "action" },
-      { id: "1a0592e46b4af3d9", from: "Stripe / The Things Industries", subject: "TTSC subscription auto-renews tomorrow", when: "Mon 21:56", flag: "action" },
-      { id: "1a057ce1d85ebba1", from: "YZF", subject: "Free GITEX AI Türkiye ticket — 9–10 Sep", when: "Mon 15:31", flag: "action" },
-      { id: "1a0582f4259c8983", from: "Google Drive", subject: "sidal shared \"Futurelab Başvuru (Paraphrased)\"", when: "Mon 17:18", flag: "watch" },
-      { id: "1a05c61e61754344", from: "İş Bankası", subject: "Ek hesap özeti ***9198 — 03.08–31.08", when: "yesterday 12:51", flag: "watch" },
-      { id: "1a058fa24557fe25", from: "Frevana", subject: "AI-Native Marketing webinar — Thu 3 Sep 22:30", when: "Mon 20:59", flag: "watch" }
+      { id: "1a06146cdc652c50", from: "Büşra Yılmaz (Bilgi)", subject: "Zorunlu staj yapan öğrencilere yapılacak ödemeler — you're cc'd", when: "yesterday 11:40", flag: "action" },
+      { id: "1a05c84c52eac68d", from: "İş Bankası", subject: "Kart teslim bilgilendirme — third failed attempt, ****8502", when: "Tue 13:29", flag: "action" },
+      { id: "1a061e88e1d1dc88", from: "Anadolu Sigorta", subject: "Elektrikli Araç Kasko poliçeniz + tahsilat çıktısı", when: "yesterday 14:37", flag: "watch" },
+      { id: "1a060be2273b7f56", from: "AWS", subject: "Billing statement available — account ****7925", when: "yesterday 09:11", flag: "watch" },
+      { id: "1a05c61e61754344", from: "İş Bankası", subject: "Ek hesap özeti ***9198 — 03.08–31.08", when: "Tue 12:51", flag: "watch" },
+      { id: "1a064be6992c2ebc", from: "ArtStation", subject: "New AI safeguards for your work", when: "today 03:49", flag: "watch" },
+      { id: "1a0626d219d9b0ca", from: "Workup", subject: "⏰ Starting in 1 hour — the event you missed", when: "yesterday 17:01", flag: "done" }
     ]
   },
 
