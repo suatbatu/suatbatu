@@ -5,7 +5,7 @@
 // Everything below is regenerated each morning by the briefing agent.
 // See BRIEFING_PROMPT.md. Nothing outside this block should be edited daily.
 const DATA = {
-  generatedAt: "2026-09-03T07:55:00+03:00",
+  generatedAt: "2026-09-04T07:55:00+03:00",
   tz: "Europe/Istanbul",
   owner: "Batuhan",
   ownerEmail: "batuhanesirger@gmail.com",
@@ -30,28 +30,31 @@ const DATA = {
     ]
   },
 
-  today: { date: "2026-09-03", label: "Thursday, 3 September 2026", weekNumber: 36, holiday: null },
+  today: { date: "2026-09-04", label: "Friday, 4 September 2026", weekNumber: 36, holiday: null },
 
   briefing:
-    "Day two on <em>Taşos</em>, home Sunday night. The Consulate reception happens this evening " +
-    "without you and The Things Stack renews itself today — both are facts now rather than " +
-    "decisions. What actually moved is the intern payments: Büşra at Bilgi wrote to the faculty " +
-    "yesterday morning about paying the Endüstriyel Tasarım students interning at your company, " +
-    "with you copied. That was item one on your Monday list and it is now someone else's thread " +
-    "too. Two more company costs surfaced — the AWS statement and a new electric-vehicle kasko " +
-    "policy — and the KOZALAK calendar carries a company card payment on the 10th. Your own card " +
-    "is still undelivered after three attempts.",
+    "Day three on <em>Taşos</em>, home Sunday night — and the intern payments now have a date on " +
+    "them. Chasing the answer yesterday you wrote that five Bilgi students are interning with you " +
+    "and that the payments have to be made <em>by 10 September</em>; Büşra's reply that lunchtime " +
+    "was that no unit at the university currently knows, and she would try the legal office. That " +
+    "leaves Monday to Thursday, on a week that already carries Yapı Kredi's 58.406,56 TL the " +
+    "morning you get back and two days of GITEX. Two things came off the board rather than onto " +
+    "it: the calendar shows you accepted both the Kısakürek wedding and the ForestGuard check-in, " +
+    "and Mobiliz confirmed your cancellation back on 17 August — so that decision was never " +
+    "actually pending. What is still wrong is the card: ****8502 has now failed four times on an " +
+    "address İş Bankası itself calls hatalı, and the extra visit they promised for Thursday came " +
+    "and went.",
 
   counters: [
-    { label: "on today",      value: 1, tone: "clear",    note: "Taşos — day 2 of 5", live: true },
-    { label: "need a reply",  value: 3, tone: "warn",     note: "1 thread · 1 admin · 1 ticket" },
-    { label: "due in 7 days", value: 12, tone: "critical", note: "6 late · 2 today" }
+    { label: "on today",      value: 1,  tone: "clear",    note: "Taşos — day 3 of 5", live: true },
+    { label: "need a reply",  value: 5,  tone: "critical", note: "2 admin · 2 money · 1 ticket" },
+    { label: "due in 7 days", value: 11, tone: "critical", note: "5 late · none today" }
   ],
 
   days: [
     {
-      date: "2026-09-03",
-      label: "Today · Thursday 3 Sep",
+      date: "2026-09-04",
+      label: "Today · Friday 4 Sep",
       events: [
         {
           start: "all day", end: "→ Sun",
@@ -64,33 +67,34 @@ const DATA = {
       ]
     },
     {
-      date: "2026-09-04",
-      label: "Tomorrow · Friday 4 Sep",
-      events: [],
-      emptyNote: "Still on Taşos. Nothing else on any of the four calendars."
+      date: "2026-09-05",
+      label: "Tomorrow · Saturday 5 Sep",
+      events: [
+        {
+          start: "all day", end: "→ Sun",
+          title: "Taşos",
+          calendar: "Aile",
+          where: "Thassos — day 4 of 5",
+          with: "Rana — accepted",
+          rsvp: "organizer", conflict: false, conflictNote: null
+        },
+        {
+          start: "08:30", end: "09:30",
+          title: "Yapıkredi Kart Son Ödeme",
+          calendar: "Personal",
+          where: "Your own recurring reminder — the statement says 7 Eylül",
+          with: null,
+          rsvp: "organizer", conflict: false, conflictNote: null
+        }
+      ]
     }
   ],
 
   deadlines: [
     {
-      title: "The Things Stack Cloud — renews today",
-      date: "2026-09-03", kind: "money",
-      detail: "Automatic, happening now. Nothing to do unless you wanted it stopped, in which case today was the last day.",
-      actions: [{ label: "Their reminder", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0592e46b4af3d9" }]
-    },
-    {
-      title: "UK–Türkiye reception — going ahead without you",
-      date: "2026-09-03", kind: "social",
-      detail: "18:00 tonight at BCG Istanbul. Never answered. A late apology to the Consul General's office still reads better than silence.",
-      actions: [
-        { label: "The invitation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411" },
-        { label: "Reply", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a033e7a1e3a7411?compose=new" }
-      ]
-    },
-    {
       title: "Q2 geçici vergi — beyanname",
       date: "2026-08-17", kind: "money",
-      detail: "Seventeen days past.",
+      detail: "Eighteen days past. The tahakkuk fişi from 13 August is still unopened, so nobody has told this board whether it was paid.",
       unverified: true,
       actions: [
         { label: "Tahakkuk fişi", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ffc5205f770e0b" },
@@ -100,101 +104,119 @@ const DATA = {
     {
       title: "GitHub 2FA — recovery codes",
       date: "2026-08-17", kind: "security",
-      detail: "Eighteen days, and you are abroad for four more.",
+      detail: "GitHub's mail from 16 August is still unread, so the codes were never saved. Lose the phone abroad and the account goes with it.",
       actions: [{ label: "GitHub's mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00a1ae6318ef0b" }]
     },
     {
       title: "Maximiles Black — son ödeme",
       date: "2026-08-20", kind: "money",
-      detail: "Fourteen days past, İş Bankası ****4363.",
-      actions: [{ label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }]
+      detail: "Fifteen days past, İş Bankası ****4363. All three statements — TL, EUR and USD — are still unread from 12 August.",
+      actions: [{ label: "TL statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/19ff4736e9bbbad7" }]
     },
     {
       title: "Fix the shot-timer firmware build",
       date: "2026-08-21", kind: "code",
-      detail: "Thirteen days past. CI red on main for eighteen.",
+      detail: "Fourteen days past. The only thing on the board that costs nothing but attention.",
       actions: []
-    },
-    {
-      title: "Kısakürek Düğün — RSVP",
-      date: "2026-08-23", kind: "social",
-      detail: "Eleven days past. The wedding is Sat 12 Sep — six days after you land.",
-      actions: [{ label: "Answer the invite", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b386707d0f3b" }]
     },
     {
       title: "Akbank kartı ödeme — Axess Platinum",
       date: "2026-08-28", kind: "money",
-      detail: "Six days past, card ****3660. Payable from the island if you have signal.",
-      actions: [{ label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }]
+      detail: "Card ****3660. Read the statement mail today and it gives neither a date nor an amount — Akbank only says it is in Juzdan. The date this row counts from was inferred, not read; treat the countdown as a nudge and check the app.",
+      unverified: true,
+      actions: [{ label: "Statement mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a018b9f64577e3f" }]
+    },
+    {
+      title: "Tam Tahıl Fikir Maratonu — son başvuru",
+      date: "2026-09-06", kind: "work",
+      detail: "6 Eylül 2026, 23.59 — the day you travel home. Nestlé × Migros, 800.000 TL split across three startups, food and agri themes. A bulk mailing from Circular Mind rather than a personal invitation, so judge it on the fit.",
+      actions: [{ label: "Their mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a06ab02bb64c633" }]
     },
     {
       title: "Yapı Kredi World Platinum — son ödeme",
       date: "2026-09-07", kind: "money",
-      detail: "58.406,56 TL, ****3346, the day after you land. Both reminders fire while you're still away.",
-      unverified: true,
+      detail: "58.406,56 TL on ****3346. Confirmed from the statement itself — Son Ödeme Tarihi 07 Eylül 2026 — so the confirm-date flag this row carried yesterday is gone. Your two calendar reminders fire Saturday and Sunday while you are still on the island.",
       actions: [
-        { label: "Statement", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" },
+        { label: "Hesap özeti", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a0430678de9bdd9" },
         { label: "5 Sep reminder", icon: "event", href: "https://www.google.com/calendar/event?eid=dGM0ZzQ2NHZnNXNnbjV2bTlrOTcwNjc2OTJfMjAyNjA5MDVUMDUzMDAwWiBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" }
       ]
     },
     {
-      title: "Onstage W26 Demo Day — applications open",
-      date: "2026-09-07", kind: "work",
-      detail: "09:00 Monday, your first morning back.",
-      actions: [{ label: "Their mail", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a03d4cb409a8107" }]
-    },
-    {
       title: "GITEX AI Türkiye — free partner ticket",
       date: "2026-09-09", kind: "work",
-      detail: "9–10 Sep, Istanbul, free through YZF. Still unclaimed; easier to sort from the island than on the morning.",
-      actions: [{ label: "YZF's offer", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a057ce1d85ebba1" }]
+      detail: "9–10 September, Istanbul Expo Center. YZF is an ecosystem partner and their August bülten carries a free registration link. Two minutes from the island beats a scramble on the 9th.",
+      actions: [
+        { label: "Free registration", icon: "web", href: "https://tinyurl.com/4w7dnt3y" },
+        { label: "YZF bülteni", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a05c338557132f9" }
+      ]
+    },
+    {
+      title: "Stajyer ödemeleri — 5 Bilgi öğrencisi",
+      date: "2026-09-10", kind: "money",
+      detail: "Your own words to Büşra yesterday: five interns this term, payments to be made by 10 Eylül. You asked four things — the minimum you owe as an employer with under 20 staff, the matching state contribution, how it is calculated and filed, and the repayment schedule. Bilgi has passed the question from accounting to HR to the internship unit and back to Erdem; the legal office is the current hope. You land Sunday night.",
+      actions: [
+        { label: "The Bilgi thread", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a06146cdc652c50" },
+        { label: "Chase Büşra", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a06146cdc652c50?compose=new" }
+      ]
     },
     {
       title: "Şirket Kredi Kartı Ödemesi — KOZALAK",
       date: "2026-09-10", kind: "money",
-      detail: "Marked ⚠️ on the KOZALAK calendar, Thu 10 Sep 09:00. A fourth card obligation, this one on the company side, three days after the personal Yapı Kredi payment.",
-      actions: []
+      detail: "Marked ⚠️ on the company calendar, Thu 10 Sep 09:00 — the same day the intern payments are due.",
+      actions: [{ label: "Calendar entry", icon: "event", href: "https://www.google.com/calendar/event?eid=N3Rzazc3NmRtZHJxZnRyajJocW1lc25udGZfMjAyNjA5MTBUMDYwMDAwWiBjXzU4YWQ1OGY0NWUxMGEwMTk3MGQ5ZDIwZmFlODNjMjA1MGNjNmI1YWMwNDk0ODg5ZWFlZTY5OWI5MTAzYWVmYmRAZw&ctz=Europe/Istanbul" }]
     },
     {
-      title: "Mobiliz araç takip — first billed month",
-      date: "2026-09-15", kind: "money",
-      detail: "Billing starts 15 Sep unless you cancel. Motorist wants a decision too.",
+      title: "futurelab hızlandırma maratonu",
+      date: "2026-09-11", kind: "work",
+      detail: "Fri 11 Sep 09:00 through Sun 13 Sep 17:30, on your own calendar since 27 August. Sidal shared a “Futurelab Başvuru” document with you on the 31st — worth reading before you are three days into it.",
       actions: [
-        { label: "Their notice", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa" },
-        { label: "Reply to cancel", icon: "reply", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa?compose=new" }
+        { label: "Başvuru dokümanı", icon: "web", href: "https://docs.google.com/document/d/1UTii1i1k6pQw_rAqJxuFd5R8BuPibBhY8RemRPQtLT4/edit" },
+        { label: "Calendar entry", icon: "event", href: "https://www.google.com/calendar/event?eid=N2dwNW10b2g5aGpjdW1vcDRyaXUyN3N2c2MgYmF0dWhhbmVzaXJnZXJAbQ&ctz=Europe/Istanbul" }
       ]
+    },
+    {
+      title: "Kısakürek Düğün",
+      date: "2026-09-12", kind: "social",
+      detail: "Sat 12 Sep 16:30–23:00, Rana organising. The calendar shows you accepted, so this is a commitment now rather than an open RSVP — and it lands on the middle day of the futurelab maratonu.",
+      actions: [{ label: "Calendar entry", icon: "event", href: "https://www.google.com/calendar/event?eid=NmtzamNkcjI2MWozZ2JiMTY4czZhYjlrNzRvamdiOW9jNHM2NGJiNGNjb2owcGoxNnBoajZkcGtjYyBiYXR1aGFuZXNpcmdlckBt&ctz=Europe/Istanbul" }]
+    },
+    {
+      title: "Mobiliz araç takip — check no charge lands",
+      date: "2026-09-15", kind: "money",
+      detail: "Not a decision any more: you asked to cancel on 16 August and Mobiliz replied the next morning that the iptal kaydı was opened. Billing would have started 15 Sep, so this row is only here to make sure nothing is charged that day.",
+      actions: [{ label: "The cancellation", icon: "mail", href: "https://mail.google.com/mail/u/0/#inbox/1a00b7f874a5bcfa" }]
     }
   ],
 
   needsYou: [
     {
-      what: "The intern payments thread is live without you",
-      source: "Büşra Yılmaz, Bilgi · yesterday 11:40, you cc'd",
-      why: "She has written to Emine Aksoy about payments for the Endüstriyel Tasarım students doing compulsory internships at your company. This was item one on your Monday list, marked SABAH İLK İŞ — now it is moving in the faculty's inbox rather than yours.",
+      what: "Five intern payments are due on the 10th and nobody at Bilgi has the answer",
+      source: "Zorunlu Staj thread · Büşra Yılmaz, yesterday 12:45",
+      why: "You told them yesterday that five Bilgi students are interning with you and payment is due by 10 September, and asked four specific things: the minimum you must pay with under 20 staff, the matching state contribution, how it is calculated and filed, and the repayment schedule. Accounting sent it to HR, the dean's office sent it to the internship unit, and you ended up back with Erdem where you started. Büşra is now trying the legal office because, in her words, no unit currently has information. You land Sunday night, which leaves four working days.",
       severity: "critical"
     },
     {
-      what: "Your card is still undelivered after three attempts",
+      what: "Card ****8502 has failed four times, and the address is the reason",
       source: "İş Bankası · Tue 13:29",
-      why: "****8502 has bounced three times on the address they hold, and you're abroad until Sunday. The address fix is doable from a phone; the delivery isn't.",
+      why: "Three notices say hatalı adres — 24, 25 and 31 August — and Tuesday's says the courier called and could not deliver, promising another visit within two business days. That window closed yesterday. Updating the registered address in İşCep works from Taşos; the delivery does not.",
       severity: "critical"
     },
     {
-      what: "Monday is loaded and you land the night before",
-      source: "Yapı Kredi 58.406,56 TL · Onstage opens 09:00",
-      why: "The largest payment on the board and a Demo Day application window both fall on your first morning home, after a five-day drive back.",
+      what: "Monday's 58.406,56 TL is confirmed now, not inferred",
+      source: "Yapı Kredi hesap özeti · 27 Aug",
+      why: "The statement says Son Ödeme Tarihi 07 Eylül 2026 for ****3346, which settles the three competing dates this board has been carrying. Your two reminders fire Saturday and Sunday while you are still away, so the payment itself lands on your first morning home.",
       severity: "warn"
     },
     {
-      what: "The GITEX ticket is still unclaimed",
-      source: "YZF · Mon 15:31",
-      why: "Free partner access on 9–10 September. Two minutes on the island beats scrambling on the 9th.",
+      what: "The accountant's balance has not moved in two weeks",
+      source: "E-Mükellef · Mon 10:57",
+      why: "56.000,00 TL on 21, 28 and 31 August — the same figure each time, with no due date given. The Q2 geçici vergi fişi from 13 August and the Temmuz KDV1 fişi from 26 August are both still unopened, so the inbox cannot tell you what is paid and what is not.",
       severity: "warn"
     },
     {
-      what: "A company card payment lands on the 10th",
-      source: "KOZALAK calendar · Thu 10 Sep 09:00",
-      why: "Marked with a warning sign on the company calendar. Worth knowing it exists before Monday's personal payment eats the attention.",
+      what: "GITEX is five days out and the free ticket is still unclaimed",
+      source: "YZF bülteni · Tue 12:01",
+      why: "9–10 September at Istanbul Expo Center, free through YZF's partner link. It is the one thing on this list that takes two minutes and cannot be done late.",
       severity: "warn"
     }
   ],
@@ -203,32 +225,31 @@ const DATA = {
     { text: "Sort out the Q2 geçici vergi", tag: "money", due: "2026-08-17", pri: 1 },
     { text: "Save the GitHub recovery codes", tag: "security", due: "2026-08-17", pri: 1 },
     { text: "Pay the Maximiles Black card", tag: "money", due: "2026-08-20", pri: 1 },
-    { text: "Fix the failing shot-timer firmware build", tag: "code", due: "2026-08-21", pri: 2 },
-    { text: "RSVP to Kısakürek Düğün, 12 Sep", tag: "social", due: "2026-08-23", pri: 2 },
-    { text: "Decide: renew or cancel Mobiliz araç takip", tag: "money", due: "2026-09-10", pri: 2 }
+    { text: "Fix the failing shot-timer firmware build", tag: "code", due: "2026-08-21", pri: 2 }
   ],
 
   weekAhead: [
-    { date: "2026-09-04", label: "Fri 4 Sep", items: ["Taşos"] },
     { date: "2026-09-05", label: "Sat 5 Sep", items: ["Taşos", "Yapıkredi reminder · 08:30 — away"] },
-    { date: "2026-09-06", label: "Sun 6 Sep", items: ["Taşos — home 23:00", "YKredi KRT reminder"] },
-    { date: "2026-09-07", label: "Mon 7 Sep", items: ["Yapı Kredi son ödeme · 58.406,56 TL", "Onstage Demo Day opens · 09:00", "KOZALAK: MA × Gizem Gülbent · 15:00 — you're not an attendee"] },
-    { date: "2026-09-08", label: "Tue 8 Sep", items: ["ForestGuard Bi-weekly · 13:30 · Teams"] },
-    { date: "2026-09-09", label: "Wed 9 Sep", items: ["GITEX AI Türkiye · Istanbul"] },
-    { date: "2026-09-10", label: "Thu 10 Sep", items: ["⚠️ Şirket Kredi Kartı Ödemesi · 09:00 · KOZALAK"] }
+    { date: "2026-09-06", label: "Sun 6 Sep", items: ["Taşos — home 23:00", "Fikir Maratonu closes 23:59"] },
+    { date: "2026-09-07", label: "Mon 7 Sep", items: ["Yapı Kredi son ödeme · 58.406,56 TL", "KOZALAK: MA × Gizem Gülbent · 15:00 — you're not an attendee"] },
+    { date: "2026-09-08", label: "Tue 8 Sep", items: ["ForestGuard Bi-weekly · 13:30 · Teams — accepted"] },
+    { date: "2026-09-09", label: "Wed 9 Sep", items: ["GITEX AI Türkiye · Istanbul Expo Center"] },
+    { date: "2026-09-10", label: "Thu 10 Sep", items: ["Stajyer ödemeleri — deadline", "⚠️ Şirket Kredi Kartı Ödemesi · 09:00", "GITEX day 2"] },
+    { date: "2026-09-11", label: "Fri 11 Sep", items: ["futurelab hızlandırma maratonu · 09:00 → Sun 17:30"] }
   ],
 
   inbox: {
     unreadEstimate: 201,
     windowLabel: "unread, last 14 days",
     threads: [
-      { id: "1a06146cdc652c50", from: "Büşra Yılmaz (Bilgi)", subject: "Zorunlu staj yapan öğrencilere yapılacak ödemeler — you're cc'd", when: "yesterday 11:40", flag: "action" },
-      { id: "1a05c84c52eac68d", from: "İş Bankası", subject: "Kart teslim bilgilendirme — third failed attempt, ****8502", when: "Tue 13:29", flag: "action" },
-      { id: "1a061e88e1d1dc88", from: "Anadolu Sigorta", subject: "Elektrikli Araç Kasko poliçeniz + tahsilat çıktısı", when: "yesterday 14:37", flag: "watch" },
-      { id: "1a060be2273b7f56", from: "AWS", subject: "Billing statement available — account ****7925", when: "yesterday 09:11", flag: "watch" },
-      { id: "1a05c61e61754344", from: "İş Bankası", subject: "Ek hesap özeti ***9198 — 03.08–31.08", when: "Tue 12:51", flag: "watch" },
-      { id: "1a064be6992c2ebc", from: "ArtStation", subject: "New AI safeguards for your work", when: "today 03:49", flag: "watch" },
-      { id: "1a0626d219d9b0ca", from: "Workup", subject: "⏰ Starting in 1 hour — the event you missed", when: "yesterday 17:01", flag: "done" }
+      { id: "1a06146cdc652c50", from: "Büşra Yılmaz (Bilgi)", subject: "Hukuk müşavirliğine soracağım — no unit knows the answer", when: "yesterday 12:45", flag: "action" },
+      { id: "1a05c84c52eac68d", from: "İş Bankası", subject: "Kart teslim bilgilendirme — fourth failure, ****8502", when: "Tue 13:29", flag: "action" },
+      { id: "1a06ab02bb64c633", from: "Circular Mind", subject: "Tam Tahıl Fikir Maratonu — son başvuru 6 Eylül 23:59", when: "today 07:32", flag: "action" },
+      { id: "1a0430678de9bdd9", from: "Yapı Kredi", subject: "Ağustos World Platinum hesap özeti — 58.406,56 TL, son ödeme 7 Eylül", when: "27 Aug", flag: "action" },
+      { id: "1a056d2b35ec9266", from: "E-Mükellef", subject: "Mali müşavirlik ücret bakiyesi — 56.000,00 TL", when: "Mon 10:57", flag: "watch" },
+      { id: "1a067d8981dbe153", from: "İMMİB", subject: "2026 Endüstriyel Tasarım Yarışmaları duyurusu — no date in the mail", when: "yesterday 18:17", flag: "watch" },
+      { id: "1a060be2273b7f56", from: "AWS", subject: "Billing statement available — account ****7925", when: "Wed 09:11", flag: "watch" },
+      { id: "1a0582f4259c8983", from: "sidal", subject: "Drive: “Futurelab Başvuru (Paraphrased)” shared with you", when: "Mon 17:18", flag: "done" }
     ]
   },
 
